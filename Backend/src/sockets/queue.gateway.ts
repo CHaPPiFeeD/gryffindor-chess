@@ -26,15 +26,19 @@ export class QueueGateway {
 
     const anotherPlayer: userQueueDto = this.getUserByColor(findColor)
 
-    if (!anotherPlayer && !this.getUserBySocket(data)) {
+    if (!anotherPlayer) {
+      if (this.getUserBySocket(data)) return
       this.queue.push(data)
     } else {
-      const index = this.queue.findIndex((obj) => !!this.getUserBySocket(obj))
+      const index = this.queue.findIndex((obj) => Object.is(obj.socket, anotherPlayer.socket))
       if (index >= 0) {
         this.queue.splice(index, 1)
       }
     }
+
+  this.logger.debug(JSON.stringify(this.queue))
   }
+
 
   getFindsColors(colors: string[]): string[] {
     return colors.map(color => {
