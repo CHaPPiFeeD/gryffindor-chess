@@ -14,7 +14,7 @@ export default {
 
 <style>
 body {
-  background-image: url("./assets/bcg_Img.jpg");
+  background-image: url("assets/bcg_Img.jpg");
   background-repeat: no-repeat;
   background-size: cover;
 }
