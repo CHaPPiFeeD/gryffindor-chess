@@ -1,0 +1,13 @@
+{
+  "name": "nest-app",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "build:frontend": "npm i --prefix ./frontend && npm run build --prefix ./frontend",
+    "build:backend": "npm i --prefix ./backend && npm run build --prefix ./backend",
+    "start": "npm run start:prod --prefix ./backend"
+  }
+}
