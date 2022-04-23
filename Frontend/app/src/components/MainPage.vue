@@ -25,55 +25,10 @@
         <button type="submit" class="registerbtn">Register</button>
       </div>
     </form>
-
-    <div class="container">
-      <h1 class="text-center">Queue</h1>
-      <div v-for="item in queue" :key="item.id">
-        <div class="d-flex">
-          <p>{{ item.id }}</p>
-          <p>{{ item.username }}</p>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 <script>
-export default {
-  name: "MainPage",
-  components: {},
-  data() {
-    return {
-      queue: [
-        {
-          id: 1,
-          username: "bob",
-          colorPreferred: "white",
-        },
-        {
-          id: 2,
-          username: "sasha",
-          colorPreferred: "white",
-        },
-        {
-          id: 3,
-          username: "aleg",
-          colorPreferred: "any",
-        },
-        {
-          id: 4,
-          username: "shaman",
-          colorPreferred: "black",
-        },
-      ],
-      isOpenModal: false,
-    };
-  },
-  methods: {
-    openModal() {
-      console.log("foo");
-    },
-  },
-};
+export default {};
 </script>
 
 <!-- ----------------------Style part-------------------------  --->
@@ -82,15 +37,18 @@ export default {
 * {
   box-sizing: border-box;
 }
-
+body {
+  background-image: url("../assets/bcgim.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
 /* Add padding to containers */
 .container {
   padding: 16px;
 }
 
 /* Full-width input fields */
-input[type="text"],
-input[type="password"] {
+input[type="text"] {
   width: 100%;
   padding: 15px;
   margin: 5px 0 22px 0;

@@ -1,11 +1,5 @@
 <template>
   <div>
-    <p>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. At aspernatur
-      excepturi asperiores dolorem provident temporibus maxime! Similique
-      voluptatem magnam culpa optio, quasi labore ipsa, sequi aut illum sit sunt
-      nisi.
-    </p>
     <div>
       <div class="box">
         <div class="centered">
@@ -115,17 +109,60 @@
         </div>
       </div>
     </div>
+    <div class="container">
+      <h1 class="text-center">Queue</h1>
+      <div v-for="item in queue" :key="item.id">
+        <div class="d-flex">
+          <p>{{ item.id }}</p>
+          <p>{{ item.username }}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  name: "MainPage",
+  components: {},
+  data() {
+    return {
+      queue: [
+        {
+          id: 1,
+          username: "bob",
+          colorPreferred: "white",
+        },
+        {
+          id: 2,
+          username: "sasha",
+          colorPreferred: "white",
+        },
+        {
+          id: 3,
+          username: "aleg",
+          colorPreferred: "any",
+        },
+        {
+          id: 4,
+          username: "shaman",
+          colorPreferred: "black",
+        },
+      ],
+      isOpenModal: false,
+    };
+  },
+  methods: {
+    openModal() {
+      console.log("foo");
+    },
+  },
+};
 </script>
 
 <style scoped>
 .box {
   text-align: center;
-  background-color: #eeeeee;
 }
 .centered {
   display: inline-block;
@@ -146,9 +183,9 @@ export default {};
   vertical-align: middle;
 }
 .chess-board .white {
-  background: #f0d9b5;
+  background: #b7b5b3c6;
 }
 .chess-board .black {
-  background: #b58863;
+  background: #5ece74cb;
 }
 </style>
