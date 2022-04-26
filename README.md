@@ -3,11 +3,8 @@
 ## Installation
 
 ```bash
-# frontend
-$ npm install --prefix ./frontend
-
-# backend
-$ npm install --prefix ./backend
+# install
+$ npm install
 ```
 
 ## Building

@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -6,39 +6,49 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { regToQueueDto, userQueueDto } from './dto/queue.dto';
+import { GameService } from './service/game.service';
+// import { GameGateway } from './game.gateway';
 
 @WebSocketGateway()
 export class QueueGateway {
   private queue = [];
   private logger = new Logger(QueueGateway.name);
 
+  @Inject(GameService)
+  private gameService: GameService;
+
   @WebSocketServer()
   server: Server;
 
   @SubscribeMessage('/search/room')
   registerToQueue(client: Socket, payload: regToQueueDto) {
-    const data: userQueueDto = {
+    const playerOne: userQueueDto = {
       socket: client.id,
       ...payload,
     };
 
-    const findColor: string[] = this.getFindsColors(data.color);
+    if (this.getUserBySocket(playerOne)) return;
+    const findColor: string[] = this.getFindsColors(playerOne.color);
+    const playerTwo: userQueueDto = this.getUserByColor(findColor);
 
-    const anotherPlayer: userQueueDto = this.getUserByColor(findColor);
-
-    if (!anotherPlayer) {
-      if (this.getUserBySocket(data)) return;
-      this.queue.push(data);
+    if (!playerTwo) {
+      this.queue.push(playerOne);
     } else {
       const index = this.queue.findIndex((obj) =>
-        Object.is(obj.socket, anotherPlayer.socket),
+        Object.is(obj.socket, playerTwo.socket),
       );
+
       if (index >= 0) {
         this.queue.splice(index, 1);
       }
+
+      this.gameService.startGame(playerOne, playerTwo, (room) => {
+        this.server.in([playerOne.socket, playerTwo.socket]).socketsJoin(room);
+        this.server.emit('/game/start'); //
+      });
     }
 
-    this.logger.debug(JSON.stringify(this.queue));
+    this.logger.log('---queue---', JSON.stringify(this.queue));
   }
 
   getFindsColors(colors: string[]): string[] {
