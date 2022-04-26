@@ -3,16 +3,22 @@ import { WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { randomString } from '../../helpers';
 import { findColors } from '../../helpers/game';
+import { userQueueDto } from '../../dto/queue.dto';
+import { gameStateType, gameType, moveDto } from 'src/dto/game.dto';
 
 export class GameService {
-  private gamesStates = {};
+  private gamesStates: gameStateType = {};
   private logger = new Logger(GameService.name);
 
   @WebSocketServer()
   server: Server;
 
-  startGame(playerOne, playerTwo, callback) {
-    const room = randomString(16);
+  startGame(
+    playerOne: userQueueDto,
+    playerTwo: userQueueDto,
+    callback: (room: string) => void,
+  ) {
+    const room: string = randomString(16);
     const { white, black } = findColors(playerOne, playerTwo);
 
     this.gamesStates[room] = {
@@ -31,23 +37,15 @@ export class GameService {
       ],
     };
 
-    this.logger.log('---gameStates---', JSON.stringify(this.gamesStates));
-
     callback(room);
   }
 
-  chessMove({ room, posOne, posTwo }, callback) {
-    const game = this.gamesStates[room];
-    this.logger.debug(game);
-
-    const figure = game.board[posOne[0]][posOne[1]];
-    game.board[posTwo[0]][posTwo[1]] = figure;
-    game.board[posOne[0]][posOne[1]] = '0';
-    this.logger.log('---gameStates---', JSON.stringify(this.gamesStates[room]));
-    this.logger.log(
-      '---board---',
-      JSON.stringify(this.gamesStates[room].board),
-    );
+  chessMove(data: moveDto, callback: (room: string) => void) {
+    const { room, startPos, endPos } = data;
+    const game: gameType = this.gamesStates[room];
+    const figure: string = game.board[startPos[0]][startPos[1]];
+    game.board[endPos[0]][endPos[1]] = figure;
+    game.board[startPos[0]][startPos[1]] = '0';
 
     callback(room);
   }

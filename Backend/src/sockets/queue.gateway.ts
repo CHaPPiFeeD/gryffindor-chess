@@ -5,13 +5,13 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { regToQueueDto, userQueueDto } from './dto/queue.dto';
+import { CHESS_COLORS } from '../enum/constants';
+import { regToQueueDto, userQueueDto } from '../dto/queue.dto';
 import { GameService } from './service/game.service';
-// import { GameGateway } from './game.gateway';
 
 @WebSocketGateway()
 export class QueueGateway {
-  private queue = [];
+  private queue: userQueueDto[] = [];
   private logger = new Logger(QueueGateway.name);
 
   @Inject(GameService)
@@ -21,7 +21,7 @@ export class QueueGateway {
   server: Server;
 
   @SubscribeMessage('/search/room')
-  registerToQueue(client: Socket, payload: regToQueueDto) {
+  registerToQueue(client: Socket, payload: regToQueueDto): void {
     const playerOne: userQueueDto = {
       socket: client.id,
       ...payload,
@@ -34,7 +34,7 @@ export class QueueGateway {
     if (!playerTwo) {
       this.queue.push(playerOne);
     } else {
-      const index = this.queue.findIndex((obj) =>
+      const index: number = this.queue.findIndex((obj) =>
         Object.is(obj.socket, playerTwo.socket),
       );
 
@@ -47,14 +47,12 @@ export class QueueGateway {
         this.server.emit('/game/start'); //
       });
     }
-
-    this.logger.log('---queue---', JSON.stringify(this.queue));
   }
 
   getFindsColors(colors: string[]): string[] {
     return colors.map((color) => {
-      if (color === 'white') return 'black';
-      if (color === 'black') return 'white';
+      if (color === CHESS_COLORS.WHITE) return CHESS_COLORS.BLACK;
+      if (color === CHESS_COLORS.BLACK) return CHESS_COLORS.WHITE;
     });
   }
 
