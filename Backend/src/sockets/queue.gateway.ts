@@ -20,7 +20,7 @@ export class QueueGateway {
   @WebSocketServer()
   server: Server;
 
-  @SubscribeMessage('/search/room')
+  @SubscribeMessage('/queue/search')
   registerToQueue(client: Socket, payload: regToQueueDto): void {
     const playerOne: userQueueDto = {
       socket: client.id,

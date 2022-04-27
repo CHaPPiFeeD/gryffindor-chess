@@ -23,8 +23,8 @@ export class GameService {
 
     this.gamesStates[room] = {
       roomName: room,
-      white: white,
-      black: black,
+      white,
+      black,
       board: [
         ['r', 'n', 'b', 'k', 'q', 'b', 'n', 'r'],
         ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
