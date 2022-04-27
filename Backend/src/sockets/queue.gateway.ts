@@ -42,9 +42,11 @@ export class QueueGateway {
         this.queue.splice(index, 1);
       }
 
-      this.gameService.startGame(playerOne, playerTwo, (room) => {
-        this.server.in([playerOne.socket, playerTwo.socket]).socketsJoin(room);
-        this.server.emit('/game/start'); //
+      this.gameService.startGame(playerOne, playerTwo, (gameState) => {
+        this.server
+          .in([playerOne.socket, playerTwo.socket])
+          .socketsJoin(gameState.roomName);
+        this.server.emit('/game/start', gameState);
       });
     }
   }
