@@ -1,119 +1,80 @@
 <template>
   <div>
     <div>
-      <div class="box">
-        <div class="centered">
-          <table class="chess-board">
-            <tbody>
-              <tr>
-                <th></th>
-                <th>a</th>
-                <th>b</th>
-                <th>c</th>
-                <th>d</th>
-                <th>e</th>
-                <th>f</th>
-                <th>g</th>
-                <th>h</th>
-              </tr>
-              <tr>
-                <th>8</th>
-                <td class="white" id="a8"></td>
-                <td class="black" id="b8"></td>
-                <td class="white" id="c8"></td>
-                <td class="black" id="d8"></td>
-                <td class="white" id="e8"></td>
-                <td class="black" id="f8"></td>
-                <td class="white" id="g8"></td>
-                <td class="black" id="h8"></td>
-              </tr>
-              <tr>
-                <th>7</th>
-                <td class="black" id="a7"></td>
-                <td class="white" id="b7"></td>
-                <td class="black" id="c7"></td>
-                <td class="white" id="d7"></td>
-                <td class="black" id="e7"></td>
-                <td class="white" id="f7"></td>
-                <td class="black" id="g7"></td>
-                <td class="white" id="h7"></td>
-              </tr>
-              <tr>
-                <th>6</th>
-                <td class="white" id="a6"></td>
-                <td class="black" id="b6"></td>
-                <td class="white" id="c6"></td>
-                <td class="black" id="d6"></td>
-                <td class="white" id="e6"></td>
-                <td class="black" id="f6"></td>
-                <td class="white" id="g6"></td>
-                <td class="black" id="h6"></td>
-              </tr>
-              <tr>
-                <th>5</th>
-                <td class="black" id="a5"></td>
-                <td class="white" id="b5"></td>
-                <td class="black" id="c5"></td>
-                <td class="white" id="d5"></td>
-                <td class="black" id="e5"></td>
-                <td class="white" id="f5"></td>
-                <td class="black" id="g5"></td>
-                <td class="white" id="h5"></td>
-              </tr>
-              <tr>
-                <th>4</th>
-                <td class="white" id="a4"></td>
-                <td class="black" id="b4"></td>
-                <td class="white" id="c4"></td>
-                <td class="black" id="d4"></td>
-                <td class="white" id="e4"></td>
-                <td class="black" id="f4"></td>
-                <td class="white" id="g4"></td>
-                <td class="black" id="h4"></td>
-              </tr>
-              <tr>
-                <th>3</th>
-                <td class="black" id="a3"></td>
-                <td class="white" id="b3"></td>
-                <td class="black" id="c3"></td>
-                <td class="white" id="d3"></td>
-                <td class="black" id="e3"></td>
-                <td class="white" id="f3"></td>
-                <td class="black" id="g3"></td>
-                <td class="white" id="h3"></td>
-              </tr>
-              <tr>
-                <th>2</th>
-                <td class="white" id="a2"></td>
-                <td class="black" id="b2"></td>
-                <td class="white" id="c2"></td>
-                <td class="black" id="d2"></td>
-                <td class="white" id="e2"></td>
-                <td class="black" id="f2"></td>
-                <td class="white" id="g2"></td>
-                <td class="black" id="h2"></td>
-              </tr>
-              <tr>
-                <th>1</th>
-                <td class="black" id="a1"></td>
-                <td class="white" id="b1"></td>
-                <td class="black" id="c1"></td>
-                <td class="white" id="d1"></td>
-                <td class="black" id="e1"></td>
-                <td class="white" id="f1"></td>
-                <td class="black" id="g1"></td>
-                <td class="white" id="h1"></td>
-              </tr>
-            </tbody>
-          </table>
+      <div>
+        <div class="board">
+          <div class="box">&#9820;</div>
+          <div class="box">&#9822;</div>
+          <div class="box">&#9821;</div>
+          <div class="box">&#9819;</div>
+          <div class="box">&#9818;</div>
+          <div class="box">&#9821;</div>
+          <div class="box">&#9822;</div>
+          <div class="box">&#9820;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9823;</div>
+          <div class="box">&#9820;</div>
+          <div class="box">&#9822;</div>
+          <div class="box">&#9812;</div>
+          <div class="box">&#9819;</div>
+          <div class="box">&#9818;</div>
+          <div class="box">&#9821;</div>
+          <div class="box">&#9822;</div>
+          <div class="box">&#9820;</div>
         </div>
-        <div class="queue_form">
-          <h1 class="text-center">Queue</h1>
-          <div v-for="item in queue" :key="item.id">
-            <div class="d-flex">
-              <p>{{ item.id }}</p>
-              <p>{{ item.username }}</p>
-            </div>
+      </div>
+      <div class="queue_form">
+        <h1 class="text-center">Queue</h1>
+        <div v-for="item in queue" :key="item.id">
+          <div class="d-flex">
+            <p>{{ item.id }}</p>
+            <p>{{ item.username }}</p>
           </div>
         </div>
       </div>
@@ -164,35 +125,85 @@ export default {
 .box {
   text-align: center;
   display: flex;
-  justify-content: space-between;
-}
-.centered {
-  display: inline-block;
-  margin: 0;
-}
-.chess-board {
-  border-spacing: 0;
-  border-collapse: collapse;
-}
-.chess-board th {
-  padding: 0.5em;
-}
-.chess-board td {
-  border: 1px solid;
-  width: 5em;
-  height: 5em;
-  text-align: center;
-  vertical-align: middle;
-}
-.chess-board .white {
-  background: #b7b5b3;
-}
-.chess-board .black {
-  background: #5ece74;
 }
 .queue_form {
   color: firebrick;
   background-color: #5ece74;
   width: 20%;
+}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Verdana, sans-serif;
+  font-size: 16px;
+  font-size: 1rem;
+  text-align: center;
+  color: #fff;
+  background-color: #6a6;
+}
+
+h1 {
+  font-size: 1.5rem;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.75);
+}
+
+.board {
+  position: relative;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  border: 4vw solid transparent;
+  border-image: url("http://allroundnews.com/wp-content/uploads/2012/02/seamless-wood-texture-free-6.jpg")
+    50 stretch;
+  max-width: 480px;
+  max-height: 480px;
+  width: 100vw;
+  height: 100vw;
+  box-shadow: 0 10px 10px -5px rgba(0, 0, 0, 0.75);
+  font-size: 0;
+  background-image: url("http://www.wood-database.com/wp-content/uploads/bamboo-qs-sealed.jpg");
+}
+
+.box {
+  width: 12.5%;
+  height: 12.5%;
+  font-size: 8vw;
+  line-height: 12vw;
+}
+
+.box:nth-child(n + 1):nth-child(-n + 16) {
+  color: #222;
+}
+
+.board .box:nth-child(n + 1):nth-child(-n + 8):nth-child(even),
+.board .box:nth-child(n + 17):nth-child(-n + 25):nth-child(even),
+.board .box:nth-child(n + 33):nth-child(-n + 40):nth-child(even),
+.board .box:nth-child(n + 49):nth-child(-n + 56):nth-child(even),
+.board .box:nth-child(n + 9):nth-child(-n + 16):nth-child(odd),
+.board .box:nth-child(n + 25):nth-child(-n + 32):nth-child(odd),
+.board .box:nth-child(n + 41):nth-child(-n + 48):nth-child(odd),
+.board .box:nth-child(n + 57):nth-child(-n + 64):nth-child(odd) {
+  background-color: rgba(135, 50, 0, 0.5);
+}
+
+@media screen and (min-width: 480px) {
+  .board {
+    border: 18px solid transparent;
+    /*  border-image: url("http://allroundnews.com/wp-content/uploads/2012/02/seamless-wood-texture-free-6.jpg")
+      50 stretch;*/
+    box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.75);
+  }
+  .box {
+    font-size: 2.5rem;
+    line-height: 56px;
+  }
 }
 </style>
