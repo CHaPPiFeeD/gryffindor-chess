@@ -1,4 +1,4 @@
-<template>
+<template id="main_bcgIM">
   <router-view />
 </template>
 
@@ -11,6 +11,9 @@
   color: #2c3e50;
 }
 
+body {
+  background-image: url("./assets/bcgim2.jpg");
+}
 nav {
   padding: 30px;
 

@@ -107,14 +107,14 @@
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
-    <div class="container">
-      <h1 class="text-center">Queue</h1>
-      <div v-for="item in queue" :key="item.id">
-        <div class="d-flex">
-          <p>{{ item.id }}</p>
-          <p>{{ item.username }}</p>
+        <div class="queue_form">
+          <h1 class="text-center">Queue</h1>
+          <div v-for="item in queue" :key="item.id">
+            <div class="d-flex">
+              <p>{{ item.id }}</p>
+              <p>{{ item.username }}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -123,7 +123,7 @@
 
 <script>
 export default {
-  name: "MainPage",
+  name: "ChessPage",
   components: {},
   data() {
     return {
@@ -163,6 +163,8 @@ export default {
 <style scoped>
 .box {
   text-align: center;
+  display: flex;
+  justify-content: space-between;
 }
 .centered {
   display: inline-block;
@@ -188,4 +190,12 @@ export default {
 .chess-board .black {
   background: #5ece74cb;
 }
+.queue_form {
+  color: firebrick;
+  background-color: #5ece74cb;
+  width: 20%;
+}
+
+/* 
+*/
 </style>

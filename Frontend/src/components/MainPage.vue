@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form class="text-center">
+    <div class="text-center">
       <div class="container">
         <h1>Register</h1>
         <p>Please fill all fields</p>
@@ -9,26 +9,55 @@
         <label for="username"><b>Username</b></label>
         <input
           type="text"
+          v-model="username"
           placeholder="Enter your Username"
-          name="username"
           required
         />
-
         <hr />
         <p class="">
-          White
-          <input type="radio" id="white_color" />
-          or Black?
-          <input type="radio" id="black_color" />
+          <label class="white_chose">
+            White
+            <input
+              v-model="chesscolor"
+              type="radio"
+              id="white_color"
+              name="chess-color"
+            />
+          </label>
+          or
+          <label class="black_chose">
+            Black?
+            <input
+              v-model="chesscolor"
+              type="radio"
+              id="black_color"
+              name="chess-color"
+            />
+          </label>
         </p>
         <hr />
-        <button type="submit" class="registerbtn">Register</button>
+        <button @click="send" type="submit" class="registerbtn">
+          Register
+        </button>
       </div>
-    </form>
+    </div>
   </div>
 </template>
+<!-- ----------------------Script part-------------------------  --->
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      username: "",
+      chesscolor: "",
+    };
+  },
+  methods: {
+    send() {
+      console.log(this.username);
+    },
+  },
+};
 </script>
 
 <!-- ----------------------Style part-------------------------  --->
@@ -37,14 +66,15 @@ export default {};
 * {
   box-sizing: border-box;
 }
-body {
-  background-image: url("../assets/bcgim.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
-}
+
 /* Add padding to containers */
 .container {
   padding: 16px;
+  border: solid;
+  border-radius: 10px 100px / 120px;
+  background-image: url("../assets/bcgim.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 /* Full-width input fields */
@@ -77,10 +107,10 @@ hr {
   margin: 8px 0;
   border: none;
   cursor: pointer;
-  width: 100%;
+  width: 30%;
   opacity: 0.9;
+  border-radius: 50% 20% / 10% 40%;
 }
-
 .registerbtn:hover {
   opacity: 1;
 }
@@ -94,5 +124,11 @@ a {
 .signin {
   background-color: #f1f1f1;
   text-align: center;
+}
+.white_chose {
+  color: #ffffff;
+}
+.black_chose {
+  color: rgb(0, 0, 0);
 }
 </style>
