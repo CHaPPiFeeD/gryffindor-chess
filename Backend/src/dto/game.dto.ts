@@ -10,9 +10,7 @@ export type gameType = {
   board: string[][];
 };
 
-export type gameStateType = {
-  [index: string]: gameType;
-};
+export type gameStateType = Map<string, gameType>;
 
 export class moveDto {
   room: string;

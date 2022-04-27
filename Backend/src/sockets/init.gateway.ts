@@ -12,7 +12,7 @@ export class InitGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private logger = new Logger(InitGateway.name);
 
   @WebSocketServer()
-  server: Server;
+  public server: Server;
 
   handleConnection(client: Socket) {
     this.logger.log(`User connection: ${client.id}`);

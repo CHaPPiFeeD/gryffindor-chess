@@ -20,10 +20,6 @@ export class GameGateway {
 
   @SubscribeMessage('/game/move')
   chessMuve(client: Socket, data: moveDto) {
-    const { startPos, endPos } = data;
-
-    this.gameService.chessMove(data, (room) => {
-      this.server.in(room).emit('/game/move', { startPos, endPos });
-    });
+    this.gameService.chessMove(data);
   }
 }
