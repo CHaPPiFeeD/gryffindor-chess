@@ -8,7 +8,7 @@ import { Server, Socket } from 'socket.io';
 import { moveDto } from '../dto/game.dto';
 import { GameService } from './service/game.service';
 
-@WebSocketGateway()
+@WebSocketGateway({ cors: true })
 export class GameGateway {
   private logger = new Logger(GameGateway.name);
 

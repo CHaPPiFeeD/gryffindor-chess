@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway()
+@WebSocketGateway({ cors: true })
 export class InitGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private logger = new Logger(InitGateway.name);
 
