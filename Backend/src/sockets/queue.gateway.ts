@@ -21,11 +21,13 @@ export class QueueGateway {
   server: Server;
 
   @SubscribeMessage('/queue/search')
-  registerToQueue(client: Socket, payload: regToQueueDto): void {
+  registerToQueue(client: Socket, payload: regToQueueDto): string {
     const playerOne: userQueueDto = {
       socket: client.id,
       ...payload,
     };
+
+    this.logger.debug(playerOne);
 
     if (this.getUserBySocket(playerOne)) return;
     const findColor: string[] = this.getFindsColors(playerOne.color);
@@ -46,7 +48,8 @@ export class QueueGateway {
         this.server
           .in([playerOne.socket, playerTwo.socket])
           .socketsJoin(gameState.roomName);
-        this.server.emit('/game/start', gameState);
+        this.logger.debug(gameState);
+        this.server.in(gameState.roomName).emit('/game/start', gameState);
       });
     }
   }

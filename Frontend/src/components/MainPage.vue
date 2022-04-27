@@ -71,7 +71,7 @@ export default {
       }
     },
     send() {
-      this.$soketio.emit("registerToQueue", { color: "color", name: "name" });
+      this.$soketio.emit("/queue/search", { color: ["white", "black"], name: "name" }, (data) => {console.log(data);});
     },
   },
   created() {
