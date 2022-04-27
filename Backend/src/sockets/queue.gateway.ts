@@ -9,7 +9,7 @@ import { CHESS_COLORS } from '../enum/constants';
 import { regToQueueDto, userQueueDto } from '../dto/queue.dto';
 import { GameService } from './service/game.service';
 
-@WebSocketGateway()
+@WebSocketGateway({ cors: true })
 export class QueueGateway {
   private queue: userQueueDto[] = [];
   private logger = new Logger(QueueGateway.name);
@@ -20,7 +20,7 @@ export class QueueGateway {
   @WebSocketServer()
   server: Server;
 
-  @SubscribeMessage('/search/room')
+  @SubscribeMessage('/queue/search')
   registerToQueue(client: Socket, payload: regToQueueDto): void {
     const playerOne: userQueueDto = {
       socket: client.id,

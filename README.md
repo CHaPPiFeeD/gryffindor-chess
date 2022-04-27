@@ -15,6 +15,9 @@ $ npm run build:frontend
 
 # backend
 $ npm run build:backend
+
+# all
+$ npm run build
 ```
 
 ## Running the app
