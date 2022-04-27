@@ -13,6 +13,9 @@
           placeholder="Enter your Username"
           required
         />
+        <div class="error_checker">
+          <span v-if="isShowError == true">{{ errorMessage }}</span>
+        </div>
         <hr />
         <p class="">
           <label class="white_chose">
@@ -22,6 +25,7 @@
               type="radio"
               id="white_color"
               name="chess-color"
+              value="White"
             />
           </label>
           or
@@ -32,6 +36,7 @@
               type="radio"
               id="black_color"
               name="chess-color"
+              value="Black"
             />
           </label>
         </p>
@@ -50,12 +55,29 @@ export default {
     return {
       username: "",
       chesscolor: "",
+      isShowError: false,
+      errorMessage: "",
     };
   },
   methods: {
-    send() {
-      console.log(this.username);
+    sendMessage() {
+      if (this.username && this.chesscolor) {
+        this.isShowError = false;
+        console.log(this.username);
+        // some logic
+      } else {
+        this.errorMessage = "Warning";
+        this.isShowError = true;
+      }
     },
+    send() {
+      this.$soketio.emit("registerToQueue", { color: "color", name: "name" });
+    },
+  },
+  created() {
+    this.$soketio.on("/game/start", (data) => {
+      console.log(data);
+    });
   },
 };
 </script>
@@ -130,5 +152,8 @@ a {
 }
 .black_chose {
   color: rgb(0, 0, 0);
+}
+.error_checker span {
+  color: red;
 }
 </style>

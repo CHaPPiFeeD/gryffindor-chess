@@ -185,17 +185,14 @@ export default {
   vertical-align: middle;
 }
 .chess-board .white {
-  background: #b7b5b3c6;
+  background: #b7b5b3;
 }
 .chess-board .black {
-  background: #5ece74cb;
+  background: #5ece74;
 }
 .queue_form {
   color: firebrick;
-  background-color: #5ece74cb;
+  background-color: #5ece74;
   width: 20%;
 }
-
-/* 
-*/
 </style>
