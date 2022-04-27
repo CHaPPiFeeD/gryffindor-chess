@@ -1,6 +1,24 @@
-<template id="main_bcgIM">
+<template>
   <router-view />
 </template>
+
+
+<script>
+export default {
+  data() {
+    return "OK";
+  },
+  methods: {
+    created() {
+      this.$soketio.on("/game/start", (data) => {
+        console.log(data);
+      });
+    },
+  },
+};
+</script>
+
+
 
 <style lang="scss">
 #app {
@@ -9,7 +27,6 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
 }
-
 body {
   background-image: url("./assets/bcgim2.jpg");
 }

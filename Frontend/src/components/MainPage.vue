@@ -71,13 +71,11 @@ export default {
       }
     },
     send() {
-      this.$soketio.emit("/queue/search", { color: ["white", "black"], name: "name" }, (data) => {console.log(data);});
+      this.$soketio.emit("/queue/search", {
+        color: ["white", "black"],
+        name: "name",
+      });
     },
-  },
-  created() {
-    this.$soketio.on("/game/start", (data) => {
-      console.log(data);
-    });
   },
 };
 </script>

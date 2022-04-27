@@ -94,21 +94,6 @@ export default {
           username: "bob",
           colorPreferred: "white",
         },
-        {
-          id: 2,
-          username: "sasha",
-          colorPreferred: "white",
-        },
-        {
-          id: 3,
-          username: "aleg",
-          colorPreferred: "any",
-        },
-        {
-          id: 4,
-          username: "shaman",
-          colorPreferred: "black",
-        },
       ],
       isOpenModal: false,
     };
@@ -161,15 +146,13 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   border: 4vw solid transparent;
-  border-image: url("http://allroundnews.com/wp-content/uploads/2012/02/seamless-wood-texture-free-6.jpg")
-    50 stretch;
   max-width: 480px;
   max-height: 480px;
   width: 100vw;
   height: 100vw;
   box-shadow: 0 10px 10px -5px rgba(0, 0, 0, 0.75);
   font-size: 0;
-  background-image: url("http://www.wood-database.com/wp-content/uploads/bamboo-qs-sealed.jpg");
+  background-image: url("../assets/bamboo.jpg");
 }
 
 .box {
@@ -191,14 +174,12 @@ h1 {
 .board .box:nth-child(n + 25):nth-child(-n + 32):nth-child(odd),
 .board .box:nth-child(n + 41):nth-child(-n + 48):nth-child(odd),
 .board .box:nth-child(n + 57):nth-child(-n + 64):nth-child(odd) {
-  background-color: rgba(135, 50, 0, 0.5);
+  background-color: rgba(159, 68, 8, 0.5);
 }
 
 @media screen and (min-width: 480px) {
   .board {
     border: 18px solid transparent;
-    /*  border-image: url("http://allroundnews.com/wp-content/uploads/2012/02/seamless-wood-texture-free-6.jpg")
-      50 stretch;*/
     box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.75);
   }
   .box {
