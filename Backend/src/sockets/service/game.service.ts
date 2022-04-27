@@ -16,12 +16,11 @@ export class GameService {
   startGame(
     playerOne: userQueueDto,
     playerTwo: userQueueDto,
-    callback: (room: string) => void,
+    callback: (gameState: gameType) => void,
   ) {
     const room: string = randomString(16);
     const { white, black } = findColors(playerOne, playerTwo);
-
-    this.gamesStates[room] = {
+    const gameState: gameType = {
       roomName: room,
       white,
       black,
@@ -37,7 +36,9 @@ export class GameService {
       ],
     };
 
-    callback(room);
+    this.gamesStates[room] = gameState;
+
+    callback(gameState);
   }
 
   chessMove(data: moveDto, callback: (room: string) => void) {
