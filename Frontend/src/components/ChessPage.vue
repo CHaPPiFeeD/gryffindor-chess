@@ -51,22 +51,22 @@
           <div class="box"></div>
           <div class="box"></div>
           <div class="box"></div>
-          <div class="box">&#9823;</div>
-          <div class="box">&#9823;</div>
-          <div class="box">&#9823;</div>
-          <div class="box">&#9823;</div>
-          <div class="box">&#9823;</div>
-          <div class="box">&#9823;</div>
-          <div class="box">&#9823;</div>
-          <div class="box">&#9823;</div>
-          <div class="box">&#9820;</div>
-          <div class="box">&#9822;</div>
+          <div class="box">&#9817;</div>
+          <div class="box">&#9817;</div>
+          <div class="box">&#9817;</div>
+          <div class="box">&#9817;</div>
+          <div class="box">&#9817;</div>
+          <div class="box">&#9817;</div>
+          <div class="box">&#9817;</div>
+          <div class="box">&#9817;</div>
+          <div class="box">&#9814;</div>
+          <div class="box">&#9816;</div>
+          <div class="box">&#9815;</div>
+          <div class="box">&#9813;</div>
           <div class="box">&#9812;</div>
-          <div class="box">&#9819;</div>
-          <div class="box">&#9818;</div>
-          <div class="box">&#9821;</div>
-          <div class="box">&#9822;</div>
-          <div class="box">&#9820;</div>
+          <div class="box">&#9815;</div>
+          <div class="box">&#9816;</div>
+          <div class="box">&#9814;</div>
         </div>
       </div>
       <div class="queue_form">
