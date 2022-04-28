@@ -6,14 +6,17 @@
 <script>
 export default {
   data() {
-    return "OK";
+    return {
+      username: "",
+      chesscolor: "",
+      isShowError: false,
+      errorMessage: "",
+    };
   },
-  methods: {
-    created() {
-      this.$soketio.on("/game/start", (data) => {
-        console.log(data);
-      });
-    },
+  created() {
+    this.$soketio.on("/game/start", (data) => {
+      console.log(data);
+    });
   },
 };
 </script>

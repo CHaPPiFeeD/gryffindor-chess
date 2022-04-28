@@ -26,7 +26,7 @@
               type="radio"
               id="white_color"
               name="chess-color"
-              value="White"
+              value="white"
             />
           </label>
           or
@@ -37,7 +37,7 @@
               type="radio"
               id="black_color"
               name="chess-color"
-              value="Black"
+              value="black"
             />
           </label>
         </p>
@@ -73,8 +73,8 @@ export default {
     },
     send() {
       this.$soketio.emit("/queue/search", {
-        color: ["white", "black"],
-        name: "name",
+        color: [this.chesscolor],
+        name: this.username,
       });
     },
   },
