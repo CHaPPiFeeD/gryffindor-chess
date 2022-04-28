@@ -75,6 +75,7 @@
           <div class="d-flex">
             <p>{{ item.id }}</p>
             <p>{{ item.username }}</p>
+            <p>{{ item.color }}</p>
           </div>
         </div>
       </div>

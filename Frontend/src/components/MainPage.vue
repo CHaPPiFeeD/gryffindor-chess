@@ -19,7 +19,8 @@
         <hr />
         <p class="">
           <label class="white_chose">
-            White
+            &#9813;
+
             <input
               v-model="chesscolor"
               type="radio"
@@ -30,7 +31,7 @@
           </label>
           or
           <label class="black_chose">
-            Black?
+            &#9819; ?
             <input
               v-model="chesscolor"
               type="radio"
