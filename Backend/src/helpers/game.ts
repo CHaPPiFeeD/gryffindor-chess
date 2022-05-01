@@ -1,10 +1,10 @@
 import { gamePlayerType } from '../dto/game.dto';
-import { userQueueDto } from '../dto/queue.dto';
+import { UserQueueDto } from '../dto/queue.dto';
 import { CHESS_COLORS } from '../enum/constants';
 
 export const findColors = (
-  playerOne: userQueueDto,
-  playerTwo: userQueueDto,
+  playerOne: UserQueueDto,
+  playerTwo: UserQueueDto,
 ): {
   white: gamePlayerType;
   black: gamePlayerType;
@@ -29,8 +29,8 @@ export const findColors = (
 };
 
 const setColors = (
-  whitePlayer: userQueueDto,
-  blackPlayer: userQueueDto,
+  whitePlayer: UserQueueDto,
+  blackPlayer: UserQueueDto,
 ): {
   white: gamePlayerType;
   black: gamePlayerType;
@@ -49,8 +49,8 @@ const setColors = (
 };
 
 const setColorsRandom = (
-  playerOne: userQueueDto,
-  playerTwo: userQueueDto,
+  playerOne: UserQueueDto,
+  playerTwo: UserQueueDto,
 ): {
   white: gamePlayerType;
   black: gamePlayerType;

@@ -4,6 +4,7 @@ import { InitGateway } from './init.gateway';
 import { QueueGateway } from './queue.gateway';
 import { GameService } from './service/game.service';
 import { QueueService } from './service/queue.service';
+import { ValidationService } from './service/validation.service';
 
 @Module({
   providers: [
@@ -12,6 +13,7 @@ import { QueueService } from './service/queue.service';
     QueueService,
     GameGateway,
     GameService,
+    ValidationService,
   ],
   exports: [InitGateway, QueueGateway, QueueService, GameGateway, GameService],
 })

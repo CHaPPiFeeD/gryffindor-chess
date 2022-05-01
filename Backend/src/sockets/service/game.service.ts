@@ -3,9 +3,10 @@ import { Inject, Logger } from '@nestjs/common';
 // import { Server } from 'socket.io';
 import { randomString } from '../../helpers';
 import { findColors } from '../../helpers/game';
-import { userQueueDto } from '../../dto/queue.dto';
-import { gameStateType, gameType, moveDto } from 'src/dto/game.dto';
+import { UserQueueDto } from '../../dto/queue.dto';
+import { gameStateType, gameType, MoveDto } from 'src/dto/game.dto';
 import { InitGateway } from '../init.gateway';
+import { ValidationService } from './validation.service';
 // import { SocketService } from './socket.service';
 
 export class GameService {
@@ -15,7 +16,10 @@ export class GameService {
   @Inject(InitGateway)
   initGateway: InitGateway;
 
-  startGame(playerOne: userQueueDto, playerTwo: userQueueDto) {
+  @Inject(ValidationService)
+  validationService: ValidationService;
+
+  startGame(playerOne: UserQueueDto, playerTwo: UserQueueDto) {
     const room: string = randomString(16);
     const { white, black } = findColors(playerOne, playerTwo);
     const gameState: gameType = {
@@ -40,23 +44,42 @@ export class GameService {
       .in([white.socket, black.socket])
       .socketsJoin(gameState.roomName);
 
-    this.logger.debug(gameState);
+    this.logger.log(gameState.roomName);
+    gameState.board.forEach((value) => this.logger.log(JSON.stringify(value)));
 
     this.initGateway.server
       .in(gameState.roomName)
       .emit('/game/start', gameState);
   }
 
-  chessMove(data: moveDto) {
-    const { room, startPos, endPos } = data;
-    const game: gameType = this.gamesStates.get(room);
-    const figure: string = game.board[startPos[0]][startPos[1]];
-    game.board[endPos[0]][endPos[1]] = figure;
-    game.board[startPos[0]][startPos[1]] = '0';
+  chessMove(data: MoveDto) {
+    try {
+      const { room, startPos, endPos } = data;
+      const game: gameType = this.gamesStates.get(room);
+      const figure: string = game.board[startPos[0]][startPos[1]];
 
-    this.logger.debug('---game---', game);
-    this.logger.debug('---set---', this.gamesStates.get(room));
+      if (
+        this.validationService.validationMove(
+          figure,
+          game.board,
+          startPos,
+          endPos,
+        )
+      ) {
+        this.logger.debug('chessMove is worked');
 
-    this.initGateway.server.in(room).emit('/game/move', { startPos, endPos });
+        game.board[endPos[0]][endPos[1]] = figure;
+        game.board[startPos[0]][startPos[1]] = '0';
+      }
+
+      // if (Object.is(figure, '0')) return;
+
+      this.logger.log(game.roomName);
+      game.board.forEach((value) => this.logger.log(JSON.stringify(value)));
+
+      this.initGateway.server.in(room).emit('/game/move', { startPos, endPos });
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 }

@@ -5,7 +5,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { moveDto } from '../dto/game.dto';
+import { MoveDto } from '../dto/game.dto';
 import { GameService } from './service/game.service';
 
 @WebSocketGateway({ cors: true })
@@ -19,7 +19,7 @@ export class GameGateway {
   private gameService: GameService;
 
   @SubscribeMessage('/game/move')
-  chessMuve(client: Socket, data: moveDto) {
+  chessMuve(client: Socket, data: MoveDto) {
     this.gameService.chessMove(data);
   }
 }

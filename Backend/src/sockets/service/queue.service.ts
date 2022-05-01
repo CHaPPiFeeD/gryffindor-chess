@@ -5,27 +5,27 @@ import {
   getFindsColors,
   getUserByColor,
 } from '../../helpers/queue';
-import { userQueueDto, regToQueueDto } from '../../dto/queue.dto';
+import { UserQueueDto, RegToQueueDto } from '../../dto/queue.dto';
 import { GameService } from './game.service';
 
 export class QueueService {
   private logger = new Logger(GameService.name);
-  private queue: userQueueDto[] = [];
+  private queue: UserQueueDto[] = [];
 
   @Inject(GameService)
   private gameService: GameService;
 
-  regToQueue(client: Socket, data: regToQueueDto): string {
-    const playerOne: userQueueDto = {
+  regToQueue(client: Socket, data: RegToQueueDto): string {
+    const playerOne: UserQueueDto = {
       socket: client.id,
       ...data,
     };
 
-    this.logger.debug(playerOne);
+    this.logger.log(playerOne);
 
     if (getUserBySocket(this.queue, playerOne)) return;
     const findColor: string[] = getFindsColors(playerOne.color);
-    const playerTwo: userQueueDto = getUserByColor(this.queue, findColor);
+    const playerTwo: UserQueueDto = getUserByColor(this.queue, findColor);
 
     if (!playerTwo) {
       this.queue.push(playerOne);

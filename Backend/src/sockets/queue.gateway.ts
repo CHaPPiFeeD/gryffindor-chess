@@ -5,7 +5,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { regToQueueDto } from '../dto/queue.dto';
+import { RegToQueueDto } from '../dto/queue.dto';
 import { QueueService } from './service/queue.service';
 
 @WebSocketGateway({ cors: true })
@@ -19,7 +19,7 @@ export class QueueGateway {
   public server: Server;
 
   @SubscribeMessage('/queue/search')
-  regToQueue(client: Socket, data: regToQueueDto) {
+  regToQueue(client: Socket, data: RegToQueueDto) {
     this.queueService.regToQueue(client, data);
   }
 }
