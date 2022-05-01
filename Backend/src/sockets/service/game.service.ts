@@ -1,13 +1,10 @@
 import { Inject, Logger } from '@nestjs/common';
-// import { WebSocketServer } from '@nestjs/websockets';
-// import { Server } from 'socket.io';
 import { randomString } from '../../helpers';
 import { findColors } from '../../helpers/game';
 import { UserQueueDto } from '../../dto/queue.dto';
 import { gameStateType, gameType, MoveDto } from 'src/dto/game.dto';
 import { InitGateway } from '../init.gateway';
 import { ValidationService } from './validation.service';
-// import { SocketService } from './socket.service';
 
 export class GameService {
   private gamesStates: gameStateType = new Map();
@@ -27,14 +24,14 @@ export class GameService {
       white,
       black,
       board: [
-        ['r', 'n', 'b', 'k', 'q', 'b', 'n', 'r'],
-        ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], // lover case - black
+        ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], // upper case - white
         ['0', '0', '0', '0', '0', '0', '0', '0'],
         ['0', '0', '0', '0', '0', '0', '0', '0'],
         ['0', '0', '0', '0', '0', '0', '0', '0'],
         ['0', '0', '0', '0', '0', '0', '0', '0'],
         ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-        ['R', 'N', 'B', 'K', 'Q', 'B', 'N', 'R'],
+        ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
       ],
     };
 
