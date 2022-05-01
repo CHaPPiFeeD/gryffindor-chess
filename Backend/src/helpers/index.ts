@@ -19,6 +19,17 @@ export const N = (number: string | number | boolean): number => {
   return Math.round(number * 100000000) / 100000000;
 };
 
+export const randomString = (length) => {
+  let result = '';
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
+
 export class ResponseDto {
   status?: boolean;
   status_code: number;
