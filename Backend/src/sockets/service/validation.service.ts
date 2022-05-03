@@ -1,5 +1,11 @@
 import { Logger } from '@nestjs/common';
-import { FIGURES } from 'src/enum/constants';
+import { Socket } from 'socket.io';
+import { FIGURES, FIGURES_COLORS } from 'src/enum/constants';
+import { gameType } from '../../dto/game.dto';
+import {
+  checkPawnMove,
+  checkVerticalAndHorizontalMove,
+} from '../../helpers/validation';
 
 export class ValidationService {
   private logger = new Logger();
@@ -25,17 +31,22 @@ export class ValidationService {
   ];
 
   validationMove(
+    client: Socket,
     figure: string,
-    board: string[][],
+    game: gameType,
     startPos: number[],
     endPos: number[],
   ): boolean {
-    const x = startPos[0] - endPos[0];
-    const y = startPos[1] - endPos[1];
-    const row = this.initPos + x;
-    const column = this.initPos + y;
+    const board: string[][] = game.board;
+    const x: number = endPos[1] - startPos[1];
+    const y: number = startPos[0] - endPos[0];
+    const row: number = this.initPos + (endPos[0] - startPos[0]);
+    const column: number = this.initPos + (endPos[1] - startPos[1]);
 
-    this.logger.debug(`row: ${row}`, `column: ${column}`);
+    this.logger.debug(`x: ${x}`);
+    this.logger.debug(`y: ${y}`);
+
+    if (this.basicСheck(client, figure, game, endPos)) return false;
 
     switch (true) {
       case Object.is(figure.toLowerCase(), FIGURES.KING):
@@ -51,7 +62,7 @@ export class ValidationService {
         return this.ATTACKS[row][column].includes(FIGURES.KNIGHT);
 
       case Object.is(figure.toLowerCase(), FIGURES.ROOK):
-        return this.ATTACKS[row][column].includes(FIGURES.ROOK);
+        return this.checkRook(board, startPos, row, column, x, y);
 
       case Object.is(figure.toLowerCase(), FIGURES.PAWN):
         return this.checkPawn(figure, board, startPos, endPos, x, y);
@@ -59,6 +70,64 @@ export class ValidationService {
       default:
         break;
     }
+  }
+
+  basicСheck(
+    client: Socket,
+    figure: string,
+    game: gameType,
+    endPos: number[],
+  ): boolean {
+    const endFigure: string = game.board[endPos[0]][endPos[1]];
+
+    const isFigureNotFound = Object.is(figure, '0');
+
+    // prettier-ignore
+    const isToOwnFigure =
+      (Object.is(client.id, game.white.socket) &&
+        'KQBNRP'.includes(endFigure)) ||
+      (Object.is(client.id, game.black.socket) && 
+        'kqbnrp'.includes(endFigure));
+
+    const isOpponentFigure =
+      (Object.is(client.id, game.white.socket) && 'kqbnrp'.includes(figure)) ||
+      (Object.is(client.id, game.black.socket) && 'KQBNRP'.includes(figure));
+
+    const figureIsKing = 'Kk'.includes(endFigure);
+
+    if (isFigureNotFound) this.logger.error('Figure not found');
+    if (isToOwnFigure) this.logger.error('Move to own figure');
+    // eslint-disable-next-line prettier/prettier
+    if (isOpponentFigure) this.logger.error('Move opponent\'s figure');
+    if (figureIsKing) this.logger.error('Move to a king figure');
+
+    return (
+      isFigureNotFound || isToOwnFigure || isOpponentFigure || figureIsKing
+    );
+  }
+
+  checkRook(
+    board: string[][],
+    startPos: number[],
+    row: number,
+    column: number,
+    x: number,
+    y: number,
+  ): boolean {
+    const isSchemeAttack: boolean = this.ATTACKS[row][column].includes(
+      FIGURES.ROOK,
+    );
+
+    const isFigureOnWay = checkVerticalAndHorizontalMove(board, startPos, x, y);
+
+    if (!isSchemeAttack) this.logger.error('A figure cannot move to this cell');
+
+    if (isFigureOnWay)
+      this.logger.error(
+        'A figure on the path does not allow you to go to this cell',
+      );
+
+    return isSchemeAttack && !isFigureOnWay;
   }
 
   checkPawn(
@@ -69,35 +138,8 @@ export class ValidationService {
     x: number,
     y: number,
   ): boolean {
-    return Object.is(figure, 'P')
-      ? this.checkPawnMove(board, startPos, endPos, x, y, 6, 1)
-      : this.checkPawnMove(board, startPos, endPos, x, y, 1, -1);
-  }
-
-  checkPawnMove(
-    board: string[][],
-    startPos: number[],
-    endPos: number[],
-    x: number,
-    y: number,
-    initPawnPos: number,
-    step: number,
-  ): boolean {
-    // step
-    const a = Object.is(x, step) && Object.is(y, 0);
-
-    // diagonal
-    const b =
-      Object.is(Math.abs(y), 1) &&
-      Object.is(x, step) &&
-      !Object.is(board[endPos[0]][endPos[1]], '0');
-
-    // two steps
-    const c =
-      Object.is(startPos[0], initPawnPos) &&
-      Object.is(x, step + step) &&
-      Object.is(y, 0);
-
-    return a || b || c;
+    return Object.is(figure, FIGURES_COLORS.WHITE.PAWN)
+      ? checkPawnMove(board, startPos, endPos, x, y, 6, 1)
+      : checkPawnMove(board, startPos, endPos, x, y, 1, -1);
   }
 }
