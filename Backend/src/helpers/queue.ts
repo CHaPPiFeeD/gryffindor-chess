@@ -1,4 +1,4 @@
-import { userQueueDto } from '../dto/queue.dto';
+import { UserQueueDto } from '../dto/queue.dto';
 import { CHESS_COLORS } from '../enum/constants';
 
 export const getFindsColors = (colors: string[]): string[] => {
@@ -9,17 +9,17 @@ export const getFindsColors = (colors: string[]): string[] => {
 };
 
 export const getUserByColor = (
-  queue: userQueueDto[],
+  queue: UserQueueDto[],
   colors: string[],
-): userQueueDto => {
+): UserQueueDto => {
   return queue.find((user) =>
     colors.some((color) => user.color.includes(color)),
   );
 };
 
 export const getUserBySocket = (
-  queue: userQueueDto[],
-  data: userQueueDto,
-): userQueueDto => {
+  queue: UserQueueDto[],
+  data: UserQueueDto,
+): UserQueueDto => {
   return queue.find((obj) => Object.is(obj.socket, data.socket));
 };
