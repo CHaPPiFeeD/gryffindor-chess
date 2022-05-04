@@ -26,7 +26,7 @@ export class GameService {
       black,
       board: [
         ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], // lover case - black
-        ['0', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], // upper case - white
+        ['0', 'p', '0', 'p', 'p', 'p', 'p', 'p'], // upper case - white
         ['0', '0', '0', '0', '0', '0', '0', '0'],
         ['b', '0', '0', 'b', '0', '0', '0', '0'],
         ['0', 'p', '0', '0', '0', '0', '0', '0'],

@@ -9,47 +9,31 @@ export const checkVerticalAndHorizontalMove = (
 
   switch (true) {
     case x < 0 && y == 0: // left
-      for (let index = -1; index > x; index--) {
-        const checkX = startPos[1] + index;
-
-        if (!Object.is(board[checkY][checkX], '0')) {
-          return true;
-        }
+      for (let index = 1; -index > x; index++) {
+        const checkX = startPos[1] - index;
+        if (!Object.is(board[checkY][checkX], '0')) return true;
       }
-
       break;
 
     case x > 0 && y == 0: // right
       for (let index = 1; index < x; index++) {
         const checkX = startPos[1] + index;
-
-        if (!Object.is(board[checkY][checkX], '0')) {
-          return true;
-        }
+        if (!Object.is(board[checkY][checkX], '0')) return true;
       }
-
       break;
 
     case x == 0 && y > 0: //top
       for (let index = 1; index < y; index++) {
-        const checkY = startPos[0] + index;
-
-        if (!Object.is(board[checkY][checkX], '0')) {
-          return true;
-        }
+        const checkY = startPos[0] - index;
+        if (!Object.is(board[checkY][checkX], '0')) return true;
       }
-
       break;
 
     case x == 0 && y < 0: // buttom
-      for (let index = -1; index > y; index--) {
+      for (let index = 1; -index > y; index++) {
         const checkY = startPos[0] + index;
-
-        if (!Object.is(board[checkY][checkX], '0')) {
-          return true;
-        }
+        if (!Object.is(board[checkY][checkX], '0')) return true;
       }
-
       break;
 
     default:
@@ -68,52 +52,33 @@ export const checkDiagonalMove = (
       for (let index = 1; -index > x && index < y; index++) {
         const checkX = startPos[1] - index;
         const checkY = startPos[0] - index;
-
-        if (!Object.is(board[checkY][checkX], '0')) {
-          return true;
-        }
+        if (!Object.is(board[checkY][checkX], '0')) return true;
       }
-
-      return false;
+      break;
 
     case x > 0 && y > 0: // top right
       for (let index = 1; index < x && index < y; index++) {
         const checkX = startPos[1] + index;
         const checkY = startPos[0] - index;
-
-        if (!Object.is(board[checkY][checkX], '0')) {
-          return true;
-        }
+        if (!Object.is(board[checkY][checkX], '0')) return true;
       }
-
-      return false;
+      break;
 
     case x < 0 && y < 0: // buttom left
       for (let index = 1; -index > x && -index > y; index++) {
         const checkX = startPos[1] - index;
         const checkY = startPos[0] + index;
-
-        if (!Object.is(board[checkY][checkX], '0')) {
-          return true;
-        }
+        if (!Object.is(board[checkY][checkX], '0')) return true;
       }
-
-      return false;
+      break;
 
     case x > 0 && y < 0: // buttom right
       for (let index = 1; index < x && -index > y; index++) {
         const checkX = startPos[1] + index;
         const checkY = startPos[0] + index;
-
-        if (!Object.is(board[checkY][checkX], '0')) {
-          return true;
-        }
+        if (!Object.is(board[checkY][checkX], '0')) return true;
       }
-
-      return false;
-
-    default:
-      return false;
+      break;
   }
 };
 

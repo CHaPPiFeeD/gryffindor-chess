@@ -21,7 +21,7 @@ export class ValidationService {
     [  '',  '',  '',  '','bq',  '',   '', 'rq',   '',  '','bq',  '',  '',  '',  ''],
     [  '',  '',  '',  '',  '','bq',  'n', 'rq',  'n','bq',  '',  '',  '',  '',  ''],
     [  '',  '',  '',  '',  '', 'n','bkq','rkq','bkq', 'n',  '',  '',  '',  '',  ''],
-    ['rq','rq','rq','rq','rq','rq','rkq',  '0','rk' , 'r', 'r', 'r', 'r', 'r', 'r'],
+    ['rq','rq','rq','rq','rq','rq','rkq',  '0','rkq','rq','rq','rq','rq','rq','rq'],
     [  '',  '',  '',  '',  '', 'n','bkq','rkq','bkq', 'n',  '',  '',  '',  '',  ''],
     [  '',  '',  '',  '',  '','bq',  'n', 'rq',  'n','bq',  '',  '',  '',  '',  ''],
     [  '',  '',  '',  '','bq',  '',   '', 'rq',   '',  '','bq',  '',  '',  '',  ''],
@@ -54,7 +54,7 @@ export class ValidationService {
         return this.ATTACKS[row][column].includes(FIGURES.KING);
 
       case Object.is(figure.toLowerCase(), FIGURES.QUEEN):
-        return this.ATTACKS[row][column].includes(FIGURES.QUEEN);
+        return this.checkQueen(board, startPos, row, column, x, y);
 
       case Object.is(figure.toLowerCase(), FIGURES.BISHOP):
         return this.checkBishop(board, startPos, row, column, x, y);
@@ -105,6 +105,28 @@ export class ValidationService {
     return (
       isFigureNotFound || isToOwnFigure || isOpponentFigure || figureIsKing
     );
+  }
+
+  checkQueen(
+    board: string[][],
+    startPos: number[],
+    row: number,
+    column: number,
+    x: number,
+    y: number,
+  ) {
+    const isSchemeAttack = this.ATTACKS[row][column].includes(FIGURES.QUEEN);
+    const isFigureOnWay =
+      checkDiagonalMove(board, startPos, x, y) ||
+      checkVerticalAndHorizontalMove(board, startPos, x, y);
+
+    if (!isSchemeAttack) this.logger.error('A figure cannot move to this cell');
+    if (isFigureOnWay)
+      this.logger.error(
+        'A figure on the path does not allow you to go to this cell',
+      );
+
+    return isSchemeAttack && !isFigureOnWay;
   }
 
   checkBishop(
