@@ -26,10 +26,10 @@ export class GameService {
       black,
       board: [
         ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], // lover case - black
-        ['0', 'p', '0', 'p', 'p', 'p', 'p', 'p'], // upper case - white
+        ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], // upper case - white
+        ['0', '0', '0', '0', '0', '0', '0', '0'], // TODO Take it all back
+        ['0', '0', '0', 'b', '0', '0', '0', '0'],
         ['0', '0', '0', '0', '0', '0', '0', '0'],
-        ['b', '0', '0', 'b', '0', '0', '0', '0'],
-        ['0', 'p', '0', '0', '0', '0', '0', '0'],
         ['0', '0', '0', '0', '0', '0', '0', '0'],
         ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
         ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
@@ -51,7 +51,18 @@ export class GameService {
   }
 
   chessMove(client: Socket, data: MoveDto) {
-    const { room, startPos, endPos } = data;
+    const { startPos, endPos } = data;
+
+    let room: string;
+
+    for (const game of this.gamesStates.values()) {
+      if (
+        Object.is(game.white.socket, client.id) ||
+        Object.is(game.black.socket, client.id)
+      )
+        room = game.roomName;
+    }
+
     const game: gameType = this.gamesStates.get(room);
     const figure: string = game.board[startPos[0]][startPos[1]];
 

@@ -79,10 +79,12 @@ export class ValidationService {
     game: gameType,
     endPos: number[],
   ): boolean {
-    const endFigure: string = game.board[endPos[0]][endPos[1]];
+    const wrongСoordinates =
+      endPos[0] < 0 || endPos[0] > 7 || endPos[1] < 0 || endPos[1] > 7;
 
     const isFigureNotFound = Object.is(figure, '0');
 
+    const endFigure: string = game.board[endPos[0]][endPos[1]];
     // prettier-ignore
     const isToOwnFigure =
       (Object.is(client.id, game.white.socket) &&
@@ -98,12 +100,15 @@ export class ValidationService {
 
     if (isFigureNotFound) this.logger.error('Figure not found');
     if (isToOwnFigure) this.logger.error('Move to own figure');
-    // eslint-disable-next-line prettier/prettier
-    if (isOpponentFigure) this.logger.error('Move opponent\'s figure');
+    if (isOpponentFigure) this.logger.error("Move opponent's figure");
     if (figureIsKing) this.logger.error('Move to a king figure');
 
     return (
-      isFigureNotFound || isToOwnFigure || isOpponentFigure || figureIsKing
+      wrongСoordinates ||
+      isFigureNotFound ||
+      isToOwnFigure ||
+      isOpponentFigure ||
+      figureIsKing
     );
   }
 

@@ -4,35 +4,35 @@ export const checkVerticalAndHorizontalMove = (
   x: number,
   y: number,
 ): boolean => {
-  const checkY = startPos[0];
-  const checkX = startPos[1];
+  const row = startPos[0];
+  const column = startPos[1];
 
   switch (true) {
     case x < 0 && y == 0: // left
-      for (let index = 1; -index > x; index++) {
-        const checkX = startPos[1] - index;
-        if (!Object.is(board[checkY][checkX], '0')) return true;
+      for (let i = 1; -i > x; i++) {
+        const column = startPos[1] - i;
+        if (!Object.is(board[row][column], '0')) return true;
       }
       break;
 
     case x > 0 && y == 0: // right
-      for (let index = 1; index < x; index++) {
-        const checkX = startPos[1] + index;
-        if (!Object.is(board[checkY][checkX], '0')) return true;
+      for (let i = 1; i < x; i++) {
+        const column = startPos[1] + i;
+        if (!Object.is(board[row][column], '0')) return true;
       }
       break;
 
     case x == 0 && y > 0: //top
-      for (let index = 1; index < y; index++) {
-        const checkY = startPos[0] - index;
-        if (!Object.is(board[checkY][checkX], '0')) return true;
+      for (let i = 1; i < y; i++) {
+        const row = startPos[0] - i;
+        if (!Object.is(board[row][column], '0')) return true;
       }
       break;
 
     case x == 0 && y < 0: // buttom
-      for (let index = 1; -index > y; index++) {
-        const checkY = startPos[0] + index;
-        if (!Object.is(board[checkY][checkX], '0')) return true;
+      for (let i = 1; -i > y; i++) {
+        const row = startPos[0] + i;
+        if (!Object.is(board[row][column], '0')) return true;
       }
       break;
 
@@ -49,34 +49,34 @@ export const checkDiagonalMove = (
 ): boolean => {
   switch (true) {
     case x < 0 && y > 0: // top left
-      for (let index = 1; -index > x && index < y; index++) {
-        const checkX = startPos[1] - index;
-        const checkY = startPos[0] - index;
-        if (!Object.is(board[checkY][checkX], '0')) return true;
+      for (let i = 1; -i > x && i < y; i++) {
+        const column = startPos[1] - i;
+        const row = startPos[0] - i;
+        if (!Object.is(board[row][column], '0')) return true;
       }
       break;
 
     case x > 0 && y > 0: // top right
-      for (let index = 1; index < x && index < y; index++) {
-        const checkX = startPos[1] + index;
-        const checkY = startPos[0] - index;
-        if (!Object.is(board[checkY][checkX], '0')) return true;
+      for (let i = 1; i < x && i < y; i++) {
+        const column = startPos[1] + i;
+        const row = startPos[0] - i;
+        if (!Object.is(board[row][column], '0')) return true;
       }
       break;
 
     case x < 0 && y < 0: // buttom left
-      for (let index = 1; -index > x && -index > y; index++) {
-        const checkX = startPos[1] - index;
-        const checkY = startPos[0] + index;
-        if (!Object.is(board[checkY][checkX], '0')) return true;
+      for (let i = 1; -i > x && -i > y; i++) {
+        const column = startPos[1] - i;
+        const row = startPos[0] + i;
+        if (!Object.is(board[row][column], '0')) return true;
       }
       break;
 
     case x > 0 && y < 0: // buttom right
-      for (let index = 1; index < x && -index > y; index++) {
-        const checkX = startPos[1] + index;
-        const checkY = startPos[0] + index;
-        if (!Object.is(board[checkY][checkX], '0')) return true;
+      for (let i = 1; i < x && -i > y; i++) {
+        const column = startPos[1] + i;
+        const row = startPos[0] + i;
+        if (!Object.is(board[row][column], '0')) return true;
       }
       break;
   }
