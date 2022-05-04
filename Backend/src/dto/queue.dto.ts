@@ -1,9 +1,9 @@
-export class regToQueueDto {
+export class RegToQueueDto {
   name: string;
   color: string[];
 }
 
-export class userQueueDto {
+export class UserQueueDto {
   socket: string;
   name: string;
   color: string[];

@@ -12,8 +12,7 @@ export type gameType = {
 
 export type gameStateType = Map<string, gameType>;
 
-export class moveDto {
-  room: string;
+export class MoveDto {
   startPos: [number, number];
   endPos: [number, number];
 }
