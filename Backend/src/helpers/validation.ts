@@ -57,6 +57,66 @@ export const checkVerticalAndHorizontalMove = (
   }
 };
 
+export const checkDiagonalMove = (
+  board: string[][],
+  startPos: number[],
+  x: number,
+  y: number,
+): boolean => {
+  switch (true) {
+    case x < 0 && y > 0: // top left
+      for (let index = 1; index > -x && index < y; index++) {
+        const checkX = startPos[1] - index;
+        const checkY = startPos[0] + index;
+
+        if (!Object.is(board[checkY][checkX], '0')) {
+          return true;
+        }
+      }
+
+      break;
+
+    case x > 0 && y > 0: // top right
+      for (let index = 1; index < x && index < y; index++) {
+        const checkX = startPos[1] + index;
+        const checkY = startPos[0] + index;
+
+        if (!Object.is(board[checkY][checkX], '0')) {
+          return true;
+        }
+      }
+
+      break;
+
+    case x < 0 && y < 0: // buttom left
+      for (let index = 1; index > -x && index > -y; index++) {
+        const checkX = startPos[1] - index;
+        const checkY = startPos[0] - index;
+
+        if (!Object.is(board[checkY][checkX], '0')) {
+          return true;
+        }
+      }
+
+      break;
+
+    case x == 0 && y < 0: // buttom right
+      for (let index = 1; index < x && index > -y; index++) {
+        const checkX = startPos[1] + index;
+        const checkY = startPos[0] - index;
+
+        if (!Object.is(board[checkY][checkX], '0')) {
+          return true;
+        }
+      }
+
+      break;
+
+    default:
+      break;
+  }
+};
+
 export const checkPawnMove = (
   board: string[][],
   startPos: number[],

@@ -3,6 +3,7 @@ import { Socket } from 'socket.io';
 import { FIGURES, FIGURES_COLORS } from 'src/enum/constants';
 import { gameType } from '../../dto/game.dto';
 import {
+  checkDiagonalMove,
   checkPawnMove,
   checkVerticalAndHorizontalMove,
 } from '../../helpers/validation';
@@ -72,6 +73,26 @@ export class ValidationService {
     }
   }
 
+  checkBishop(
+    board: string[][],
+    startPos: number[],
+    row: number,
+    column: number,
+    x: number,
+    y: number,
+  ): boolean {
+    const isSchemeAttack = this.ATTACKS[row][column].includes(FIGURES.BISHOP);
+    const isFigureOnWay = checkDiagonalMove(board, startPos, x, y);
+
+    if (!isSchemeAttack) this.logger.error('A figure cannot move to this cell');
+    if (isFigureOnWay)
+      this.logger.error(
+        'A figure on the path does not allow you to go to this cell',
+      );
+
+    return isSchemeAttack || isFigureOnWay;
+  }
+
   basicСheck(
     client: Socket,
     figure: string,
@@ -117,11 +138,9 @@ export class ValidationService {
     const isSchemeAttack: boolean = this.ATTACKS[row][column].includes(
       FIGURES.ROOK,
     );
-
     const isFigureOnWay = checkVerticalAndHorizontalMove(board, startPos, x, y);
 
     if (!isSchemeAttack) this.logger.error('A figure cannot move to this cell');
-
     if (isFigureOnWay)
       this.logger.error(
         'A figure on the path does not allow you to go to this cell',
