@@ -57,7 +57,7 @@ export class ValidationService {
         return this.ATTACKS[row][column].includes(FIGURES.QUEEN);
 
       case Object.is(figure.toLowerCase(), FIGURES.BISHOP):
-        return this.ATTACKS[row][column].includes(FIGURES.BISHOP);
+        return this.checkBishop(board, startPos, row, column, x, y);
 
       case Object.is(figure.toLowerCase(), FIGURES.KNIGHT):
         return this.ATTACKS[row][column].includes(FIGURES.KNIGHT);
@@ -71,26 +71,6 @@ export class ValidationService {
       default:
         break;
     }
-  }
-
-  checkBishop(
-    board: string[][],
-    startPos: number[],
-    row: number,
-    column: number,
-    x: number,
-    y: number,
-  ): boolean {
-    const isSchemeAttack = this.ATTACKS[row][column].includes(FIGURES.BISHOP);
-    const isFigureOnWay = checkDiagonalMove(board, startPos, x, y);
-
-    if (!isSchemeAttack) this.logger.error('A figure cannot move to this cell');
-    if (isFigureOnWay)
-      this.logger.error(
-        'A figure on the path does not allow you to go to this cell',
-      );
-
-    return isSchemeAttack || isFigureOnWay;
   }
 
   basicСheck(
@@ -125,6 +105,26 @@ export class ValidationService {
     return (
       isFigureNotFound || isToOwnFigure || isOpponentFigure || figureIsKing
     );
+  }
+
+  checkBishop(
+    board: string[][],
+    startPos: number[],
+    row: number,
+    column: number,
+    x: number,
+    y: number,
+  ): boolean {
+    const isSchemeAttack = this.ATTACKS[row][column].includes(FIGURES.BISHOP);
+    const isFigureOnWay = checkDiagonalMove(board, startPos, x, y);
+
+    if (!isSchemeAttack) this.logger.error('A figure cannot move to this cell');
+    if (isFigureOnWay)
+      this.logger.error(
+        'A figure on the path does not allow you to go to this cell',
+      );
+
+    return isSchemeAttack && !isFigureOnWay;
   }
 
   checkRook(
