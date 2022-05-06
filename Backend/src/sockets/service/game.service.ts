@@ -7,6 +7,7 @@ import { InitGateway } from '../init.gateway';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
 import { BOARD, FIGURES } from 'src/enum/constants';
+import { BoardService } from './board.service';
 
 export class GameService {
   private gamesStates: gameStateType = new Map();
@@ -17,6 +18,9 @@ export class GameService {
 
   @Inject(ValidationService)
   validationService: ValidationService;
+
+  @Inject(BoardService)
+  boardService: BoardService;
 
   startGame(playerOne: UserQueueDto, playerTwo: UserQueueDto) {
     const roomId: string = randomString(16);
@@ -60,6 +64,12 @@ export class GameService {
       game.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
 
       alertBoard(this.logger, game.board, roomId);
+
+      const { whiteBoard, blackBoard } =
+        this.boardService.createBoardsForPlayers(game.board);
+
+      alertBoard(this.logger, whiteBoard, 'white board');
+      alertBoard(this.logger, blackBoard, 'black board');
 
       this.initGateway.server
         .in(roomId)

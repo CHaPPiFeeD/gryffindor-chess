@@ -22,31 +22,30 @@ export class ValidationService {
     const board: string[][] = game.board;
     const x: number = endPos[1] - startPos[1];
     const y: number = startPos[0] - endPos[0];
-    const row: number = this.initPos + (endPos[0] - startPos[0]);
-    const column: number = this.initPos + (endPos[1] - startPos[1]);
-
-    this.logger.debug(`x: ${x}`);
-    this.logger.debug(`y: ${y}`);
+    const row: number = this.initPos + y;
+    const column: number = this.initPos + x;
 
     if (this.basicСheck(client, figure, game, endPos)) return;
 
+    this.logger.debug(figure);
+
     switch (true) {
-      case Object.is(figure.toLowerCase(), FIGURES.KING):
+      case figure.toLowerCase() === FIGURES.KING:
         return ATTACKS[row][column].includes(FIGURES.KING);
 
-      case Object.is(figure.toLowerCase(), FIGURES.QUEEN):
+      case figure.toLowerCase() === FIGURES.QUEEN:
         return this.checkQueen(board, startPos, row, column, x, y);
 
-      case Object.is(figure.toLowerCase(), FIGURES.BISHOP):
+      case figure.toLowerCase() === FIGURES.BISHOP:
         return this.checkBishop(board, startPos, row, column, x, y);
 
-      case Object.is(figure.toLowerCase(), FIGURES.KNIGHT):
+      case figure.toLowerCase() === FIGURES.KNIGHT:
         return ATTACKS[row][column].includes(FIGURES.KNIGHT);
 
-      case Object.is(figure.toLowerCase(), FIGURES.ROOK):
+      case figure.toLowerCase() === FIGURES.ROOK:
         return this.checkRook(board, startPos, row, column, x, y);
 
-      case Object.is(figure.toLowerCase(), FIGURES.PAWN):
+      case figure.toLowerCase() === FIGURES.PAWN:
         return this.checkPawn(figure, board, startPos, endPos, x, y);
 
       default:
@@ -163,7 +162,7 @@ export class ValidationService {
     x: number,
     y: number,
   ): boolean {
-    return Object.is(figure, FIGURES_COLORS.WHITE.PAWN)
+    return figure === FIGURES_COLORS.WHITE.PAWN
       ? checkPawnMove(board, startPos, endPos, x, y, 6, 1)
       : checkPawnMove(board, startPos, endPos, x, y, 1, -1);
   }
