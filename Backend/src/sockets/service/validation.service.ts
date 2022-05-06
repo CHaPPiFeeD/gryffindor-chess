@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { FIGURES, FIGURES_COLORS } from 'src/enum/constants';
+import { ATTACKS, FIGURES, FIGURES_COLORS } from '../../enum/constants';
 import { gameType } from '../../dto/game.dto';
 import {
   checkDiagonalMove,
@@ -11,25 +11,6 @@ import {
 export class ValidationService {
   private logger = new Logger();
   private initPos = 7;
-
-  // prettier-ignore
-  private ATTACKS: string[][] = [
-    ['bq',  '',  '',  '',  '',  '',   '', 'rq',   '',  '',  '',  '',  '',  '','bq'],
-    [  '','bq',  '',  '',  '',  '',   '', 'rq',   '',  '',  '',  '',  '','bq',  ''],
-    [  '',  '','bq',  '',  '',  '',   '', 'rq',   '',  '',  '',  '','bq',  '',  ''],
-    [  '',  '',  '','bq',  '',  '',   '', 'rq',   '',  '',  '','bq',  '',  '',  ''],
-    [  '',  '',  '',  '','bq',  '',   '', 'rq',   '',  '','bq',  '',  '',  '',  ''],
-    [  '',  '',  '',  '',  '','bq',  'n', 'rq',  'n','bq',  '',  '',  '',  '',  ''],
-    [  '',  '',  '',  '',  '', 'n','bkq','rkq','bkq', 'n',  '',  '',  '',  '',  ''],
-    ['rq','rq','rq','rq','rq','rq','rkq',  '0','rkq','rq','rq','rq','rq','rq','rq'],
-    [  '',  '',  '',  '',  '', 'n','bkq','rkq','bkq', 'n',  '',  '',  '',  '',  ''],
-    [  '',  '',  '',  '',  '','bq',  'n', 'rq',  'n','bq',  '',  '',  '',  '',  ''],
-    [  '',  '',  '',  '','bq',  '',   '', 'rq',   '',  '','bq',  '',  '',  '',  ''],
-    [  '',  '',  '','bq',  '',  '',   '', 'rq',   '',  '',  '','bq',  '',  '',  ''],
-    [  '',  '','bq',  '',  '',  '',   '', 'rq',   '',  '',  '',  '','bq',  '',  ''],
-    [  '','bq',  '',  '',  '',  '',   '', 'rq',   '',  '',  '',  '',  '','bq',  ''],
-    ['bq',  '',  '',  '',  '',  '',   '', 'rq',   '',  '',  '',  '',  '',  '','bq'],
-  ];
 
   validationMove(
     client: Socket,
@@ -47,11 +28,11 @@ export class ValidationService {
     this.logger.debug(`x: ${x}`);
     this.logger.debug(`y: ${y}`);
 
-    if (this.basicСheck(client, figure, game, endPos)) return false;
+    if (this.basicСheck(client, figure, game, endPos)) return;
 
     switch (true) {
       case Object.is(figure.toLowerCase(), FIGURES.KING):
-        return this.ATTACKS[row][column].includes(FIGURES.KING);
+        return ATTACKS[row][column].includes(FIGURES.KING);
 
       case Object.is(figure.toLowerCase(), FIGURES.QUEEN):
         return this.checkQueen(board, startPos, row, column, x, y);
@@ -60,7 +41,7 @@ export class ValidationService {
         return this.checkBishop(board, startPos, row, column, x, y);
 
       case Object.is(figure.toLowerCase(), FIGURES.KNIGHT):
-        return this.ATTACKS[row][column].includes(FIGURES.KNIGHT);
+        return ATTACKS[row][column].includes(FIGURES.KNIGHT);
 
       case Object.is(figure.toLowerCase(), FIGURES.ROOK):
         return this.checkRook(board, startPos, row, column, x, y);
@@ -82,22 +63,22 @@ export class ValidationService {
     const wrongСoordinates =
       endPos[0] < 0 || endPos[0] > 7 || endPos[1] < 0 || endPos[1] > 7;
 
-    const isFigureNotFound = Object.is(figure, '0');
+    const isFigureNotFound = figure === FIGURES.EMPTY;
 
     const endFigure: string = game.board[endPos[0]][endPos[1]];
-    // prettier-ignore
+
     const isToOwnFigure =
-      (Object.is(client.id, game.white.socket) &&
-        'KQBNRP'.includes(endFigure)) ||
-      (Object.is(client.id, game.black.socket) && 
-        'kqbnrp'.includes(endFigure));
+      (client.id === game.white.socket && 'KQBNRP'.includes(endFigure)) ||
+      (client.id === game.black.socket && 'kqbnrp'.includes(endFigure));
 
     const isOpponentFigure =
-      (Object.is(client.id, game.white.socket) && 'kqbnrp'.includes(figure)) ||
-      (Object.is(client.id, game.black.socket) && 'KQBNRP'.includes(figure));
+      (client.id === game.white.socket && 'kqbnrp'.includes(figure)) ||
+      (client.id === game.black.socket && 'KQBNRP'.includes(figure));
 
     const figureIsKing = 'Kk'.includes(endFigure);
 
+    if (wrongСoordinates)
+      this.logger.error('The coordinates are out of the board');
     if (isFigureNotFound) this.logger.error('Figure not found');
     if (isToOwnFigure) this.logger.error('Move to own figure');
     if (isOpponentFigure) this.logger.error("Move opponent's figure");
@@ -120,7 +101,7 @@ export class ValidationService {
     x: number,
     y: number,
   ) {
-    const isSchemeAttack = this.ATTACKS[row][column].includes(FIGURES.QUEEN);
+    const isSchemeAttack = ATTACKS[row][column].includes(FIGURES.QUEEN);
     const isFigureOnWay =
       checkDiagonalMove(board, startPos, x, y) ||
       checkVerticalAndHorizontalMove(board, startPos, x, y);
@@ -142,7 +123,7 @@ export class ValidationService {
     x: number,
     y: number,
   ): boolean {
-    const isSchemeAttack = this.ATTACKS[row][column].includes(FIGURES.BISHOP);
+    const isSchemeAttack = ATTACKS[row][column].includes(FIGURES.BISHOP);
     const isFigureOnWay = checkDiagonalMove(board, startPos, x, y);
 
     if (!isSchemeAttack) this.logger.error('A figure cannot move to this cell');
@@ -162,9 +143,7 @@ export class ValidationService {
     x: number,
     y: number,
   ): boolean {
-    const isSchemeAttack: boolean = this.ATTACKS[row][column].includes(
-      FIGURES.ROOK,
-    );
+    const isSchemeAttack: boolean = ATTACKS[row][column].includes(FIGURES.ROOK);
     const isFigureOnWay = checkVerticalAndHorizontalMove(board, startPos, x, y);
 
     if (!isSchemeAttack) this.logger.error('A figure cannot move to this cell');

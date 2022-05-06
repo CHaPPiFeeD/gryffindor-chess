@@ -15,29 +15,30 @@ export class QueueService {
   @Inject(GameService)
   private gameService: GameService;
 
-  regToQueue(client: Socket, data: RegToQueueDto): string {
+  regToQueue(client: Socket, data: RegToQueueDto) {
     const playerOne: UserQueueDto = {
       socket: client.id,
       ...data,
     };
 
+    if (getUserBySocket(this.queue, playerOne)) {
+      this.logger.error('You are already in line');
+      return;
+    }
+
     this.logger.log(playerOne);
 
-    if (getUserBySocket(this.queue, playerOne)) return;
-    const findColor: string[] = getFindsColors(playerOne.color);
-    const playerTwo: UserQueueDto = getUserByColor(this.queue, findColor);
+    const desiredColors: string[] = getFindsColors(playerOne.color);
+    const playerTwo: UserQueueDto = getUserByColor(this.queue, desiredColors);
 
     if (!playerTwo) {
       this.queue.push(playerOne);
     } else {
-      const index: number = this.queue.findIndex((obj) =>
-        Object.is(obj.socket, playerTwo.socket),
+      const index: number = this.queue.findIndex(
+        (player) => player.socket === playerTwo.socket,
       );
 
-      if (index >= 0) {
-        this.queue.splice(index, 1);
-      }
-
+      if (index >= 0) this.queue.splice(index, 1);
       this.gameService.startGame(playerOne, playerTwo);
     }
   }

@@ -1,11 +1,12 @@
 import { Inject, Logger } from '@nestjs/common';
 import { randomString } from '../../helpers';
-import { findColors } from '../../helpers/game';
+import { alertBoard, findColors, findRoom } from '../../helpers/game';
 import { UserQueueDto } from '../../dto/queue.dto';
 import { gameStateType, gameType, MoveDto } from 'src/dto/game.dto';
 import { InitGateway } from '../init.gateway';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
+import { BOARD, FIGURES } from 'src/enum/constants';
 
 export class GameService {
   private gamesStates: gameStateType = new Map();
@@ -18,52 +19,30 @@ export class GameService {
   validationService: ValidationService;
 
   startGame(playerOne: UserQueueDto, playerTwo: UserQueueDto) {
-    const room: string = randomString(16);
+    const roomId: string = randomString(16);
     const { white, black } = findColors(playerOne, playerTwo);
-    const gameState: gameType = {
-      roomName: room,
+    const game: gameType = {
+      roomId,
       white,
       black,
-      board: [
-        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], // lover case - black
-        ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], // upper case - white
-        ['0', '0', '0', '0', '0', '0', '0', '0'], // TODO Take it all back
-        ['0', '0', '0', 'b', '0', '0', '0', '0'],
-        ['0', '0', '0', '0', '0', '0', '0', '0'],
-        ['0', '0', '0', '0', '0', '0', '0', '0'],
-        ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-        ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
-      ],
+      board: BOARD,
     };
 
-    this.gamesStates.set(room, gameState);
+    this.gamesStates.set(roomId, game);
+
+    alertBoard(this.logger, game.board, game.roomId);
 
     this.initGateway.server
       .in([white.socket, black.socket])
-      .socketsJoin(gameState.roomName);
+      .socketsJoin(game.roomId);
 
-    this.logger.log(gameState.roomName);
-    gameState.board.forEach((value) => this.logger.log(JSON.stringify(value)));
-
-    this.initGateway.server
-      .in(gameState.roomName)
-      .emit('/game/start', gameState);
+    this.initGateway.server.in(game.roomId).emit('/game/start', game);
   }
 
   chessMove(client: Socket, data: MoveDto) {
     const { startPos, endPos } = data;
-
-    let room: string;
-
-    for (const game of this.gamesStates.values()) {
-      if (
-        Object.is(game.white.socket, client.id) ||
-        Object.is(game.black.socket, client.id)
-      )
-        room = game.roomName;
-    }
-
-    const game: gameType = this.gamesStates.get(room);
+    const roomId = findRoom(client, this.gamesStates);
+    const game: gameType = this.gamesStates.get(roomId);
     const figure: string = game.board[startPos[0]][startPos[1]];
 
     if (
@@ -78,12 +57,13 @@ export class GameService {
       this.logger.log('chessMove is worked');
 
       game.board[endPos[0]][endPos[1]] = figure;
-      game.board[startPos[0]][startPos[1]] = '0';
+      game.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
+
+      alertBoard(this.logger, game.board, roomId);
+
+      this.initGateway.server
+        .in(roomId)
+        .emit('/game/move', { startPos, endPos });
     }
-
-    this.logger.log(game.roomName);
-    game.board.forEach((value) => this.logger.log(JSON.stringify(value)));
-
-    this.initGateway.server.in(room).emit('/game/move', { startPos, endPos });
   }
 }

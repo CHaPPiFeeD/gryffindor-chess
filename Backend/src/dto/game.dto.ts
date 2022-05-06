@@ -4,7 +4,7 @@ export type gamePlayerType = {
 };
 
 export type gameType = {
-  roomName: string;
+  roomId: string;
   white: gamePlayerType;
   black: gamePlayerType;
   board: string[][];
