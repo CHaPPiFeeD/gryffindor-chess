@@ -101,7 +101,7 @@ export const checkPawnMove = (
     board[endPos[0]][endPos[1]] !== FIGURES.EMPTY;
 
   const isTwoSteps =
-    startPos[0] !== initPawnPos && y === step + step && x === 0;
+    startPos[0] === initPawnPos && y === step + step && x === 0;
 
   return isStep || isDiagonal || isTwoSteps;
 };
