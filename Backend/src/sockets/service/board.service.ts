@@ -1,5 +1,11 @@
 import { Logger } from '@nestjs/common';
-import { FIGURES, FOG_BOARD, KNIGHTS_WAYS } from '../../enum/constants';
+import { createWay } from 'src/helpers';
+import {
+  FIGURES,
+  FOG_BOARD,
+  KNIGHTS_WAYS,
+  ROOK_WAYS,
+} from '../../enum/constants';
 
 export class BoardService {
   private logger = new Logger(BoardService.name);
@@ -8,84 +14,105 @@ export class BoardService {
     const start = new Date();
     const whiteBoard = FOG_BOARD();
     const blackBoard = FOG_BOARD();
+    const whiteWays = [];
+    const blackWays = [];
 
-    board.forEach((row, rowIndex) => {
-      row.forEach((column, columnIndex) => {
-        const cell = board[rowIndex][columnIndex];
+    board.forEach((row, checkRowIndex) => {
+      row.forEach((column, checkColIndex) => {
+        const cell = board[checkRowIndex][checkColIndex];
+        let selectBoard;
+        let selectWays;
 
         if ('KQBNRP'.includes(cell)) {
-          whiteBoard[rowIndex][columnIndex] = cell;
-
-          switch (true) {
-            case cell.toLowerCase() === FIGURES.KING:
-              return;
-
-            case cell.toLowerCase() === FIGURES.QUEEN:
-              return;
-
-            case cell.toLowerCase() === FIGURES.BISHOP:
-              return;
-
-            case cell.toLowerCase() === FIGURES.KNIGHT:
-              this.checkCellKnight(board, whiteBoard, rowIndex, columnIndex);
-              return;
-
-            case cell.toLowerCase() === FIGURES.ROOK:
-              return;
-
-            case cell.toLowerCase() === FIGURES.PAWN:
-              return;
-
-            default:
-              break;
-          }
-
-          return;
+          whiteBoard[checkRowIndex][checkColIndex] = cell;
+          selectBoard = whiteBoard;
+          selectWays = whiteWays;
         }
 
         if ('kqbnrp'.includes(cell)) {
-          blackBoard[rowIndex][columnIndex] = cell;
+          blackBoard[checkRowIndex][checkColIndex] = cell;
+          selectBoard = blackBoard;
+          selectWays = blackWays;
+        }
 
-          switch (true) {
-            case cell.toLowerCase() === FIGURES.KING:
-              return;
+        switch (true) {
+          case cell.toLowerCase() === FIGURES.KING:
+            break;
 
-            case cell.toLowerCase() === FIGURES.QUEEN:
-              return;
+          case cell.toLowerCase() === FIGURES.QUEEN:
+            break;
 
-            case cell.toLowerCase() === FIGURES.BISHOP:
-              return;
+          case cell.toLowerCase() === FIGURES.BISHOP:
+            break;
 
-            case cell.toLowerCase() === FIGURES.KNIGHT:
-              this.checkCellKnight(board, blackBoard, rowIndex, columnIndex);
-              return;
+          case cell.toLowerCase() === FIGURES.KNIGHT:
+            this.checkKnightWays(
+              board,
+              selectBoard,
+              checkRowIndex,
+              checkColIndex,
+              selectWays,
+            );
+            break;
 
-            case cell.toLowerCase() === FIGURES.ROOK:
-              return;
+          case cell.toLowerCase() === FIGURES.ROOK:
+            this.checkRookWays(
+              board,
+              selectBoard,
+              checkRowIndex,
+              checkColIndex,
+              selectWays,
+            );
+            break;
 
-            case cell.toLowerCase() === FIGURES.PAWN:
-              return;
+          case cell.toLowerCase() === FIGURES.PAWN:
+            break;
 
-            default:
-              break;
-          }
-          return;
+          default:
+            break;
         }
       });
     });
 
     const end = new Date();
     this.logger.warn(+end - +start);
-    return { whiteBoard, blackBoard };
+
+    return { whiteBoard, blackBoard, whiteWays, blackWays };
   }
 
-  checkCellKnight(generalBoard, playerBoard, rowIndex, columnIndex) {
-    KNIGHTS_WAYS.forEach((way, i) => {
-      const row = rowIndex + way[0];
-      const column = columnIndex + way[1];
-      if (row >= 0 && row < 8 && column >= 0 && column < 8) {
-        playerBoard[row][column] = generalBoard[row][column];
+  checkKnightWays(
+    generalBoard,
+    playerBoard,
+    checkRowIndex,
+    checkColIndex,
+    ways,
+  ) {
+    KNIGHTS_WAYS.forEach((way) => {
+      const wayRow = checkRowIndex + way[0];
+      const wayCol = checkColIndex + way[1];
+      if (wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8) {
+        playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
+        ways.push(createWay(checkRowIndex, checkColIndex, wayRow, wayCol));
       }
+    });
+  }
+
+  checkRookWays(generalBoard, playerBoard, checkRowIndex, checkColIndex, ways) {
+    ROOK_WAYS.forEach((side) => {
+      let isSide = true;
+
+      side.forEach((way) => {
+        if (isSide) {
+          const wayRow = checkRowIndex + way[0];
+          const wayCol = checkColIndex + way[1];
+
+          if (wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8) {
+            playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
+            ways.push(createWay(checkRowIndex, checkColIndex, wayRow, wayCol));
+            if (generalBoard[wayRow][wayCol] !== FIGURES.EMPTY) isSide = false;
+          }
+        }
+      });
     });
   }
 }

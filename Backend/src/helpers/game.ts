@@ -39,11 +39,13 @@ const setColors = (
   const white: gamePlayerType = {
     socket: whitePlayer.socket,
     name: whitePlayer.name,
+    ways: [],
   };
 
   const black: gamePlayerType = {
     socket: blackPlayer.socket,
     name: blackPlayer.name,
+    ways: [],
   };
 
   return { white, black };

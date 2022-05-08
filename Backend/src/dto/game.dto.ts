@@ -1,6 +1,7 @@
 export type gamePlayerType = {
   socket: string;
   name: string;
+  ways: string[];
 };
 
 export type gameType = {

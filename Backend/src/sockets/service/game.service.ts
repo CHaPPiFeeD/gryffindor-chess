@@ -32,9 +32,20 @@ export class GameService {
       board: BOARD,
     };
 
+    alertBoard(this.logger, game.board, game.roomId);
+
+    const { whiteBoard, blackBoard, whiteWays, blackWays } =
+      this.boardService.createBoardsForPlayers(game.board);
+
+    game.white.ways = whiteWays;
+    game.black.ways = blackWays;
+
     this.gamesStates.set(roomId, game);
 
-    alertBoard(this.logger, game.board, game.roomId);
+    alertBoard(this.logger, whiteBoard, 'white board');
+    this.logger.log(whiteWays);
+    alertBoard(this.logger, blackBoard, 'black board');
+    this.logger.log(blackWays);
 
     this.initGateway.server
       .in([white.socket, black.socket])
@@ -65,11 +76,13 @@ export class GameService {
 
       alertBoard(this.logger, game.board, roomId);
 
-      const { whiteBoard, blackBoard } =
+      const { whiteBoard, blackBoard, whiteWays, blackWays } =
         this.boardService.createBoardsForPlayers(game.board);
 
       alertBoard(this.logger, whiteBoard, 'white board');
+      this.logger.log(whiteWays);
       alertBoard(this.logger, blackBoard, 'black board');
+      this.logger.log(blackWays);
 
       this.initGateway.server
         .in(roomId)

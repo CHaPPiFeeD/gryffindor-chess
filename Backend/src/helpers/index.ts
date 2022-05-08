@@ -43,3 +43,7 @@ interface ErrorType {
   code: API_ERROR_CODES;
   message: string;
 }
+
+export const createWay = (checkRowIndex, checkColIndex, wayRow, wayCol) => {
+  return [checkRowIndex, checkColIndex, wayRow, wayCol].join('');
+};
