@@ -1,11 +1,12 @@
 import { Logger } from '@nestjs/common';
 import { createWay } from 'src/helpers';
+import { FIGURES, FOG_BOARD } from '../../enum/constants';
 import {
-  FIGURES,
-  FOG_BOARD,
+  BISHOP_WAYS,
   KNIGHTS_WAYS,
+  QUEEN_WAYS,
   ROOK_WAYS,
-} from '../../enum/constants';
+} from '../../enum/figureWays';
 
 export class BoardService {
   private logger = new Logger(BoardService.name);
@@ -40,9 +41,25 @@ export class BoardService {
             break;
 
           case cell.toLowerCase() === FIGURES.QUEEN:
+            this.checkWays(
+              board,
+              selectBoard,
+              checkRowIndex,
+              checkColIndex,
+              selectWays,
+              QUEEN_WAYS,
+            );
             break;
 
           case cell.toLowerCase() === FIGURES.BISHOP:
+            this.checkWays(
+              board,
+              selectBoard,
+              checkRowIndex,
+              checkColIndex,
+              selectWays,
+              BISHOP_WAYS,
+            );
             break;
 
           case cell.toLowerCase() === FIGURES.KNIGHT:
@@ -56,12 +73,13 @@ export class BoardService {
             break;
 
           case cell.toLowerCase() === FIGURES.ROOK:
-            this.checkRookWays(
+            this.checkWays(
               board,
               selectBoard,
               checkRowIndex,
               checkColIndex,
               selectWays,
+              ROOK_WAYS,
             );
             break;
 
@@ -97,8 +115,15 @@ export class BoardService {
     });
   }
 
-  checkRookWays(generalBoard, playerBoard, checkRowIndex, checkColIndex, ways) {
-    ROOK_WAYS.forEach((side) => {
+  checkWays(
+    generalBoard,
+    playerBoard,
+    checkRowIndex,
+    checkColIndex,
+    playersWays,
+    figureWays,
+  ) {
+    figureWays.forEach((side) => {
       let isSide = true;
 
       side.forEach((way) => {
@@ -108,9 +133,11 @@ export class BoardService {
 
           if (wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8) {
             playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
-            ways.push(createWay(checkRowIndex, checkColIndex, wayRow, wayCol));
+            playersWays.push(
+              createWay(checkRowIndex, checkColIndex, wayRow, wayCol),
+            );
             if (generalBoard[wayRow][wayCol] !== FIGURES.EMPTY) isSide = false;
-          }
+          } else isSide = false;
         }
       });
     });
