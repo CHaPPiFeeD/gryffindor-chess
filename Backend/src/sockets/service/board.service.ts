@@ -26,17 +26,20 @@ export class BoardService {
         const cell = board[checkRowIndex][checkColIndex];
         let selectBoard;
         let selectWays;
+        let figuresString;
 
         if ('QBNRP'.includes(cell)) {
           whiteBoard[checkRowIndex][checkColIndex] = cell;
           selectBoard = whiteBoard;
           selectWays = initWhiteWays;
+          figuresString = 'KQBNRP';
         }
 
         if ('qbnrp'.includes(cell)) {
           blackBoard[checkRowIndex][checkColIndex] = cell;
           selectBoard = blackBoard;
           selectWays = initBlackWays;
+          figuresString = 'kqbnrp';
         }
 
         switch (true) {
@@ -48,6 +51,7 @@ export class BoardService {
               checkColIndex,
               selectWays,
               QUEEN_WAYS,
+              figuresString,
             );
             break;
 
@@ -59,6 +63,7 @@ export class BoardService {
               checkColIndex,
               selectWays,
               BISHOP_WAYS,
+              figuresString,
             );
             break;
 
@@ -69,6 +74,7 @@ export class BoardService {
               checkRowIndex,
               checkColIndex,
               selectWays,
+              figuresString,
             );
             break;
 
@@ -80,6 +86,7 @@ export class BoardService {
               checkColIndex,
               selectWays,
               ROOK_WAYS,
+              figuresString,
             );
             break;
 
@@ -91,6 +98,7 @@ export class BoardService {
               checkColIndex,
               selectWays,
               WHITE_PAWN_WAYS,
+              figuresString,
             );
             break;
 
@@ -102,6 +110,7 @@ export class BoardService {
               checkColIndex,
               selectWays,
               BLACK_PAWN_WAYS,
+              figuresString,
             );
             break;
 
@@ -124,7 +133,7 @@ export class BoardService {
             checkColIndex,
             initWhiteWays,
             initBlackWays,
-            'QBNRP',
+            'KQBNRP',
           );
         }
 
@@ -137,7 +146,7 @@ export class BoardService {
             checkColIndex,
             initBlackWays,
             initWhiteWays,
-            'qbnrp',
+            'kqbnrp',
           );
         }
       });
@@ -166,6 +175,7 @@ export class BoardService {
     checkRowIndex,
     checkColIndex,
     playerWays,
+    figuresString,
   ) {
     KNIGHTS_WAYS.forEach((way) => {
       const wayRow = checkRowIndex + way[0];
@@ -173,10 +183,12 @@ export class BoardService {
 
       if (wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8) {
         playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
-        playerWays.push([
-          [checkRowIndex, checkColIndex],
-          [wayRow, wayCol],
-        ]);
+        if (!figuresString.includes(generalBoard[wayRow][wayCol])) {
+          playerWays.push([
+            [checkRowIndex, checkColIndex],
+            [wayRow, wayCol],
+          ]);
+        }
       }
     });
   }
@@ -188,6 +200,7 @@ export class BoardService {
     checkColIndex,
     playerWays,
     figureWays,
+    figuresString,
   ) {
     figureWays.forEach((side) => {
       let isSide = true;
@@ -199,10 +212,13 @@ export class BoardService {
 
           if (wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8) {
             playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
-            playerWays.push([
-              [checkRowIndex, checkColIndex],
-              [wayRow, wayCol],
-            ]);
+            if (!figuresString.includes(generalBoard[wayRow][wayCol])) {
+              playerWays.push([
+                [checkRowIndex, checkColIndex],
+                [wayRow, wayCol],
+              ]);
+            }
+
             if (generalBoard[wayRow][wayCol] !== FIGURES.EMPTY) isSide = false;
           } else isSide = false;
         }
@@ -217,6 +233,7 @@ export class BoardService {
     checkColIndex,
     playerWays,
     figureWays,
+    figuresString,
   ) {
     figureWays.forEach((side) => {
       let isSide = true;
@@ -232,18 +249,23 @@ export class BoardService {
               generalBoard[wayRow][wayCol] !== FIGURES.EMPTY
             ) {
               playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
-              playerWays.push([
-                [checkRowIndex, checkColIndex],
-                [wayRow, wayCol],
-              ]);
+              if (!figuresString.includes(generalBoard[wayRow][wayCol])) {
+                playerWays.push([
+                  [checkRowIndex, checkColIndex],
+                  [wayRow, wayCol],
+                ]);
+              }
             }
 
             if (Math.abs(way[1]) === 0) {
               playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
-              playerWays.push([
-                [checkRowIndex, checkColIndex],
-                [wayRow, wayCol],
-              ]);
+              if (!figuresString.includes(generalBoard[wayRow][wayCol])) {
+                playerWays.push([
+                  [checkRowIndex, checkColIndex],
+                  [wayRow, wayCol],
+                ]);
+              }
+
               if (generalBoard[wayRow][wayCol] !== FIGURES.EMPTY)
                 isSide = false;
             }
