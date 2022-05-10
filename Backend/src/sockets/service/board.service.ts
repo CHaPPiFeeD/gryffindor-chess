@@ -1,6 +1,12 @@
 import { Logger } from '@nestjs/common';
 import { createWay } from 'src/helpers';
-import { FIGURES, FIGURES_COLORS, FOG_BOARD } from '../../enum/constants';
+import {
+  BLACK_FIGURES,
+  FIGURES,
+  FIGURES_COLORS,
+  FOG_BOARD,
+  WHITE_FIGURES,
+} from '../../enum/constants';
 import {
   BISHOP_WAYS,
   BLACK_PAWN_WAYS,
@@ -28,18 +34,18 @@ export class BoardService {
         let selectWays;
         let figuresString;
 
-        if ('QBNRP'.includes(cell)) {
+        if (WHITE_FIGURES.includes(cell)) {
           whiteBoard[checkRow][checkCol] = cell;
           selectBoard = whiteBoard;
           selectWays = initWhiteWays;
-          figuresString = 'KQBNRP';
+          figuresString = WHITE_FIGURES;
         }
 
-        if ('qbnrp'.includes(cell)) {
+        if (BLACK_FIGURES.includes(cell)) {
           blackBoard[checkRow][checkCol] = cell;
           selectBoard = blackBoard;
           selectWays = initBlackWays;
-          figuresString = 'kqbnrp';
+          figuresString = BLACK_FIGURES;
         }
 
         switch (true) {
@@ -113,9 +119,6 @@ export class BoardService {
               figuresString,
             );
             break;
-
-          default:
-            break;
         }
       });
     });
@@ -133,7 +136,7 @@ export class BoardService {
             col,
             initWhiteWays,
             initBlackWays,
-            'KQBNRP',
+            WHITE_FIGURES,
           );
         }
 
@@ -146,7 +149,7 @@ export class BoardService {
             col,
             initBlackWays,
             initWhiteWays,
-            'kqbnrp',
+            BLACK_FIGURES,
           );
         }
       });
@@ -273,22 +276,22 @@ export class BoardService {
             const isCellNotEmpty =
               generalBoard[wayRow][wayCol] !== FIGURES.EMPTY;
 
-            const isOwnFigure = ownFigures.includes(
-              generalBoard[wayRow][wayCol],
-            );
-
             if (isDiagonal || isDirect) {
               playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
+
+              const isOwnFigure = ownFigures.includes(
+                generalBoard[wayRow][wayCol],
+              );
+
+              if (!isOwnFigure) {
+                playerWays.push([
+                  [checkRow, checkCol],
+                  [wayRow, wayCol],
+                ]);
+              }
             }
 
             if (isCellNotEmpty) isSide = false;
-
-            if (!isOwnFigure) {
-              playerWays.push([
-                [checkRow, checkCol],
-                [wayRow, wayCol],
-              ]);
-            }
           } else isSide = false;
         }
       });
@@ -314,7 +317,7 @@ export class BoardService {
         wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
 
       if (isCorrectCoordinates) {
-        playerBoard[way[0]][way[1]] = generalBoard[way[0]][way[1]];
+        playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
 
         const isOwnFigure = ownFigures.includes(generalBoard[wayRow][wayCol]);
 

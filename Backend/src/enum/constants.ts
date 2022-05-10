@@ -92,3 +92,7 @@ export const FOG_BOARD: any = () => [
   ['~', '~', '~', '~', '~', '~', '~', '~'],
   ['~', '~', '~', '~', '~', '~', '~', '~'],
 ];
+
+export const WHITE_FIGURES = 'KQBNRP';
+
+export const BLACK_FIGURES = 'kqbnrp';
