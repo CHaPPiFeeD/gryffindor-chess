@@ -73,6 +73,15 @@ export const ATTACKS: string[][] = [
   ['bq',  '',  '',  '',  '',  '',   '', 'rq',   '',  '',  '',  '',  '',  '','bq'],
 ];
 
+// prettier-ignore
+export const PAWN_ATTACKS: string[][] = [
+  [ '', 'P',  ''],
+  ['P', 'P', 'P'],
+  [ '',  '',  ''],
+  ['p', 'p', 'p'],
+  [ '', 'p',  ''],
+];
+
 export const FOG_BOARD: any = () => [
   ['~', '~', '~', '~', '~', '~', '~', '~'],
   ['~', '~', '~', '~', '~', '~', '~', '~'],

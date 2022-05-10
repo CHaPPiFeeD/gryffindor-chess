@@ -21,22 +21,22 @@ export class BoardService {
     const initWhiteWays = [];
     const initBlackWays = [];
 
-    board.forEach((row, checkRowIndex) => {
-      row.forEach((column, checkColIndex) => {
-        const cell = board[checkRowIndex][checkColIndex];
+    board.forEach((rowValue, checkRow) => {
+      rowValue.forEach((colValue, checkCol) => {
+        const cell = board[checkRow][checkCol];
         let selectBoard;
         let selectWays;
         let figuresString;
 
         if ('QBNRP'.includes(cell)) {
-          whiteBoard[checkRowIndex][checkColIndex] = cell;
+          whiteBoard[checkRow][checkCol] = cell;
           selectBoard = whiteBoard;
           selectWays = initWhiteWays;
           figuresString = 'KQBNRP';
         }
 
         if ('qbnrp'.includes(cell)) {
-          blackBoard[checkRowIndex][checkColIndex] = cell;
+          blackBoard[checkRow][checkCol] = cell;
           selectBoard = blackBoard;
           selectWays = initBlackWays;
           figuresString = 'kqbnrp';
@@ -47,8 +47,8 @@ export class BoardService {
             this.checkWays(
               board,
               selectBoard,
-              checkRowIndex,
-              checkColIndex,
+              checkRow,
+              checkCol,
               selectWays,
               QUEEN_WAYS,
               figuresString,
@@ -59,8 +59,8 @@ export class BoardService {
             this.checkWays(
               board,
               selectBoard,
-              checkRowIndex,
-              checkColIndex,
+              checkRow,
+              checkCol,
               selectWays,
               BISHOP_WAYS,
               figuresString,
@@ -71,8 +71,8 @@ export class BoardService {
             this.checkKnightWays(
               board,
               selectBoard,
-              checkRowIndex,
-              checkColIndex,
+              checkRow,
+              checkCol,
               selectWays,
               figuresString,
             );
@@ -82,8 +82,8 @@ export class BoardService {
             this.checkWays(
               board,
               selectBoard,
-              checkRowIndex,
-              checkColIndex,
+              checkRow,
+              checkCol,
               selectWays,
               ROOK_WAYS,
               figuresString,
@@ -94,8 +94,8 @@ export class BoardService {
             this.checkPawnWays(
               board,
               selectBoard,
-              checkRowIndex,
-              checkColIndex,
+              checkRow,
+              checkCol,
               selectWays,
               WHITE_PAWN_WAYS,
               figuresString,
@@ -106,8 +106,8 @@ export class BoardService {
             this.checkPawnWays(
               board,
               selectBoard,
-              checkRowIndex,
-              checkColIndex,
+              checkRow,
+              checkCol,
               selectWays,
               BLACK_PAWN_WAYS,
               figuresString,
@@ -120,17 +120,17 @@ export class BoardService {
       });
     });
 
-    board.forEach((row, checkRowIndex) => {
-      row.forEach((column, checkColIndex) => {
-        const cell = board[checkRowIndex][checkColIndex];
+    board.forEach((rowValue, row) => {
+      rowValue.forEach((colValue, col) => {
+        const cell = board[row][col];
 
         if (cell === FIGURES_COLORS.WHITE.KING) {
-          whiteBoard[checkRowIndex][checkColIndex] = cell;
+          whiteBoard[row][col] = cell;
           this.checkKingWays(
             board,
             whiteBoard,
-            checkRowIndex,
-            checkColIndex,
+            row,
+            col,
             initWhiteWays,
             initBlackWays,
             'KQBNRP',
@@ -138,12 +138,12 @@ export class BoardService {
         }
 
         if (cell === FIGURES_COLORS.BLACK.KING) {
-          blackBoard[checkRowIndex][checkColIndex] = cell;
+          blackBoard[row][col] = cell;
           this.checkKingWays(
             board,
             blackBoard,
-            checkRowIndex,
-            checkColIndex,
+            row,
+            col,
             initBlackWays,
             initWhiteWays,
             'kqbnrp',
@@ -170,22 +170,28 @@ export class BoardService {
   }
 
   checkKnightWays(
-    generalBoard,
-    playerBoard,
-    checkRowIndex,
-    checkColIndex,
-    playerWays,
-    figuresString,
+    generalBoard: string[][],
+    playerBoard: string[][],
+    checkRow: number,
+    checkCol: number,
+    playerWays: number[][][],
+    ownFigures: string,
   ) {
     KNIGHTS_WAYS.forEach((way) => {
-      const wayRow = checkRowIndex + way[0];
-      const wayCol = checkColIndex + way[1];
+      const wayRow = checkRow + way[0];
+      const wayCol = checkCol + way[1];
 
-      if (wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8) {
+      const isCorrectCoordinates =
+        wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
+
+      if (isCorrectCoordinates) {
         playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
-        if (!figuresString.includes(generalBoard[wayRow][wayCol])) {
+
+        const isOwnFigure = ownFigures.includes(generalBoard[wayRow][wayCol]);
+
+        if (!isOwnFigure) {
           playerWays.push([
-            [checkRowIndex, checkColIndex],
+            [checkRow, checkCol],
             [wayRow, wayCol],
           ]);
         }
@@ -194,32 +200,43 @@ export class BoardService {
   }
 
   checkWays(
-    generalBoard,
-    playerBoard,
-    checkRowIndex,
-    checkColIndex,
-    playerWays,
-    figureWays,
-    figuresString,
+    generalBoard: string[][],
+    playerBoard: string[][],
+    checkRow: number,
+    checkCol: number,
+    playerWays: number[][][],
+    figureWays: number[][][],
+    ownFigures: string,
   ) {
     figureWays.forEach((side) => {
       let isSide = true;
 
       side.forEach((way) => {
         if (isSide) {
-          const wayRow = checkRowIndex + way[0];
-          const wayCol = checkColIndex + way[1];
+          const wayRow = checkRow + way[0];
+          const wayCol = checkCol + way[1];
 
-          if (wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8) {
+          const isCorrectCoordinates =
+            wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
+
+          if (isCorrectCoordinates) {
             playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
-            if (!figuresString.includes(generalBoard[wayRow][wayCol])) {
+
+            const isOwnFigure = ownFigures.includes(
+              generalBoard[wayRow][wayCol],
+            );
+
+            if (!isOwnFigure) {
               playerWays.push([
-                [checkRowIndex, checkColIndex],
+                [checkRow, checkCol],
                 [wayRow, wayCol],
               ]);
             }
 
-            if (generalBoard[wayRow][wayCol] !== FIGURES.EMPTY) isSide = false;
+            const isCellNotEmpty =
+              generalBoard[wayRow][wayCol] !== FIGURES.EMPTY;
+
+            if (isCellNotEmpty) isSide = false;
           } else isSide = false;
         }
       });
@@ -227,47 +244,50 @@ export class BoardService {
   }
 
   checkPawnWays(
-    generalBoard,
-    playerBoard,
-    checkRowIndex,
-    checkColIndex,
-    playerWays,
-    figureWays,
-    figuresString,
+    generalBoard: string[][],
+    playerBoard: string[][],
+    checkRow: number,
+    checkCol: number,
+    playerWays: number[][][],
+    figureWays: number[][][],
+    ownFigures: string,
   ) {
     figureWays.forEach((side) => {
       let isSide = true;
 
       side.forEach((way) => {
         if (isSide) {
-          const wayRow = checkRowIndex + way[0];
-          const wayCol = checkColIndex + way[1];
+          const wayRow = checkRow + way[0];
+          const wayCol = checkCol + way[1];
 
-          if (wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8) {
-            if (
+          const isCorrectCoordinates =
+            wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
+
+          if (isCorrectCoordinates) {
+            const isDiagonal =
               Math.abs(way[1]) === 1 &&
-              generalBoard[wayRow][wayCol] !== FIGURES.EMPTY
-            ) {
+              generalBoard[wayRow][wayCol] !== FIGURES.EMPTY;
+
+            const isDirect = Math.abs(way[1]) === 0;
+
+            const isCellNotEmpty =
+              generalBoard[wayRow][wayCol] !== FIGURES.EMPTY;
+
+            const isOwnFigure = ownFigures.includes(
+              generalBoard[wayRow][wayCol],
+            );
+
+            if (isDiagonal || isDirect) {
               playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
-              if (!figuresString.includes(generalBoard[wayRow][wayCol])) {
-                playerWays.push([
-                  [checkRowIndex, checkColIndex],
-                  [wayRow, wayCol],
-                ]);
-              }
             }
 
-            if (Math.abs(way[1]) === 0) {
-              playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
-              if (!figuresString.includes(generalBoard[wayRow][wayCol])) {
-                playerWays.push([
-                  [checkRowIndex, checkColIndex],
-                  [wayRow, wayCol],
-                ]);
-              }
+            if (isCellNotEmpty) isSide = false;
 
-              if (generalBoard[wayRow][wayCol] !== FIGURES.EMPTY)
-                isSide = false;
+            if (!isOwnFigure) {
+              playerWays.push([
+                [checkRow, checkCol],
+                [wayRow, wayCol],
+              ]);
             }
           } else isSide = false;
         }
@@ -276,43 +296,45 @@ export class BoardService {
   }
 
   checkKingWays(
-    generalBoard,
-    playerBoard,
-    checkRowIndex,
-    checkColIndex,
-    playerWays,
-    anotherPlayerWays,
-    figuresString,
+    generalBoard: string[][],
+    playerBoard: string[][],
+    checkRow: number,
+    checkCol: number,
+    playerWays: number[][][],
+    anotherPlayerWays: number[][][],
+    ownFigures: string,
   ) {
     const kingInitWays = [];
 
     KING_WAYS.forEach((way) => {
-      const wayRow = checkRowIndex + way[0];
-      const wayCol = checkColIndex + way[1];
+      const wayRow = checkRow + way[0];
+      const wayCol = checkCol + way[1];
 
-      if (wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8) {
-        if (!figuresString.includes(generalBoard[wayRow][wayCol]))
-          kingInitWays.push([wayRow, wayCol]);
+      const isCorrectCoordinates =
+        wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
+
+      if (isCorrectCoordinates) {
+        playerBoard[way[0]][way[1]] = generalBoard[way[0]][way[1]];
+
+        const isOwnFigure = ownFigures.includes(generalBoard[wayRow][wayCol]);
+
+        if (!isOwnFigure) kingInitWays.push([wayRow, wayCol]);
       }
     });
 
     anotherPlayerWays.forEach((anotherPlayerWay) => {
       kingInitWays.forEach((kingWay, i) => {
-        if (
+        const isIdenticalCells =
           anotherPlayerWay[1][0] === kingWay[0] &&
-          anotherPlayerWay[1][1] === kingWay[1]
-        ) {
-          kingInitWays.splice(i, 1);
-        }
+          anotherPlayerWay[1][1] === kingWay[1];
+
+        if (isIdenticalCells) kingInitWays.splice(i, 1);
       });
     });
 
-    this.logger.debug(kingInitWays);
-
     kingInitWays.forEach((way) => {
-      playerBoard[way[0]][way[1]] = generalBoard[way[0]][way[1]];
       playerWays.push([
-        [checkRowIndex, checkColIndex],
+        [checkRow, checkCol],
         [way[0], way[1]],
       ]);
     });

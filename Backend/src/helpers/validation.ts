@@ -83,25 +83,3 @@ export const checkDiagonalMove = (
       break;
   }
 };
-
-export const checkPawnMove = (
-  board: string[][],
-  startPos: number[],
-  endPos: number[],
-  x: number,
-  y: number,
-  initPawnPos: number,
-  step: number,
-): boolean => {
-  const isStep = y === step && x === 0;
-
-  const isDiagonal =
-    Math.abs(x) === 1 &&
-    y === step &&
-    board[endPos[0]][endPos[1]] !== FIGURES.EMPTY;
-
-  const isTwoSteps =
-    startPos[0] === initPawnPos && y === step + step && x === 0;
-
-  return isStep || isDiagonal || isTwoSteps;
-};
