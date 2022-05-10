@@ -83,3 +83,7 @@ export const checkDiagonalMove = (
       break;
   }
 };
+
+export const checkCoordinates = (wayRow: number, wayCol: number) => {
+  return wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
+};

@@ -2,15 +2,18 @@ import { Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import {
   ATTACKS,
+  BLACK_FIGURES,
   FIGURES,
   FIGURES_COLORS,
   PAWN_ATTACKS,
+  WHITE_FIGURES,
 } from '../../enum/constants';
 import { gameType } from '../../dto/game.dto';
 import {
   checkDiagonalMove,
   checkVerticalAndHorizontalMove,
 } from '../../helpers/validation';
+import { movePropsType } from 'src/dto/validation.dto';
 
 export class ValidationService {
   private logger = new Logger();
@@ -23,13 +26,25 @@ export class ValidationService {
     startPos: number[],
     endPos: number[],
   ): boolean {
-    const board: string[][] = game.board;
     const x: number = endPos[1] - startPos[1];
     const y: number = startPos[0] - endPos[0];
     const attacksRow: number = this.initPos + y;
     const attacksCol: number = this.initPos + x;
 
-    if (this.basicСheck(client, figure, game, endPos)) return;
+    const props: movePropsType = {
+      client,
+      figure,
+      game,
+      board: game.board,
+      startPos,
+      endPos,
+      row: attacksRow,
+      col: attacksCol,
+      x,
+      y,
+    };
+
+    if (this.basicСheck(props)) return;
 
     this.logger.debug(figure);
 
@@ -38,28 +53,25 @@ export class ValidationService {
         return ATTACKS[attacksRow][attacksCol].includes(FIGURES.KING);
 
       case figure.toLowerCase() === FIGURES.QUEEN:
-        return this.checkQueen(board, startPos, attacksRow, attacksCol, x, y);
+        return this.checkQueen(props);
 
       case figure.toLowerCase() === FIGURES.BISHOP:
-        return this.checkBishop(board, startPos, attacksRow, attacksCol, x, y);
+        return this.checkBishop(props);
 
       case figure.toLowerCase() === FIGURES.KNIGHT:
         return ATTACKS[attacksRow][attacksCol].includes(FIGURES.KNIGHT);
 
       case figure.toLowerCase() === FIGURES.ROOK:
-        return this.checkRook(board, startPos, attacksRow, attacksCol, x, y);
+        return this.checkRook(props);
 
       case figure.toLowerCase() === FIGURES.PAWN:
-        return this.checkPawn(figure, board, startPos, endPos, x, y);
+        return this.checkPawn(props);
     }
   }
 
-  basicСheck(
-    client: Socket,
-    figure: string,
-    game: gameType,
-    endPos: number[],
-  ): boolean {
+  basicСheck(props): boolean {
+    const { client, figure, game, endPos } = props;
+
     const endFigure: string = game.board[endPos[0]][endPos[1]];
 
     const isWrongСoordinates =
@@ -68,12 +80,12 @@ export class ValidationService {
     const isFigureNotFound = figure === FIGURES.EMPTY;
 
     const isToOwnFigure =
-      (client.id === game.white.socket && 'KQBNRP'.includes(endFigure)) ||
-      (client.id === game.black.socket && 'kqbnrp'.includes(endFigure));
+      (client.id === game.white.socket && WHITE_FIGURES.includes(endFigure)) ||
+      (client.id === game.black.socket && BLACK_FIGURES.includes(endFigure));
 
     const isOpponentFigure =
-      (client.id === game.white.socket && 'kqbnrp'.includes(figure)) ||
-      (client.id === game.black.socket && 'KQBNRP'.includes(figure));
+      (client.id === game.white.socket && BLACK_FIGURES.includes(figure)) ||
+      (client.id === game.black.socket && WHITE_FIGURES.includes(figure));
 
     const isFigureKing = 'Kk'.includes(endFigure);
 
@@ -93,14 +105,9 @@ export class ValidationService {
     );
   }
 
-  checkQueen(
-    board: string[][],
-    startPos: number[],
-    row: number,
-    col: number,
-    x: number,
-    y: number,
-  ) {
+  checkQueen(props) {
+    const { board, startPos, row, col, x, y } = props;
+
     const isSchemeAttack = ATTACKS[row][col].includes(FIGURES.QUEEN);
 
     const isFigureOnWay =
@@ -116,14 +123,9 @@ export class ValidationService {
     return isSchemeAttack && !isFigureOnWay;
   }
 
-  checkBishop(
-    board: string[][],
-    startPos: number[],
-    row: number,
-    col: number,
-    x: number,
-    y: number,
-  ): boolean {
+  checkBishop(props): boolean {
+    const { board, startPos, row, col, x, y } = props;
+
     const isSchemeAttack = ATTACKS[row][col].includes(FIGURES.BISHOP);
 
     const isFigureOnWay = checkDiagonalMove(board, startPos, x, y);
@@ -137,14 +139,9 @@ export class ValidationService {
     return isSchemeAttack && !isFigureOnWay;
   }
 
-  checkRook(
-    board: string[][],
-    startPos: number[],
-    row: number,
-    col: number,
-    x: number,
-    y: number,
-  ): boolean {
+  checkRook(props): boolean {
+    const { board, startPos, row, col, x, y } = props;
+
     const isSchemeAttack: boolean = ATTACKS[row][col].includes(FIGURES.ROOK);
     const isFigureOnWay = checkVerticalAndHorizontalMove(board, startPos, x, y);
 
@@ -157,14 +154,9 @@ export class ValidationService {
     return isSchemeAttack && !isFigureOnWay;
   }
 
-  checkPawn(
-    figure: string,
-    board: string[][],
-    startPos: number[],
-    endPos: number[],
-    x: number,
-    y: number,
-  ): boolean {
+  checkPawn(props): boolean {
+    const { figure, board, startPos, endPos, x, y } = props;
+
     const row = y + 2;
     const col = y + 1;
     const initPawnPos = figure === FIGURES_COLORS.WHITE.PAWN ? 6 : 1;

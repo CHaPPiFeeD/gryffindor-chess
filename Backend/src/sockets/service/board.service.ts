@@ -1,26 +1,31 @@
 import { Logger } from '@nestjs/common';
-import { createWay } from 'src/helpers';
 import {
+  checkWaysPropsType,
+  createBoardsForPlayersType,
+} from '../../dto/board.dto';
+import { createWay } from 'src/helpers';
+import { checkCoordinates } from 'src/helpers/validation';
+import {
+  WHITE_FIGURES,
   BLACK_FIGURES,
   FIGURES,
   FIGURES_COLORS,
   FOG_BOARD,
-  WHITE_FIGURES,
 } from '../../enum/constants';
 import {
-  BISHOP_WAYS,
-  BLACK_PAWN_WAYS,
   KING_WAYS,
-  KNIGHTS_WAYS,
   QUEEN_WAYS,
+  BISHOP_WAYS,
+  KNIGHTS_WAYS,
   ROOK_WAYS,
   WHITE_PAWN_WAYS,
+  BLACK_PAWN_WAYS,
 } from '../../enum/figureWays';
 
 export class BoardService {
   private logger = new Logger(BoardService.name);
 
-  createBoardsForPlayers(board: string[][]): any {
+  createBoardsForPlayers(board: string[][]): createBoardsForPlayersType {
     const start = new Date();
     const whiteBoard = FOG_BOARD();
     const blackBoard = FOG_BOARD();
@@ -30,127 +35,95 @@ export class BoardService {
     board.forEach((rowValue, checkRow) => {
       rowValue.forEach((colValue, checkCol) => {
         const cell = board[checkRow][checkCol];
-        let selectBoard;
-        let selectWays;
-        let figuresString;
+        let props;
 
         if (WHITE_FIGURES.includes(cell)) {
           whiteBoard[checkRow][checkCol] = cell;
-          selectBoard = whiteBoard;
-          selectWays = initWhiteWays;
-          figuresString = WHITE_FIGURES;
+
+          props = {
+            generalBoard: board,
+            playerBoard: whiteBoard,
+            checkRow,
+            checkCol,
+            playerWays: initWhiteWays,
+            ownFigures: WHITE_FIGURES,
+            pawnWays: WHITE_PAWN_WAYS,
+          };
         }
 
         if (BLACK_FIGURES.includes(cell)) {
           blackBoard[checkRow][checkCol] = cell;
-          selectBoard = blackBoard;
-          selectWays = initBlackWays;
-          figuresString = BLACK_FIGURES;
+
+          props = {
+            generalBoard: board,
+            playerBoard: blackBoard,
+            checkRow,
+            checkCol,
+            playerWays: initBlackWays,
+            ownFigures: BLACK_FIGURES,
+            pawnWays: BLACK_PAWN_WAYS,
+          };
         }
 
         switch (true) {
           case cell.toLowerCase() === FIGURES.QUEEN:
-            this.checkWays(
-              board,
-              selectBoard,
-              checkRow,
-              checkCol,
-              selectWays,
-              QUEEN_WAYS,
-              figuresString,
-            );
+            this.checkWays(props, QUEEN_WAYS);
             break;
 
           case cell.toLowerCase() === FIGURES.BISHOP:
-            this.checkWays(
-              board,
-              selectBoard,
-              checkRow,
-              checkCol,
-              selectWays,
-              BISHOP_WAYS,
-              figuresString,
-            );
+            this.checkWays(props, BISHOP_WAYS);
             break;
 
           case cell.toLowerCase() === FIGURES.KNIGHT:
-            this.checkKnightWays(
-              board,
-              selectBoard,
-              checkRow,
-              checkCol,
-              selectWays,
-              figuresString,
-            );
+            this.checkKnightWays(props, KNIGHTS_WAYS);
             break;
 
           case cell.toLowerCase() === FIGURES.ROOK:
-            this.checkWays(
-              board,
-              selectBoard,
-              checkRow,
-              checkCol,
-              selectWays,
-              ROOK_WAYS,
-              figuresString,
-            );
+            this.checkWays(props, ROOK_WAYS);
             break;
 
-          case cell === FIGURES_COLORS.WHITE.PAWN:
-            this.checkPawnWays(
-              board,
-              selectBoard,
-              checkRow,
-              checkCol,
-              selectWays,
-              WHITE_PAWN_WAYS,
-              figuresString,
-            );
-            break;
-
-          case cell === FIGURES_COLORS.BLACK.PAWN:
-            this.checkPawnWays(
-              board,
-              selectBoard,
-              checkRow,
-              checkCol,
-              selectWays,
-              BLACK_PAWN_WAYS,
-              figuresString,
-            );
+          case cell.toLowerCase() === FIGURES.PAWN:
+            this.checkPawnWays(props);
             break;
         }
       });
     });
 
-    board.forEach((rowValue, row) => {
-      rowValue.forEach((colValue, col) => {
-        const cell = board[row][col];
+    board.forEach((rowValue, checkRow) => {
+      rowValue.forEach((colValue, checkCol) => {
+        const cell = board[checkRow][checkCol];
+        let props;
 
         if (cell === FIGURES_COLORS.WHITE.KING) {
-          whiteBoard[row][col] = cell;
-          this.checkKingWays(
-            board,
-            whiteBoard,
-            row,
-            col,
-            initWhiteWays,
-            initBlackWays,
-            WHITE_FIGURES,
-          );
+          whiteBoard[checkRow][checkCol] = cell;
+
+          props = {
+            generalBoard: board,
+            playerBoard: whiteBoard,
+            checkRow,
+            checkCol,
+            playerWays: initWhiteWays,
+            anotherPlayerWays: initBlackWays,
+            ownFigures: WHITE_FIGURES,
+          };
+
+          this.checkKingWays(props);
         }
 
         if (cell === FIGURES_COLORS.BLACK.KING) {
-          blackBoard[row][col] = cell;
-          this.checkKingWays(
-            board,
-            blackBoard,
-            row,
-            col,
-            initBlackWays,
-            initWhiteWays,
-            BLACK_FIGURES,
-          );
+          blackBoard[checkRow][checkCol] = cell;
+
+          props = {
+            generalBoard: board,
+            playerBoard: blackBoard,
+            checkRow,
+            checkCol,
+            playerWays: initBlackWays,
+            anotherPlayerWays: initWhiteWays,
+            ownFigures: BLACK_FIGURES,
+          };
+
+          this.checkKingWays(props);
         }
       });
     });
@@ -158,8 +131,8 @@ export class BoardService {
     const end = new Date();
     this.logger.warn(+end - +start);
 
-    const whiteWays = [];
-    const blackWays = [];
+    const whiteWays: string[] = [];
+    const blackWays: string[] = [];
 
     initWhiteWays.forEach((way) => {
       whiteWays.push(createWay(way[0][0], way[0][1], way[1][0], way[1][1]));
@@ -172,20 +145,21 @@ export class BoardService {
     return { whiteBoard, blackBoard, whiteWays, blackWays };
   }
 
-  checkKnightWays(
-    generalBoard: string[][],
-    playerBoard: string[][],
-    checkRow: number,
-    checkCol: number,
-    playerWays: number[][][],
-    ownFigures: string,
-  ) {
-    KNIGHTS_WAYS.forEach((way) => {
+  checkKnightWays(props: checkWaysPropsType, figureWays: number[][]) {
+    const {
+      generalBoard,
+      playerBoard,
+      checkRow,
+      checkCol,
+      playerWays,
+      ownFigures,
+    } = props;
+
+    figureWays.forEach((way) => {
       const wayRow = checkRow + way[0];
       const wayCol = checkCol + way[1];
 
-      const isCorrectCoordinates =
-        wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
+      const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
 
       if (isCorrectCoordinates) {
         playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
@@ -202,15 +176,16 @@ export class BoardService {
     });
   }
 
-  checkWays(
-    generalBoard: string[][],
-    playerBoard: string[][],
-    checkRow: number,
-    checkCol: number,
-    playerWays: number[][][],
-    figureWays: number[][][],
-    ownFigures: string,
-  ) {
+  checkWays(props: checkWaysPropsType, figureWays: number[][][]) {
+    const {
+      generalBoard,
+      playerBoard,
+      checkRow,
+      checkCol,
+      playerWays,
+      ownFigures,
+    } = props;
+
     figureWays.forEach((side) => {
       let isSide = true;
 
@@ -219,8 +194,7 @@ export class BoardService {
           const wayRow = checkRow + way[0];
           const wayCol = checkCol + way[1];
 
-          const isCorrectCoordinates =
-            wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
+          const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
 
           if (isCorrectCoordinates) {
             playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
@@ -246,16 +220,18 @@ export class BoardService {
     });
   }
 
-  checkPawnWays(
-    generalBoard: string[][],
-    playerBoard: string[][],
-    checkRow: number,
-    checkCol: number,
-    playerWays: number[][][],
-    figureWays: number[][][],
-    ownFigures: string,
-  ) {
-    figureWays.forEach((side) => {
+  checkPawnWays(props: checkWaysPropsType) {
+    const {
+      generalBoard,
+      playerBoard,
+      checkRow,
+      checkCol,
+      playerWays,
+      ownFigures,
+      pawnWays,
+    } = props;
+
+    pawnWays.forEach((side) => {
       let isSide = true;
 
       side.forEach((way) => {
@@ -263,8 +239,7 @@ export class BoardService {
           const wayRow = checkRow + way[0];
           const wayCol = checkCol + way[1];
 
-          const isCorrectCoordinates =
-            wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
+          const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
 
           if (isCorrectCoordinates) {
             const isDiagonal =
@@ -298,23 +273,24 @@ export class BoardService {
     });
   }
 
-  checkKingWays(
-    generalBoard: string[][],
-    playerBoard: string[][],
-    checkRow: number,
-    checkCol: number,
-    playerWays: number[][][],
-    anotherPlayerWays: number[][][],
-    ownFigures: string,
-  ) {
+  checkKingWays(props: checkWaysPropsType) {
+    const {
+      generalBoard,
+      playerBoard,
+      checkRow,
+      checkCol,
+      playerWays,
+      anotherPlayerWays,
+      ownFigures,
+    } = props;
+
     const kingInitWays = [];
 
     KING_WAYS.forEach((way) => {
       const wayRow = checkRow + way[0];
       const wayCol = checkCol + way[1];
 
-      const isCorrectCoordinates =
-        wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
+      const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
 
       if (isCorrectCoordinates) {
         playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];

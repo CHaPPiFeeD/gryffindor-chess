@@ -43,9 +43,9 @@ export class GameService {
     this.gamesStates.set(roomId, game);
 
     alertBoard(this.logger, whiteBoard, 'white board');
-    this.logger.log(whiteWays);
+    this.logger.log(game.white.ways);
     alertBoard(this.logger, blackBoard, 'black board');
-    this.logger.log(blackWays);
+    this.logger.log(game.black.ways);
 
     this.initGateway.server
       .in([white.socket, black.socket])
