@@ -12,7 +12,7 @@ export type checkWaysPropsType = {
   ownKing?: string;
   anotherPlayerKing?: string;
   kingWays?: number[][];
-  pawnWays?: number[][][];
+  pawnWays?: number[][];
 };
 
 export type createBoardsForPlayersType = {

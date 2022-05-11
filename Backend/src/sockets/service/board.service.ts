@@ -187,35 +187,29 @@ export class BoardService {
 
   checkPawnWays(props: checkWaysPropsType) {
     const { generalBoard, checkRow, checkCol, pawnWays } = props;
+    const initPosPawn = pawnWays === WHITE_PAWN_WAYS ? 6 : 1;
 
-    pawnWays.forEach((side) => {
-      let isSide = true;
+    pawnWays.forEach((way) => {
+      const wayRow = checkRow + way[0];
+      const wayCol = checkCol + way[1];
 
-      side.forEach((way, i) => {
-        if (isSide) {
-          const wayRow = checkRow + way[0];
-          const wayCol = checkCol + way[1];
+      const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
 
-          const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
+      if (isCorrectCoordinates) {
+        const isStep = Math.abs(way[0]) === 1 && Math.abs(way[1]) === 0;
 
-          if (isCorrectCoordinates) {
-            const isDiagonal =
-              Math.abs(way[1]) === 1 &&
-              generalBoard[wayRow][wayCol] !== FIGURES.EMPTY;
+        const isDiagonal =
+          Math.abs(way[1]) === 1 &&
+          generalBoard[wayRow][wayCol] !== FIGURES.EMPTY;
 
-            const isDirect = Math.abs(way[1]) === 0;
+        const isTwoSteps =
+          checkRow === initPosPawn &&
+          Math.abs(way[0]) === 2 &&
+          Math.abs(way[1]) === 0;
 
-            const isCellNotEmpty =
-              generalBoard[wayRow][wayCol] !== FIGURES.EMPTY;
-
-            if (isDiagonal || isDirect) {
-              checkBoardPos({ ...props, side, wayRow, wayCol, i }, true);
-            }
-
-            if (isCellNotEmpty) isSide = false;
-          } else isSide = false;
-        }
-      });
+        if (isDiagonal || isStep || isTwoSteps)
+          checkBoardPos({ ...props, wayRow, wayCol }, false);
+      }
     });
   }
 }

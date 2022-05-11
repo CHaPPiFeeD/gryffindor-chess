@@ -90,21 +90,17 @@ export const BISHOP_WAYS = [
 export const QUEEN_WAYS = [...ROOK_WAYS, ...BISHOP_WAYS];
 
 export const WHITE_PAWN_WAYS = [
-  [
-    [-1, 0],
-    [-2, 0],
-  ],
-  [[-1, -1]],
-  [[-1, 1]],
+  [-1, 0],
+  [-2, 0],
+  [-1, -1],
+  [-1, 1],
 ];
 
 export const BLACK_PAWN_WAYS = [
-  [
-    [1, 0],
-    [2, 0],
-  ],
-  [[1, -1]],
-  [[1, 1]],
+  [1, 0],
+  [2, 0],
+  [1, -1],
+  [1, 1],
 ];
 
 export const KING_WAYS = [
