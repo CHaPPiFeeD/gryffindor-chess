@@ -1,10 +1,12 @@
 export type gamePlayerType = {
   socket: string;
   name: string;
+  ways: string[];
+  rules: { isRock: boolean };
 };
 
 export type gameType = {
-  roomName: string;
+  roomId: string;
   white: gamePlayerType;
   black: gamePlayerType;
   board: string[][];
