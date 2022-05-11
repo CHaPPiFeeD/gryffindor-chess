@@ -20,11 +20,13 @@ import {
   WHITE_PAWN_WAYS,
   BLACK_PAWN_WAYS,
 } from '../../enum/figureWays';
+import { gameType } from 'src/dto/game.dto';
 
 export class BoardService {
   private logger = new Logger(BoardService.name);
 
-  createBoardsForPlayers(board: string[][]): createBoardsForPlayersType {
+  createBoardsForPlayers(game: gameType): createBoardsForPlayersType {
+    const board = game.board;
     const start = new Date();
     const whiteBoard = FOG_BOARD();
     const blackBoard = FOG_BOARD();
@@ -65,6 +67,7 @@ export class BoardService {
       rowValue.forEach((colValue, checkCol) => {
         const cell = board[checkRow][checkCol];
         let props: checkWaysPropsType = {
+          game,
           generalBoard: board,
           checkRow,
           checkCol,
@@ -79,6 +82,7 @@ export class BoardService {
             playerWays: initWhiteWays,
             ownFigures: WHITE_FIGURES,
             ownKing: FIGURES_COLORS.WHITE.KING,
+            anotherPlayerKing: FIGURES_COLORS.BLACK.KING,
             kingWays: initBlackKingWays,
             pawnWays: WHITE_PAWN_WAYS,
           };
@@ -93,6 +97,7 @@ export class BoardService {
             playerWays: initBlackWays,
             ownFigures: BLACK_FIGURES,
             ownKing: FIGURES_COLORS.BLACK.KING,
+            anotherPlayerKing: FIGURES_COLORS.WHITE.KING,
             kingWays: initWhiteKingWays,
             pawnWays: BLACK_PAWN_WAYS,
           };

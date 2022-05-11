@@ -35,7 +35,7 @@ export class GameService {
     alertBoard(this.logger, game.board, game.roomId);
 
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
-      this.boardService.createBoardsForPlayers(game.board);
+      this.boardService.createBoardsForPlayers(game);
 
     game.white.ways = whiteWays;
     game.black.ways = blackWays;
@@ -44,8 +44,10 @@ export class GameService {
 
     alertBoard(this.logger, whiteBoard, 'white board');
     this.logger.log(game.white.ways);
+    this.logger.log(game.white.rules.isRock);
     alertBoard(this.logger, blackBoard, 'black board');
     this.logger.log(game.black.ways);
+    this.logger.log(game.black.rules.isRock);
 
     this.initGateway.server
       .in([white.socket, black.socket])
@@ -66,6 +68,9 @@ export class GameService {
     const game: gameType = this.gamesStates.get(roomId);
     const figure: string = game.board[startPos[0]][startPos[1]];
 
+    if (client.id === game.white.socket) game.white.rules.isRock = false;
+    if (client.id === game.black.socket) game.black.rules.isRock = false;
+
     if (
       this.validationService.validationMove(
         client,
@@ -77,18 +82,30 @@ export class GameService {
     ) {
       this.logger.log('chessMove is worked');
 
+      const endFigure = game.board[endPos[0]][endPos[1]];
       game.board[endPos[0]][endPos[1]] = figure;
       game.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
 
       alertBoard(this.logger, game.board, roomId);
 
       const { whiteBoard, blackBoard, whiteWays, blackWays } =
-        this.boardService.createBoardsForPlayers(game.board);
+        this.boardService.createBoardsForPlayers(game);
+
+      if (
+        (client.id === game.white.socket && game.white.rules.isRock === true) ||
+        (client.id === game.black.socket && game.black.rules.isRock === true)
+      ) {
+        game.board[endPos[0]][endPos[1]] = endFigure;
+        game.board[startPos[0]][startPos[1]] = figure;
+        alertBoard(this.logger, game.board, roomId);
+        return;
+      }
+
+      game.white.ways = whiteWays;
+      game.black.ways = blackWays;
 
       alertBoard(this.logger, whiteBoard, 'white board');
-      this.logger.log(whiteWays);
       alertBoard(this.logger, blackBoard, 'black board');
-      this.logger.log(blackWays);
 
       this.initGateway.server
         .in(roomId)

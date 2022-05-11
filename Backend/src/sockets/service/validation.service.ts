@@ -5,7 +5,6 @@ import {
   BLACK_FIGURES,
   FIGURES,
   FIGURES_COLORS,
-  PAWN_ATTACKS,
   WHITE_FIGURES,
 } from '../../enum/constants';
 import { gameType } from '../../dto/game.dto';
@@ -183,19 +182,25 @@ export class ValidationService {
   checkPawn(props): boolean {
     const { figure, board, startPos, endPos, x, y } = props;
 
-    const row = y + 2;
-    const col = y + 1;
     const initPawnPos = figure === FIGURES_COLORS.WHITE.PAWN ? 6 : 1;
+    const step = figure === FIGURES_COLORS.WHITE.PAWN ? 1 : -1;
 
-    const isSchemeAttack = PAWN_ATTACKS[row][col].includes(figure);
+    const isStep = Math.abs(y) === step && x === 0;
 
-    const isStep = Math.abs(y) === 1 && x === 0;
+    this.logger.debug(y, x);
 
     const isDiagonal =
-      Math.abs(x) === 1 && board[endPos[0]][endPos[1]] !== FIGURES.EMPTY;
+      Math.abs(x) === 1 &&
+      y === step &&
+      board[endPos[0]][endPos[1]] !== FIGURES.EMPTY;
 
-    const isTwoSteps = startPos[0] === initPawnPos && Math.abs(y) === 2;
+    const isTwoSteps =
+      startPos[0] === initPawnPos && Math.abs(y) === step + step;
 
-    return isSchemeAttack && (isStep || isDiagonal || isTwoSteps);
+    this.logger.debug(isStep);
+    this.logger.debug(isDiagonal);
+    this.logger.debug(isTwoSteps);
+
+    return isStep || isDiagonal || isTwoSteps;
   }
 }

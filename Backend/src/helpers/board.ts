@@ -1,4 +1,4 @@
-import { FIGURES } from 'src/enum/constants';
+import { FIGURES, FIGURES_COLORS } from 'src/enum/constants';
 import { KING_WAYS } from 'src/enum/figureWays';
 import { checkCoordinates } from './validation';
 
@@ -73,12 +73,14 @@ export const checkKingWays = (props, isHaveSide: boolean) => {
 
 export const checkBoardPos = (props, isHaveSide: boolean) => {
   const {
+    game,
     generalBoard,
     playerBoard,
     wayRow,
     wayCol,
     ownFigures,
     ownKing,
+    anotherPlayerKing,
     playerWays,
     checkRow,
     checkCol,
@@ -88,7 +90,8 @@ export const checkBoardPos = (props, isHaveSide: boolean) => {
   const endFigure = generalBoard[wayRow][wayCol];
 
   const isOwnFigure = ownFigures.includes(endFigure);
-  const isOwnKingFigure = ownKing.includes(endFigure);
+  const isOwnKingFigure = ownKing === endFigure;
+  const isAnotherKingFigure = anotherPlayerKing === endFigure;
 
   if (!isOwnFigure) {
     playerWays.push([
@@ -99,5 +102,15 @@ export const checkBoardPos = (props, isHaveSide: boolean) => {
 
   if (!isOwnKingFigure) {
     checkKingWays(props, isHaveSide);
+  }
+
+  if (isAnotherKingFigure) {
+    if (anotherPlayerKing === FIGURES_COLORS.WHITE.KING) {
+      game.white.rules.isRock = true;
+    }
+
+    if (anotherPlayerKing === FIGURES_COLORS.BLACK.KING) {
+      game.black.rules.isRock = true;
+    }
   }
 };

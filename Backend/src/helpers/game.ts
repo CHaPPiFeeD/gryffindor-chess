@@ -40,12 +40,14 @@ const setColors = (
     socket: whitePlayer.socket,
     name: whitePlayer.name,
     ways: [],
+    rules: { isRock: false },
   };
 
   const black: gamePlayerType = {
     socket: blackPlayer.socket,
     name: blackPlayer.name,
     ways: [],
+    rules: { isRock: false },
   };
 
   return { white, black };
