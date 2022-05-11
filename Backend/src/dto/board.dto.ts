@@ -6,6 +6,7 @@ export type checkWaysPropsType = {
   playerWays: number[][][];
   ownFigures: string;
   anotherPlayerWays?: string[];
+  kingWays?: number[][];
   pawnWays?: number[][];
 };
 
