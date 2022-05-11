@@ -105,6 +105,32 @@ export class ValidationService {
     );
   }
 
+  checkKing(
+    game: gameType,
+    figure: string,
+    startPos: string[],
+    endPos: string[],
+  ) {
+    let acceptWays: string[];
+
+    if (figure === FIGURES_COLORS.WHITE.KING) acceptWays = game.white.ways;
+    if (figure === FIGURES_COLORS.BLACK.KING) acceptWays = game.black.ways;
+
+    acceptWays.forEach((way) => {
+      const wayPos = way.split('');
+      const wayStartPos = [wayPos[0], wayPos[1]];
+      const wayEndPos = [wayPos[2], wayPos[3]];
+
+      const isIdenticalWay =
+        wayStartPos[0] === startPos[0] &&
+        wayStartPos[1] === startPos[1] &&
+        wayEndPos[0] === endPos[0] &&
+        wayEndPos[1] === endPos[1];
+
+      if (isIdenticalWay) return true;
+    });
+  }
+
   checkQueen(props) {
     const { board, startPos, row, col, x, y } = props;
 

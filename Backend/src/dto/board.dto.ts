@@ -1,13 +1,14 @@
 export type checkWaysPropsType = {
   generalBoard: string[][];
-  playerBoard: string[][];
+  playerBoard?: string[][];
   checkRow: number;
   checkCol: number;
-  playerWays: number[][][];
-  ownFigures: string;
+  playerWays?: number[][][];
+  ownFigures?: string;
   anotherPlayerWays?: string[];
+  ownKing?: string;
   kingWays?: number[][];
-  pawnWays?: number[][];
+  pawnWays?: number[][][];
 };
 
 export type createBoardsForPlayersType = {
