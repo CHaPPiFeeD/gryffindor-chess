@@ -1,9 +1,14 @@
 import { Autocomplete, Box, Button, TextField } from '@mui/material'
 import { useFormik } from 'formik'
+import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
+import { regInQueue } from '../../../api/socket'
+import { path } from '../../../router/constants'
 import styles from './styles.module.scss'
 
 export const LoginForm = () => {
+  const navigate = useNavigate();
+
   const initialValues: initialValuesType = {
     username: '',
     color: null,
@@ -18,9 +23,14 @@ export const LoginForm = () => {
       .nullable(),
   });
 
-  const onSubmit = ({ username, color }: initialValuesType) => {
-    console.log(username);
-    console.log(color);
+  const onSubmit = (values: initialValuesType) => {
+    console.log(values.username);
+    console.log(values.color);
+    regInQueue(values)
+      .then((data) => {
+        console.log(data);
+        navigate(path.game())
+      })
   };
 
   const formik = useFormik({

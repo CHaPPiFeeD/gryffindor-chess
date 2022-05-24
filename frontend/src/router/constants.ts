@@ -1,4 +1,4 @@
 export const path = {
-  base: '/',
-  login: () => path.base,
+  login: () => '/',
+  game: () => '/game',
 }
