@@ -13,7 +13,6 @@
     "@types/node": "^16.11.36",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.5",
-    "dotenv": "^16.0.1",
     "formik": "^2.2.9",
     "nest-app": "file:..",
     "react": "^18.1.0",

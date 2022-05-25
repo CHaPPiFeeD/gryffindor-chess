@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client'
 let socket: Socket;
 
 export const joinSocket = () => {
-  socket = io('http://localhost:8000')
+  socket = io(`${process.env.REACT_APP_API_KEY}`)
 
   socket.on('connect', () => {
     console.log('socket:', socket.id)
