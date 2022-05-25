@@ -1,0 +1,24 @@
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  width: 800px;
+  height: 800px;
+  background-color: lightgray;
+}
+
+// .cell {
+//   width: 100px;
+//   height: 100px;
+// }
+
+.cell_white {
+  background-color: rgb(199, 199, 199);
+  width: 100px;
+  height: 100px;
+}
+
+.cell_black {
+  background-color: rgb(41, 41, 41);
+  width: 100px;
+  height: 100px;
+}
