@@ -13,20 +13,6 @@
   flex-direction: row;
 }
 
-.cell {
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: sans-serif;
-  font-weight: 94;
-}
-
-.cell, .cell_white, .cell_black {
-  width: 75px;
-  height: 75px;
-}
-
 .board {
   display: flex;
   flex-wrap: wrap;
@@ -44,5 +30,7 @@
 
   .cell_white, .cell_black {
     background-size: 100%;
+    width: 75px;
+    height: 75px;
   }
 }

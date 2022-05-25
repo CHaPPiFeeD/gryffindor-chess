@@ -1,63 +1,49 @@
 import { Box } from '@mui/system'
-import { FC } from 'react';
-import styles from './styles.module.scss'
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store';
+import { GorizontallAxis } from './components/GorizontalAxis';
+import { VerticalAxis } from './components/VerticalAxis';
+import styles from './styles.module.scss';
 
-export const Board: FC = () => {
-  const board = [];
+export const Board = () => {
+  const board: any[] = [];
+  // const boardState = useSelector((state: RootState) => state.board.board)
 
-  for (let i = verticalAxis.length - 1; i >= 0; i--) {
-    for (let j = 0; j < gorizontalAxis.length; j++) {
-      const number = i + j + 2;
+  verticalAxis.forEach((v, i) => {
+    gorizontalAxis.forEach((v, j) => {
+      const number = i + j;
 
       if (number % 2 === 0) {
         board.push(
-          <Box className={styles.cell_black} key={`${i}${j}`} data-row={i + 1} data-col={j + 1}></Box>,
+          <Box className={styles.cell_white} key={`${i}${j}`} data-row={i} data-col={j}></Box>,
         )
       } else {
         board.push(
-          <Box className={styles.cell_white} key={`${i}${j}`} data-row={i + 1} data-col={j + 1}></Box>,
+          <Box className={styles.cell_black} key={`${i}${j}`} data-row={i} data-col={j}></Box>,
         )
       }
-    }
-  }
-
-  const gorizontalAxisElements = []
-
-  for (let i = 0; i < gorizontalAxis.length; i++) {
-    gorizontalAxisElements.push(
-      <Box className={styles.cell}>{gorizontalAxis[i]}</Box>,
-    )
-  }
-
-  const verticalAxisElements = []
-
-  for (let i = verticalAxis.length - 1; i >= 0; i--) {
-    verticalAxisElements.push(
-      <Box className={styles.cell}>{verticalAxis[i]}</Box>,
-    )
-  }
-
+    })
+  })
 
   return (
     <Box className={styles.wrapper}>
-      <Box className={styles.gorizontalAxis}>
-        {gorizontalAxisElements}
-      </Box>
+      <GorizontallAxis style={{ transform: 'rotate(-180deg)' }} />
+
       <Box className={styles.vericalAxisBox}>
-        <Box>{verticalAxisElements}</Box>
+        <VerticalAxis />
+
         <Box className={styles.board}>
           {board}
         </Box>
-        <Box>{verticalAxisElements}</Box>
+
+        <VerticalAxis style={{ transform: 'rotate(-180deg)' }} />
       </Box>
 
-      <Box className={styles.gorizontalAxis}>
-        {gorizontalAxisElements}
-      </Box>
+      <GorizontallAxis />
     </Box>
   )
 }
 
-const verticalAxis = ['1', '2', '3', '4', '5', '6', '7', '8'];
+const verticalAxis = ['8', '7', '6', '5', '4', '3', '2', '1'];
 const gorizontalAxis = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 

@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { Board } from './Board'
 import styles from './styles.module.scss'
 
-export const Game: FC = () => {
+export const Game = () => {
 
   return (
     <Box className={styles.wrapper}>
