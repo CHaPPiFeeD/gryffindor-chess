@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client'
+import { startGameDataType } from './types';
 
 
 let socket: Socket;
@@ -21,7 +22,7 @@ export const regInQueue = (data: any) => {
   return new Promise((res, rej) => {
     socket.emit('/queue/search', data)
 
-    socket.on('/game/start', (data) => {
+    socket.on('/game/start', (data: startGameDataType) => {
       res(data)
     })
   })

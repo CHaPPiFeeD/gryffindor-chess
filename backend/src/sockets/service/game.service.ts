@@ -53,13 +53,17 @@ export class GameService {
       .in([white.socket, black.socket])
       .socketsJoin(game.roomId);
 
-    this.initGateway.server
-      .in(white.socket)
-      .emit('/game/start', { whiteBoard, whiteWays });
+    this.initGateway.server.in(white.socket).emit('/game/start', {
+      color: 'white',
+      board: whiteBoard,
+      ways: whiteWays,
+    });
 
-    this.initGateway.server
-      .in(black.socket)
-      .emit('/game/start', { blackBoard, blackWays });
+    this.initGateway.server.in(black.socket).emit('/game/start', {
+      color: 'black',
+      board: blackBoard,
+      ways: blackWays,
+    });
   }
 
   chessMove(client: Socket, data: MoveDto) {

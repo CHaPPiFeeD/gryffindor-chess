@@ -11,11 +11,11 @@ export const Board: FC = () => {
 
       if (number % 2 === 0) {
         board.push(
-          <Box className={styles.cell_black} data-row={i + 1} data-col={j + 1}></Box>,
+          <Box className={styles.cell_black} key={`${i}${j}`} data-row={i + 1} data-col={j + 1}></Box>,
         )
       } else {
         board.push(
-          <Box className={styles.cell_white} data-row={i + 1} data-col={j + 1}></Box>,
+          <Box className={styles.cell_white} key={`${i}${j}`} data-row={i + 1} data-col={j + 1}></Box>,
         )
       }
     }
