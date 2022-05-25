@@ -1,4 +1,5 @@
 export type startGameDataType = {
   board: string[][],
-  ways: string[]
+  ways: string[],
+  color: string
 };

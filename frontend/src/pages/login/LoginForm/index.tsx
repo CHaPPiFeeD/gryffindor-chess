@@ -27,8 +27,6 @@ export const LoginForm = () => {
   });
 
   const onSubmit = (values: initialValuesType) => {
-    console.log(values.username);
-    console.log(values.color);
     regInQueue(values)
       .then((data: any) => {
         dispatch(setBoard(data));

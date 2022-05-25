@@ -9,24 +9,41 @@ import styles from './styles.module.scss';
 export const Board = () => {
   const board: any[] = [];
   const boardState = useSelector((state: RootState) => state.board.board)
+  const colorState = useSelector((state: RootState) => state.board.color)
 
-  verticalAxis.forEach((v, i) => {
-    gorizontalAxis.forEach((v, j) => {
+  const start = new Date()
+
+  boardState.forEach((v, i) => {
+    v.forEach((v, j) => {
+      let row = i;
+      let col = j;
       const number = i + j;
 
-      board.push(
+      if (colorState === 'black') {
+        row = Math.abs(row - 7);
+        col = Math.abs(col - 7);
+      }
+
+      const figure = (
         <Box
           className={number % 2 === 0 ? styles.cell_white : styles.cell_black}
-          key={`${i}${j}`}
-          id={`${i}${j}`}
-          data-row={i}
-          data-col={j}
+          key={`${row}${col}`}
+          id={`${row}${col}`}
+          data-row={row}
+          data-col={col}
         >
-          <Figure row={i} col={j} />
-        </Box>,
+          <Figure row={row} col={col} />
+        </Box>
       )
+
+      board.push(figure)
     })
   })
+
+  const end = new Date()
+
+  console.log(+end - +start);
+
 
   return (
     <Box className={styles.wrapper}>
@@ -46,7 +63,4 @@ export const Board = () => {
     </Box>
   )
 }
-
-const verticalAxis = ['8', '7', '6', '5', '4', '3', '2', '1'];
-const gorizontalAxis = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
