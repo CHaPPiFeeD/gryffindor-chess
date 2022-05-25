@@ -1,13 +1,16 @@
 import { Autocomplete, Box, Button, TextField } from '@mui/material'
 import { useFormik } from 'formik'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 import { regInQueue } from '../../../api/socket'
 import { path } from '../../../router/constants'
+import { setBoard } from '../../../store/board/boardSlise'
 import styles from './styles.module.scss'
 
 export const LoginForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const initialValues: initialValuesType = {
     username: '',
@@ -27,9 +30,9 @@ export const LoginForm = () => {
     console.log(values.username);
     console.log(values.color);
     regInQueue(values)
-      .then((data) => {
-        console.log(data);
-        navigate(path.game())
+      .then((data: any) => {
+        dispatch(setBoard(data));
+        navigate(path.game());
       })
   };
 
