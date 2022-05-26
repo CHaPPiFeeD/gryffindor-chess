@@ -20,19 +20,7 @@ export const RenderBoard = () => {
     getBoard((data: startGameDataType) => {
       const { color, board, ways } = data;
 
-      let newBoard: string[][] = [];
-
-      if (color === 'black') {
-        board.forEach((v, i) => {
-          const row: string[] = [];
-
-          v.forEach((v, j) => {
-            row.unshift(v)
-          })
-
-          newBoard.unshift(row);
-        })
-      } else newBoard = board;
+      const newBoard = createNewBoard(board, color);
 
       dispatch(setBoard({ color, board: newBoard, ways }))
     })
@@ -88,3 +76,21 @@ export const RenderBoard = () => {
     </Box>
   );
 }
+
+const createNewBoard = (board: any[], color: string) => {
+  let newBoard = [];
+
+  if (color === 'black') {
+    board.forEach((v: any[], i: any) => {
+      const row: string[] = [];
+
+      v.forEach((v: string, j: any) => {
+        row.unshift(v)
+      })
+
+      newBoard.unshift(row);
+    })
+  } else newBoard = board;
+
+  return newBoard;
+} 
