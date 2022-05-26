@@ -1,6 +1,11 @@
-import { Box, style } from '@mui/system'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../../../store'
+import { Bishop } from './figures/Bishop'
+import { King } from './figures/King'
+import { Knight } from './figures/Knight'
+import { Pawn } from './figures/Pawn'
+import { Queen } from './figures/Queen'
+import { Rook } from './figures/Rook'
 import styles from './styles.module.scss'
 
 export const Figure = (props: coordinateType) => {
@@ -8,45 +13,32 @@ export const Figure = (props: coordinateType) => {
   const boardState = useSelector((state: RootState) => state.board.board);
   const cell = boardState[row][col];
 
+  let fill;
+
+  if (WHITE_FIGURES.includes(cell)) fill = 'white'
+  if (BLACK_FIGURES.includes(cell)) fill = '#333333'
+
   switch (true) {
     case cell === FIGURES.FOG:
-      return <img src={require('./img/fog.png')} className={styles.figure} />
+      return <img src={require('./figures/fog.png')} className={styles.figure} />
 
-    case cell === FIGURES.WHITE.KING:
-      return <img src={require('./img/white_king.png')} className={styles.figure} />
+    case cell.toLowerCase() === FIGURES.KING:
+      return <King fill={fill} />
 
-    case cell === FIGURES.WHITE.QUEEN:
-      return <img src={require('./img/white_queen.png')} className={styles.figure} />
+    case cell.toLowerCase() === FIGURES.QUEEN:
+      return <Queen fill={fill} />
 
-    case cell === FIGURES.WHITE.BISHOP:
-      return <img src={require('./img/white_bishop.png')} className={styles.figure} />
+    case cell.toLowerCase() === FIGURES.BISHOP:
+      return <Bishop fill={fill} />
 
-    case cell === FIGURES.WHITE.KNIGHT:
-      return <img src={require('./img/white_knight.png')} className={styles.figure} />
+    case cell.toLowerCase() === FIGURES.KNIGHT:
+      return <Knight fill={fill} />
 
-    case cell === FIGURES.WHITE.ROOK:
-      return <img src={require('./img/white_rook.png')} className={styles.figure} />
+    case cell.toLowerCase() === FIGURES.ROOK:
+      return <Rook fill={fill} />
 
-    case cell === FIGURES.WHITE.PAWN:
-      return <img src={require('./img/white_pawn.png')} className={styles.figure} />
-
-    case cell === FIGURES.BLACK.KING:
-      return <img src={require('./img/black_king.png')} className={styles.figure} />
-
-    case cell === FIGURES.BLACK.QUEEN:
-      return <img src={require('./img/black_queen.png')} className={styles.figure} />
-
-    case cell === FIGURES.BLACK.BISHOP:
-      return <img src={require('./img/black_bishop.png')} className={styles.figure} />
-
-    case cell === FIGURES.BLACK.KNIGHT:
-      return <img src={require('./img/black_knight.png')} className={styles.figure} />
-
-    case cell === FIGURES.BLACK.ROOK:
-      return <img src={require('./img/black_rook.png')} className={styles.figure} />
-
-    case cell === FIGURES.BLACK.PAWN:
-      return <img src={require('./img/black_pawn.png')} className={styles.figure} />
+    case cell.toLowerCase() === FIGURES.PAWN:
+      return <Pawn fill={fill} />
 
     default:
       return null;
@@ -54,24 +46,17 @@ export const Figure = (props: coordinateType) => {
 }
 
 const FIGURES = {
-  WHITE: {
-    KING: 'K',
-    QUEEN: 'Q',
-    BISHOP: 'B',
-    KNIGHT: 'N',
-    ROOK: 'R',
-    PAWN: 'P',
-  },
-  BLACK: {
-    KING: 'k',
-    QUEEN: 'q',
-    BISHOP: 'b',
-    KNIGHT: 'n',
-    ROOK: 'r',
-    PAWN: 'p',
-  },
+  KING: 'k',
+  QUEEN: 'q',
+  BISHOP: 'b',
+  KNIGHT: 'n',
+  ROOK: 'r',
+  PAWN: 'p',
   FOG: '~',
 }
+
+const WHITE_FIGURES = 'KQBNRP';
+const BLACK_FIGURES = 'rqbnrp';
 
 type coordinateType = {
   row: number;

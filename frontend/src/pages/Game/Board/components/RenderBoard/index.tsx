@@ -34,6 +34,14 @@ export const RenderBoard = () => {
     let col = +e.currentTarget.attributes.getNamedItem('data-col')?.value;
     [row, col] = getCoordinate(row, col);
 
+    if (activePosStore) {
+      if (activePosStore[0] === row && activePosStore[1] === col) {
+        e.currentTarget.classList.toggle(styles.active);
+      }
+    } else {
+      e.currentTarget.classList.add(styles.active);
+    }
+
     dispatch(setMove(activePosStore, [row, col]))
   }
 
