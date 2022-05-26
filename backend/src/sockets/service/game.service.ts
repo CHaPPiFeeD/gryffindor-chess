@@ -68,9 +68,10 @@ export class GameService {
 
   chessMove(client: Socket, data: MoveDto) {
     const { startPos, endPos } = data;
+    this.logger.debug(data);
     const roomId = findRoom(client, this.gamesStates);
     const game: gameType = this.gamesStates.get(roomId);
-    const figure: string = game.board[startPos[0]][startPos[1]];
+    const figure: string = game.board[+startPos[0]][+startPos[1]];
 
     if (client.id === game.white.socket) game.white.rules.isRock = false;
     if (client.id === game.black.socket) game.black.rules.isRock = false;
@@ -111,9 +112,21 @@ export class GameService {
       alertBoard(this.logger, whiteBoard, 'white board');
       alertBoard(this.logger, blackBoard, 'black board');
 
-      this.initGateway.server
-        .in(roomId)
-        .emit('/game/move', { startPos, endPos });
+      // this.initGateway.server
+      //   .in(roomId)
+      //   .emit('/game/move:get', { startPos, endPos });
+
+      this.initGateway.server.in(game.white.socket).emit('/game/move:get', {
+        color: 'white',
+        board: whiteBoard,
+        ways: whiteWays,
+      });
+
+      this.initGateway.server.in(game.black.socket).emit('/game/move:get', {
+        color: 'black',
+        board: blackBoard,
+        ways: blackWays,
+      });
     }
   }
 }

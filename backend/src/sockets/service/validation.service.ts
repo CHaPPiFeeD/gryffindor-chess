@@ -185,7 +185,7 @@ export class ValidationService {
     const initPawnPos = figure === FIGURES_COLORS.WHITE.PAWN ? 6 : 1;
     const step = figure === FIGURES_COLORS.WHITE.PAWN ? 1 : -1;
 
-    const isStep = Math.abs(y) === step && x === 0;
+    const isStep = y === step && x === 0;
 
     this.logger.debug(y, x);
 
