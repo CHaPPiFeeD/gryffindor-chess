@@ -18,14 +18,30 @@ export const RenderBoard = () => {
 
   useEffect(() => {
     getBoard((data: startGameDataType) => {
-      dispatch(setBoard(data))
+      const { color, board, ways } = data;
+
+      let newBoard: string[][] = [];
+
+      if (color === 'black') {
+        board.forEach((v, i) => {
+          const row: string[] = [];
+
+          v.forEach((v, j) => {
+            row.unshift(v)
+          })
+
+          newBoard.unshift(row);
+        })
+      } else newBoard = board;
+
+      dispatch(setBoard({ color, board: newBoard, ways }))
     })
   }, [])
 
   const getCoordinate = (row: number, col: number): number[] => {
-    // const isReverse = colorState === 'black';
+    const isReverse = colorStore === 'black';
 
-    // if (isReverse) return [row = Math.abs(row - 7), col = Math.abs(col - 7)];
+    if (isReverse) return [row = Math.abs(row - 7), col = Math.abs(col - 7)];
     return [row, col];
   }
 
@@ -50,20 +66,20 @@ export const RenderBoard = () => {
       {boardStore.map((v, i) => {
         return <Box key={i} style={{ display: 'flex' }}>
           {v.map((v: any, j: number) => {
-            // const [row, col] = getCoordinate(i, j);
+            const [row, col] = getCoordinate(i, j);
             const number = i + j;
             const style = number % 2 === 0 ? styles.cell_white : styles.cell_black
 
             return (
               <Box
                 className={style}
-                key={j}
-                id={`${i}${j}`}
-                data-row={i}
-                data-col={j}
+                key={col}
+                id={`${row}${col}`}
+                data-row={row}
+                data-col={col}
                 onClick={handleClick}
               >
-                <Figure row={i} col={j} />
+                <Figure row={row} col={col} />
               </Box>
             )
           })}
