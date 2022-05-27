@@ -7,12 +7,12 @@ import { useAppDispatch } from '../../../../hooks/redux';
 import { RootState } from '../../../../store';
 import { setBoard, setMove } from '../../../../store/board/boardSlise';
 import { Figure } from '../Figure';
-import styles from './styles.module.scss'
+import styles from './styles.module.scss';
 
 export const RenderBoard = () => {
   const boardStore = useSelector((state: RootState) => state.board.board)
   const colorStore = useSelector((state: RootState) => state.board.color);
-  const activePosStore = useSelector((state: RootState) => state.board.activePos);
+  const activePositionStore = useSelector((state: RootState) => state.board.activePosition);
   const waysStore = useSelector((state: RootState) => state.board.ways);
   const boardRef = useRef(document.getElementById('board'));
   const dispatch = useAppDispatch()
@@ -31,7 +31,7 @@ export const RenderBoard = () => {
     const row = +e.currentTarget.attributes.getNamedItem('data-row')?.value;
     const col = +e.currentTarget.attributes.getNamedItem('data-col')?.value;
 
-    if (activePosStore) {
+    if (activePositionStore) {
       for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
           boardRef?.current?.children[i]?.children[j].classList.remove(
@@ -44,29 +44,43 @@ export const RenderBoard = () => {
       }
     }
 
-    if (!activePosStore) {
-      const [rowBoard, colBoard] = getCoordinate(row, col)
-      const cell = boardRef?.current?.children[rowBoard]?.children[colBoard]
+    if (!activePositionStore) {
+      const [rowBoard, colBoard] = getCoordinate(row, col);
+      const cell = boardRef?.current?.children[rowBoard]?.children[colBoard];
 
-      if (cell !== undefined && cell.childElementCount) {
+      const isNotEmpty =
+        cell !== undefined &&
+        cell.childElementCount;
+
+      if (isNotEmpty) {
         cell.classList.add(styles.active);
       } else return;
 
       waysStore.forEach((v) => {
         const way = v.split('');
         const [start, end] = [
-          [+way[0], +way[1]], 
+          [+way[0], +way[1]],
           [+way[2], +way[3]],
         ]
 
-        if (row === start[0] && col === start[1]) {
+        const isAllowWay =
+          row === start[0] &&
+          col === start[1];
+
+        if (isAllowWay) {
           const [rowBoard, colBoard] = getCoordinate(end[0], end[1])
           const cell = boardRef?.current?.children[rowBoard]?.children[colBoard]
 
-          if (cell !== undefined) {
-            if (cell.childElementCount) {
+          const isNotUndefined = cell !== undefined;
+
+          if (isNotUndefined) {
+            const isNotEmpty = cell.childElementCount;
+
+            if (isNotEmpty) {
               cell.classList.add(styles.circle);
-            } else {
+            }
+
+            if (!isNotEmpty) {
               cell.classList.add(styles.ellips);
             }
           }
@@ -74,7 +88,7 @@ export const RenderBoard = () => {
       })
     }
 
-    dispatch(setMove(activePosStore, [row, col]))
+    dispatch(setMove(activePositionStore, [row, col]));
   }
 
   return (
