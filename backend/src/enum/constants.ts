@@ -1,4 +1,4 @@
-export const CHESS_COLORS = {
+export const COLORS = {
   WHITE: 'white',
   BLACK: 'black',
 };
@@ -32,27 +32,27 @@ export const FIGURES_COLORS = {
   },
 };
 
-export const BOARD: string[][] = [
-  ['r', 'n', 'b', 'q', 'k', 'b', 'n', '.'], // lover case - black
-  ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], // upper case - white
-  ['.', '.', '.', '.', '.', '.', '.', '.'], // TODO Take it all back
-  ['.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', 'q', '.', '.', 'r'],
-  ['P', 'P', 'P', 'P', 'K', 'P', 'P', 'P'],
-  ['R', 'N', 'B', 'Q', '.', 'B', 'N', 'R'],
-];
-
-// export const BOARD = [
-//   ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], // lover case - black
+// export const BOARD: string[][] = [
+//   ['r', 'n', 'b', 'q', 'k', 'b', 'n', '.'], // lover case - black
 //   ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], // upper case - white
+//   ['.', '.', '.', '.', '.', '.', '.', '.'], // TODO Take it all back
 //   ['.', '.', '.', '.', '.', '.', '.', '.'],
 //   ['.', '.', '.', '.', '.', '.', '.', '.'],
-//   ['.', '.', '.', '.', '.', '.', '.', '.'],
-//   ['.', '.', '.', '.', '.', '.', '.', '.'],
-//   ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-//   ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+//   ['.', '.', '.', '.', 'q', '.', '.', 'r'],
+//   ['P', 'P', 'P', 'P', 'K', 'P', 'P', 'P'],
+//   ['R', 'N', 'B', 'Q', '.', 'B', 'N', 'R'],
 // ];
+
+export const BOARD = (): string[][] => [
+  ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], // lover case - black
+  ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], // upper case - white
+  ['.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.'],
+  ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+  ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+];
 
 // prettier-ignore
 export const ATTACKS: string[][] = [

@@ -1,10 +1,10 @@
 import { UserQueueDto } from '../dto/queue.dto';
-import { CHESS_COLORS } from '../enum/constants';
+import { COLORS } from '../enum/constants';
 
 export const getFindsColors = (colors: string[]): string[] => {
   return colors.map((color) => {
-    if (color === CHESS_COLORS.WHITE) return CHESS_COLORS.BLACK;
-    if (color === CHESS_COLORS.BLACK) return CHESS_COLORS.WHITE;
+    if (color === COLORS.WHITE) return COLORS.BLACK;
+    if (color === COLORS.BLACK) return COLORS.WHITE;
   });
 };
 

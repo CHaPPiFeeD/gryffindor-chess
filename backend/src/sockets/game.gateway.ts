@@ -18,7 +18,7 @@ export class GameGateway {
   @Inject(GameService)
   private gameService: GameService;
 
-  @SubscribeMessage('/game/move')
+  @SubscribeMessage('/game/move:post')
   chessMuve(client: Socket, data: MoveDto) {
     this.gameService.chessMove(client, data);
   }

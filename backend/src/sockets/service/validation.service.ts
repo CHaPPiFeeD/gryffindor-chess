@@ -86,48 +86,18 @@ export class ValidationService {
       (client.id === game.white.socket && BLACK_FIGURES.includes(figure)) ||
       (client.id === game.black.socket && WHITE_FIGURES.includes(figure));
 
-    const isFigureKing = 'Kk'.includes(endFigure);
-
     if (isWrongСoordinates)
       this.logger.error('The coordinates are out of the board');
     if (isFigureNotFound) this.logger.error('Figure not found');
     if (isToOwnFigure) this.logger.error('Move to own figure');
     if (isOpponentFigure) this.logger.error("Move opponent's figure");
-    if (isFigureKing) this.logger.error('Move to a king figure');
 
     return (
       isWrongСoordinates ||
       isFigureNotFound ||
       isToOwnFigure ||
-      isOpponentFigure ||
-      isFigureKing
+      isOpponentFigure
     );
-  }
-
-  checkKing(
-    game: gameType,
-    figure: string,
-    startPos: string[],
-    endPos: string[],
-  ) {
-    let acceptWays: string[];
-
-    if (figure === FIGURES_COLORS.WHITE.KING) acceptWays = game.white.ways;
-    if (figure === FIGURES_COLORS.BLACK.KING) acceptWays = game.black.ways;
-
-    acceptWays.forEach((way) => {
-      const wayPos = way.split('');
-      const wayStartPos = [wayPos[0], wayPos[1]];
-      const wayEndPos = [wayPos[2], wayPos[3]];
-
-      const isIdenticalWay =
-        wayStartPos[0] === startPos[0] &&
-        wayStartPos[1] === startPos[1] &&
-        wayEndPos[0] === endPos[0] &&
-        wayEndPos[1] === endPos[1];
-
-      if (isIdenticalWay) return true;
-    });
   }
 
   checkQueen(props) {
@@ -183,23 +153,24 @@ export class ValidationService {
     const { figure, board, startPos, endPos, x, y } = props;
 
     const initPawnPos = figure === FIGURES_COLORS.WHITE.PAWN ? 6 : 1;
-    const step = figure === FIGURES_COLORS.WHITE.PAWN ? 1 : -1;
+    const step =
+      figure === FIGURES_COLORS.WHITE.PAWN ? endPos[0] + 1 : endPos[0] - 1;
 
-    const isStep = Math.abs(y) === step && x === 0;
-
-    this.logger.debug(y, x);
+    const isStep =
+      Math.abs(y) === 1 &&
+      x === 0 &&
+      board[endPos[0]][endPos[1]] === FIGURES.EMPTY;
 
     const isDiagonal =
       Math.abs(x) === 1 &&
-      y === step &&
+      Math.abs(y) === 1 &&
       board[endPos[0]][endPos[1]] !== FIGURES.EMPTY;
 
     const isTwoSteps =
-      startPos[0] === initPawnPos && Math.abs(y) === step + step;
-
-    this.logger.debug(isStep);
-    this.logger.debug(isDiagonal);
-    this.logger.debug(isTwoSteps);
+      startPos[0] === initPawnPos &&
+      Math.abs(y) === 2 &&
+      board[endPos[0]][endPos[1]] === FIGURES.EMPTY &&
+      board[step][endPos[1]] === FIGURES.EMPTY;
 
     return isStep || isDiagonal || isTwoSteps;
   }
