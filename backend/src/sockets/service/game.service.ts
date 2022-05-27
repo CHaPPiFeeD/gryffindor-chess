@@ -81,6 +81,21 @@ export class GameService {
         endPos,
       )
     ) {
+      let clientColor, nextMove;
+
+      if (client.id === game.white.socket) {
+        clientColor = COLORS.WHITE;
+        nextMove = COLORS.BLACK;
+      }
+
+      if (client.id === game.black.socket) {
+        clientColor = COLORS.BLACK;
+        nextMove = COLORS.WHITE;
+      }
+
+      if (clientColor !== game.moveQueue) return;
+      if (clientColor === game.moveQueue) game.moveQueue = nextMove;
+
       this.logger.log('chessMove is worked');
 
       game.board[endPos[0]][endPos[1]] = figure;

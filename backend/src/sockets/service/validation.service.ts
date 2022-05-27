@@ -3,7 +3,6 @@ import { Socket } from 'socket.io';
 import {
   ATTACKS,
   BLACK_FIGURES,
-  COLORS,
   FIGURES,
   FIGURES_COLORS,
   WHITE_FIGURES,
@@ -47,21 +46,6 @@ export class ValidationService {
     if (this.basicСheck(props)) return;
 
     this.logger.debug(figure);
-
-    let clientColor, nextMove;
-
-    if (client.id === game.white.socket) {
-      clientColor = COLORS.WHITE;
-      nextMove = COLORS.BLACK;
-    }
-
-    if (client.id === game.black.socket) {
-      clientColor = COLORS.BLACK;
-      nextMove = COLORS.WHITE;
-    }
-
-    if (clientColor !== game.moveQueue) return;
-    if (clientColor === game.moveQueue) game.moveQueue = nextMove;
 
     switch (true) {
       case figure.toLowerCase() === FIGURES.KING:
@@ -169,6 +153,8 @@ export class ValidationService {
     const { figure, board, startPos, endPos, x, y } = props;
 
     const initPawnPos = figure === FIGURES_COLORS.WHITE.PAWN ? 6 : 1;
+    const step =
+      figure === FIGURES_COLORS.WHITE.PAWN ? endPos[0] + 1 : endPos[0] - 1;
 
     const isStep =
       Math.abs(y) === 1 &&
@@ -183,7 +169,8 @@ export class ValidationService {
     const isTwoSteps =
       startPos[0] === initPawnPos &&
       Math.abs(y) === 2 &&
-      board[endPos[0]][endPos[1]] === FIGURES.EMPTY;
+      board[endPos[0]][endPos[1]] === FIGURES.EMPTY &&
+      board[step][endPos[1]] === FIGURES.EMPTY;
 
     return isStep || isDiagonal || isTwoSteps;
   }

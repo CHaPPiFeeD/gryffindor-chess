@@ -173,10 +173,15 @@ export class BoardService {
       const wayRow = checkRow + way[0];
       const wayCol = checkCol + way[1];
 
+      const step = pawnWays === WHITE_PAWN_WAYS ? wayRow + 1 : wayRow - 1;
+
       const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
 
       if (isCorrectCoordinates) {
-        const isStep = Math.abs(way[0]) === 1 && Math.abs(way[1]) === 0;
+        const isStep =
+          Math.abs(way[0]) === 1 &&
+          Math.abs(way[1]) === 0 &&
+          generalBoard[wayRow][wayCol] === FIGURES.EMPTY;
 
         const isDiagonal =
           Math.abs(way[1]) === 1 &&
@@ -185,7 +190,9 @@ export class BoardService {
         const isTwoSteps =
           checkRow === initPosPawn &&
           Math.abs(way[0]) === 2 &&
-          Math.abs(way[1]) === 0;
+          Math.abs(way[1]) === 0 &&
+          generalBoard[wayRow][wayCol] === FIGURES.EMPTY &&
+          generalBoard[step][wayCol] === FIGURES.EMPTY;
 
         if (isDiagonal || isStep || isTwoSteps)
           addWayAndVisibility({ ...props, wayRow, wayCol });
