@@ -1,11 +1,11 @@
 import { Box } from '@mui/material';
-import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { getBoard } from '../../../../../api/socket';
 import { startGameDataType } from '../../../../../api/types';
 import { useAppDispatch } from '../../../../../hooks/redux';
 import { RootState } from '../../../../../store';
-import { setActivePos, setBoard, setMove } from '../../../../../store/board/boardSlise';
+import { setBoard, setMove } from '../../../../../store/board/boardSlise';
 import { Figure } from '../Figure';
 import styles from './styles.module.scss'
 
@@ -13,30 +13,21 @@ export const RenderBoard = () => {
   const boardStore = useSelector((state: RootState) => state.board.board)
   const colorStore = useSelector((state: RootState) => state.board.color);
   const activePosStore = useSelector((state: RootState) => state.board.activePos);
-  const boardRef = useRef(document.getElementById('board'));
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    getBoard((data: startGameDataType) => {
-      const { color, board, ways } = data;
-
-      const newBoard = createNewBoard(board, color);
-
-      dispatch(setBoard({ color, board: newBoard, ways }))
-    })
+    getBoard((data: startGameDataType) => dispatch(setBoard(data)))
   }, [])
 
   const getCoordinate = (row: number, col: number): number[] => {
     const isReverse = colorStore === 'black';
-
-    if (isReverse) return [row = Math.abs(row - 7), col = Math.abs(col - 7)];
+    if (isReverse) return [Math.abs(row - 7), Math.abs(col - 7)];
     return [row, col];
   }
 
   const handleClick = (e: any) => {
-    let row = +e.currentTarget.attributes.getNamedItem('data-row')?.value;
-    let col = +e.currentTarget.attributes.getNamedItem('data-col')?.value;
-    [row, col] = getCoordinate(row, col);
+    const row = +e.currentTarget.attributes.getNamedItem('data-row')?.value;
+    const col = +e.currentTarget.attributes.getNamedItem('data-col')?.value;
 
     if (activePosStore) {
       if (activePosStore[0] === row && activePosStore[1] === col) {
@@ -52,6 +43,8 @@ export const RenderBoard = () => {
   return (
     <Box className={styles.board} id='board'>
       {boardStore.map((v, i) => {
+        console.log(v);
+
         return <Box key={i} style={{ display: 'flex' }}>
           {v.map((v: any, j: number) => {
             const [row, col] = getCoordinate(i, j);
@@ -76,21 +69,3 @@ export const RenderBoard = () => {
     </Box>
   );
 }
-
-const createNewBoard = (board: any[], color: string) => {
-  let newBoard = [];
-
-  if (color === 'black') {
-    board.forEach((v: any[], i: any) => {
-      const row: string[] = [];
-
-      v.forEach((v: string, j: any) => {
-        row.unshift(v)
-      })
-
-      newBoard.unshift(row);
-    })
-  } else newBoard = board;
-
-  return newBoard;
-} 

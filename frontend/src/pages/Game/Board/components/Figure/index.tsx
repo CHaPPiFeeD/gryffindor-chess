@@ -1,3 +1,4 @@
+import { Box } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../../../store'
 import { Bishop } from './figures/Bishop'
@@ -20,7 +21,7 @@ export const Figure = (props: coordinateType) => {
 
   switch (true) {
     case cell === FIGURES.FOG:
-      return <img src={require('./figures/fog.png')} className={styles.figure} />
+      return <Box className={styles.wrapper}><img src={require('./figures/fog.gif')} className={styles.figure} /></Box>
 
     case cell.toLowerCase() === FIGURES.KING:
       return <King fill={fill} />

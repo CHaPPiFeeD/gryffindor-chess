@@ -26,6 +26,7 @@
   }
 
   .active {
-    background-color: red;
+    background-color: rgba($color: #fff859, $alpha: 0.7);
+    box-shadow: inset 0px 0px 30px 0 rgba(0,0,0,0.3);
   }
 }

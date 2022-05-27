@@ -35,7 +35,7 @@ export const move = (data: any) => {
 
 export const getBoard = (cb: any) => {
   socket.on('/game/move:get', (payload: startGameDataType) => {
-    console.log(`get: ${JSON.stringify(payload.board)}`);
+    console.log(payload.board);
     cb(payload)
   })
 }
