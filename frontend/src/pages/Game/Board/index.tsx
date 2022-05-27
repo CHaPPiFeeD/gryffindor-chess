@@ -1,7 +1,7 @@
 import { Box } from '@mui/system'
-import { GorizontallAxis } from './components/GorizontalAxis';
-import { RenderBoard } from './components/RenderBoard';
-import { VerticalAxis } from './components/VerticalAxis';
+import { GorizontallAxis } from './GorizontalAxis';
+import { RenderBoard } from './RenderBoard';
+import { VerticalAxis } from './VerticalAxis';
 import styles from './styles.module.scss';
 
 export const Board = () => {
