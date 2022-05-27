@@ -29,7 +29,7 @@ export class GameService {
       roomId,
       white,
       black,
-      board: BOARD,
+      board: BOARD(),
     };
 
     alertBoard(this.logger, game.board, game.roomId);

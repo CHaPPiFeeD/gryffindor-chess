@@ -183,23 +183,15 @@ export class ValidationService {
     const { figure, board, startPos, endPos, x, y } = props;
 
     const initPawnPos = figure === FIGURES_COLORS.WHITE.PAWN ? 6 : 1;
-    const step = figure === FIGURES_COLORS.WHITE.PAWN ? 1 : -1;
 
-    const isStep = y === step && x === 0;
-
-    this.logger.debug(y, x);
+    const isStep = Math.abs(y) === 1 && x === 0;
 
     const isDiagonal =
       Math.abs(x) === 1 &&
-      y === step &&
+      Math.abs(y) === 1 &&
       board[endPos[0]][endPos[1]] !== FIGURES.EMPTY;
 
-    const isTwoSteps =
-      startPos[0] === initPawnPos && Math.abs(y) === step + step;
-
-    this.logger.debug(isStep);
-    this.logger.debug(isDiagonal);
-    this.logger.debug(isTwoSteps);
+    const isTwoSteps = startPos[0] === initPawnPos && Math.abs(y) === 2;
 
     return isStep || isDiagonal || isTwoSteps;
   }
