@@ -1,4 +1,4 @@
-export const CHESS_COLORS = {
+export const COLORS = {
   WHITE: 'white',
   BLACK: 'black',
 };

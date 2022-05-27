@@ -6,7 +6,7 @@ import { gameStateType, gameType, MoveDto } from 'src/dto/game.dto';
 import { InitGateway } from '../init.gateway';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
-import { BOARD, FIGURES } from 'src/enum/constants';
+import { BOARD, COLORS, FIGURES } from 'src/enum/constants';
 import { BoardService } from './board.service';
 
 export class GameService {
@@ -30,6 +30,7 @@ export class GameService {
       white,
       black,
       board: BOARD(),
+      moveQueue: COLORS.WHITE,
     };
 
     alertBoard(this.logger, game.board, game.roomId);

@@ -9,6 +9,7 @@ export type gameType = {
   white: gamePlayerType;
   black: gamePlayerType;
   board: string[][];
+  moveQueue: string;
 };
 
 export type gameStateType = Map<string, gameType>;

@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 import { gamePlayerType, gameStateType } from '../dto/game.dto';
 import { UserQueueDto } from '../dto/queue.dto';
-import { CHESS_COLORS } from '../enum/constants';
+import { COLORS } from '../enum/constants';
 
 export const findColors = (
   playerOne: UserQueueDto,
@@ -15,15 +15,15 @@ export const findColors = (
   }
 
   if (
-    playerOne.color.includes(CHESS_COLORS.WHITE) &&
-    playerTwo.color.includes(CHESS_COLORS.BLACK)
+    playerOne.color.includes(COLORS.WHITE) &&
+    playerTwo.color.includes(COLORS.BLACK)
   ) {
     return setColors(playerOne, playerTwo);
   }
 
   if (
-    playerOne.color.includes(CHESS_COLORS.BLACK) &&
-    playerTwo.color.includes(CHESS_COLORS.WHITE)
+    playerOne.color.includes(COLORS.BLACK) &&
+    playerTwo.color.includes(COLORS.WHITE)
   ) {
     return setColors(playerTwo, playerOne);
   }
@@ -61,7 +61,7 @@ const setColorsRandom = (
   const i: number = Math.round(Math.random());
   const firstColor: string = playerOne.color[i];
 
-  if (Object.is(firstColor, CHESS_COLORS.WHITE)) {
+  if (Object.is(firstColor, COLORS.WHITE)) {
     return setColors(playerOne, playerTwo);
   } else {
     return setColors(playerTwo, playerOne);
