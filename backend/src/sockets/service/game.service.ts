@@ -44,10 +44,8 @@ export class GameService {
 
     alertBoard(this.logger, whiteBoard, 'white board');
     this.logger.log(game.white.ways);
-    this.logger.log(game.white.rules.isRock);
     alertBoard(this.logger, blackBoard, 'black board');
     this.logger.log(game.black.ways);
-    this.logger.log(game.black.rules.isRock);
 
     this.initGateway.server
       .in([white.socket, black.socket])
@@ -73,9 +71,6 @@ export class GameService {
     const game: gameType = this.gamesStates.get(roomId);
     const figure: string = game.board[+startPos[0]][+startPos[1]];
 
-    if (client.id === game.white.socket) game.white.rules.isRock = false;
-    if (client.id === game.black.socket) game.black.rules.isRock = false;
-
     if (
       this.validationService.validationMove(
         client,
@@ -87,7 +82,6 @@ export class GameService {
     ) {
       this.logger.log('chessMove is worked');
 
-      const endFigure = game.board[endPos[0]][endPos[1]];
       game.board[endPos[0]][endPos[1]] = figure;
       game.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
 
@@ -96,25 +90,11 @@ export class GameService {
       const { whiteBoard, blackBoard, whiteWays, blackWays } =
         this.boardService.createBoardsForPlayers(game);
 
-      if (
-        (client.id === game.white.socket && game.white.rules.isRock === true) ||
-        (client.id === game.black.socket && game.black.rules.isRock === true)
-      ) {
-        game.board[endPos[0]][endPos[1]] = endFigure;
-        game.board[startPos[0]][startPos[1]] = figure;
-        alertBoard(this.logger, game.board, roomId);
-        return;
-      }
-
       game.white.ways = whiteWays;
       game.black.ways = blackWays;
 
       alertBoard(this.logger, whiteBoard, 'white board');
       alertBoard(this.logger, blackBoard, 'black board');
-
-      // this.initGateway.server
-      //   .in(roomId)
-      //   .emit('/game/move:get', { startPos, endPos });
 
       this.initGateway.server.in(game.white.socket).emit('/game/move:get', {
         color: 'white',
