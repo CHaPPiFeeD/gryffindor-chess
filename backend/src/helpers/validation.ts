@@ -25,14 +25,14 @@ export const checkVerticalAndHorizontalMove = (
       break;
 
     case x == 0 && y > 0: //top
-      for (let i = 1; i < y; i++) {
+      for (let i = 1; -i > y; i++) {
         const row = startPos[0] - i;
         if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x == 0 && y < 0: // buttom
-      for (let i = 1; -i > y; i++) {
+      for (let i = 1; i < y; i++) {
         const row = startPos[0] + i;
         if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
       }
@@ -47,35 +47,35 @@ export const checkDiagonalMove = (props: movePropsType): boolean => {
   const { gameRoom, startPos, x, y } = props;
 
   switch (true) {
-    case x < 0 && y > 0: // top left
-      for (let i = 1; -i > x && i < y; i++) {
-        const column = startPos[1] - i;
+    case x < 0 && y < 0: // top left
+      for (let i = 1; -i > x && -i > y; i++) {
+        const col = startPos[1] - i;
         const row = startPos[0] - i;
-        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
+        if (gameRoom.board[row][col] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x > 0 && y > 0: // top right
-      for (let i = 1; i < x && i < y; i++) {
-        const column = startPos[1] + i;
+      for (let i = 1; i < x && -i > y; i++) {
+        const col = startPos[1] + i;
         const row = startPos[0] - i;
-        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
+        if (gameRoom.board[row][col] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x < 0 && y < 0: // buttom left
-      for (let i = 1; -i > x && -i > y; i++) {
-        const column = startPos[1] - i;
+      for (let i = 1; -i > x && i < y; i++) {
+        const col = startPos[1] - i;
         const row = startPos[0] + i;
-        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
+        if (gameRoom.board[row][col] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x > 0 && y < 0: // buttom right
-      for (let i = 1; i < x && -i > y; i++) {
-        const column = startPos[1] + i;
+      for (let i = 1; i < x && i < y; i++) {
+        const col = startPos[1] + i;
         const row = startPos[0] + i;
-        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
+        if (gameRoom.board[row][col] !== FIGURES.EMPTY) return true;
       }
       break;
   }

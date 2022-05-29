@@ -26,7 +26,8 @@ export class GameService {
   startGame(playerOne: UserQueueDto, playerTwo: UserQueueDto) {
     const roomId: string = randomString(16);
     const { white, black } = findColors(playerOne, playerTwo);
-    const game: gameRoomType = {
+
+    const gameRoom: gameRoomType = {
       roomId,
       white,
       black,
@@ -34,24 +35,21 @@ export class GameService {
       moveQueue: COLORS.WHITE,
     };
 
-    alertBoard(this.logger, game.board, game.roomId);
-
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
-      this.boardService.createBoardsForPlayers(game);
+      this.boardService.createBoardsForPlayers(gameRoom);
 
-    game.white.ways = whiteWays;
-    game.black.ways = blackWays;
+    gameRoom.white.ways = whiteWays;
+    gameRoom.black.ways = blackWays;
 
-    this.gamesStates.set(roomId, game);
+    this.gamesStates.set(roomId, gameRoom);
 
+    alertBoard(this.logger, gameRoom.board, gameRoom.roomId);
     alertBoard(this.logger, whiteBoard, 'white board');
-    this.logger.log(game.white.ways);
     alertBoard(this.logger, blackBoard, 'black board');
-    this.logger.log(game.black.ways);
 
     this.initGateway.server
       .in([white.socket, black.socket])
-      .socketsJoin(game.roomId);
+      .socketsJoin(gameRoom.roomId);
 
     this.initGateway.server.in(white.socket).emit('/game/start', {
       color: 'white',
@@ -62,7 +60,7 @@ export class GameService {
     this.initGateway.server.in(black.socket).emit('/game/start', {
       color: 'black',
       board: blackBoard,
-      ways: blackWays,
+      ways: [],
     });
   }
 
@@ -80,51 +78,34 @@ export class GameService {
       endPos,
     };
 
-    const isAllowed = this.validationService.validationMove(props);
+    const nextPlayerMove = this.validationService.checkMoveQueue(props);
 
-    if (isAllowed) {
-      let clientColor, nextMove;
+    this.validationService.validationMove(props);
 
-      if (client.id === gameRoom.white.socket) {
-        clientColor = COLORS.WHITE;
-        nextMove = COLORS.BLACK;
-      }
+    gameRoom.moveQueue = nextPlayerMove;
+    gameRoom.board[endPos[0]][endPos[1]] = figure;
+    gameRoom.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
 
-      if (client.id === gameRoom.black.socket) {
-        clientColor = COLORS.BLACK;
-        nextMove = COLORS.WHITE;
-      }
+    const { whiteBoard, blackBoard, whiteWays, blackWays } =
+      this.boardService.createBoardsForPlayers(gameRoom);
 
-      if (clientColor !== gameRoom.moveQueue) return;
-      if (clientColor === gameRoom.moveQueue) gameRoom.moveQueue = nextMove;
+    gameRoom.white.ways = whiteWays;
+    gameRoom.black.ways = blackWays;
 
-      this.logger.log('chessMove is worked');
+    alertBoard(this.logger, gameRoom.board, roomId);
+    alertBoard(this.logger, whiteBoard, 'white board');
+    alertBoard(this.logger, blackBoard, 'black board');
 
-      gameRoom.board[endPos[0]][endPos[1]] = figure;
-      gameRoom.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
+    this.initGateway.server.in(gameRoom.white.socket).emit('/game/move:get', {
+      color: COLORS.WHITE,
+      board: whiteBoard,
+      ways: nextPlayerMove === COLORS.WHITE ? whiteWays : [],
+    });
 
-      alertBoard(this.logger, gameRoom.board, roomId);
-
-      const { whiteBoard, blackBoard, whiteWays, blackWays } =
-        this.boardService.createBoardsForPlayers(gameRoom);
-
-      gameRoom.white.ways = whiteWays;
-      gameRoom.black.ways = blackWays;
-
-      alertBoard(this.logger, whiteBoard, 'white board');
-      alertBoard(this.logger, blackBoard, 'black board');
-
-      this.initGateway.server.in(gameRoom.white.socket).emit('/game/move:get', {
-        color: 'white',
-        board: whiteBoard,
-        ways: whiteWays,
-      });
-
-      this.initGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
-        color: 'black',
-        board: blackBoard,
-        ways: blackWays,
-      });
-    }
+    this.initGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
+      color: COLORS.BLACK,
+      board: blackBoard,
+      ways: nextPlayerMove === COLORS.BLACK ? blackWays : [],
+    });
   }
 }

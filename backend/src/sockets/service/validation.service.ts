@@ -1,7 +1,12 @@
 import { Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { movePropsType } from 'src/dto/validation.dto';
-import { BLACK_FIGURES, FIGURES, WHITE_FIGURES } from '../../enum/constants';
+import {
+  BLACK_FIGURES,
+  COLORS,
+  FIGURES,
+  WHITE_FIGURES,
+} from '../../enum/constants';
 import {
   checkDiagonalMove,
   checkSchemeAttack,
@@ -16,7 +21,7 @@ export class ValidationService {
     const { figure, endPos, startPos } = props;
 
     const x: number = endPos[1] - startPos[1];
-    const y: number = startPos[0] - endPos[0];
+    const y: number = endPos[0] - startPos[0];
     const attackRow: number = this.initPos + y;
     const attackCol: number = this.initPos + x;
 
@@ -50,6 +55,27 @@ export class ValidationService {
         return this.checkPawn(props);
     }
   }
+
+  checkMoveQueue = (props): string => {
+    const { client, gameRoom } = props;
+
+    let clientColor, nextMove;
+
+    if (client.id === gameRoom.white.socket) {
+      clientColor = COLORS.WHITE;
+      nextMove = COLORS.BLACK;
+    }
+
+    if (client.id === gameRoom.black.socket) {
+      clientColor = COLORS.BLACK;
+      nextMove = COLORS.WHITE;
+    }
+
+    if (clientColor !== gameRoom.moveQueue)
+      throw new WsException("Opponent's move order");
+
+    return nextMove;
+  };
 
   private basicСheck(props: movePropsType): boolean {
     const { client, figure, gameRoom, endPos } = props;
@@ -147,6 +173,9 @@ export class ValidationService {
       gameRoom.board[endPos[0]][endPos[1]] === FIGURES.EMPTY &&
       gameRoom.board[startPos[0] - step][endPos[1]] === FIGURES.EMPTY;
 
-    return isStep || isDiagonal || isTwoSteps;
+    if (!isStep && !isDiagonal && !isTwoSteps)
+      throw new WsException('A figure cannot move to this cell');
+
+    return true;
   }
 }

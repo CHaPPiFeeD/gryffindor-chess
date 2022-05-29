@@ -61,7 +61,7 @@ const setColorsRandom = (
   const i: number = Math.round(Math.random());
   const firstColor: string = playerOne.color[i];
 
-  if (Object.is(firstColor, COLORS.WHITE)) {
+  if (firstColor === COLORS.WHITE) {
     return setColors(playerOne, playerTwo);
   } else {
     return setColors(playerTwo, playerOne);
