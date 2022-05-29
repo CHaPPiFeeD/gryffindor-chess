@@ -4,7 +4,7 @@ export type gamePlayerType = {
   ways: string[];
 };
 
-export type gameType = {
+export type gameRoomType = {
   roomId: string;
   white: gamePlayerType;
   black: gamePlayerType;
@@ -12,7 +12,7 @@ export type gameType = {
   moveQueue: string;
 };
 
-export type gameStateType = Map<string, gameType>;
+export type gameStateType = Map<string, gameRoomType>;
 
 export class MoveDto {
   startPos: [number, number];

@@ -1,7 +1,7 @@
-import { gameType } from './game.dto';
+import { gameRoomType } from './game.dto';
 
 export type checkWaysPropsType = {
-  game: gameType;
+  game: gameRoomType;
   generalBoard: string[][];
   playerBoard?: string[][];
   checkRow: number;

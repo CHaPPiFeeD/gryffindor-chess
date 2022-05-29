@@ -2,12 +2,13 @@ import { Inject, Logger } from '@nestjs/common';
 import { randomString } from '../../helpers';
 import { alertBoard, findColors, findRoom } from '../../helpers/game';
 import { UserQueueDto } from '../../dto/queue.dto';
-import { gameStateType, gameType, MoveDto } from 'src/dto/game.dto';
+import { gameStateType, gameRoomType, MoveDto } from 'src/dto/game.dto';
 import { InitGateway } from '../init.gateway';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
-import { BOARD, COLORS, FIGURES } from 'src/enum/constants';
+import { INIT_BOARD, COLORS, FIGURES } from 'src/enum/constants';
 import { BoardService } from './board.service';
+import { movePropsType } from 'src/dto/validation.dto';
 
 export class GameService {
   private gamesStates: gameStateType = new Map();
@@ -25,11 +26,11 @@ export class GameService {
   startGame(playerOne: UserQueueDto, playerTwo: UserQueueDto) {
     const roomId: string = randomString(16);
     const { white, black } = findColors(playerOne, playerTwo);
-    const game: gameType = {
+    const game: gameRoomType = {
       roomId,
       white,
       black,
-      board: BOARD(),
+      board: INIT_BOARD(),
       moveQueue: COLORS.WHITE,
     };
 
@@ -67,58 +68,59 @@ export class GameService {
 
   chessMove(client: Socket, data: MoveDto) {
     const { startPos, endPos } = data;
-    this.logger.debug(data);
     const roomId = findRoom(client, this.gamesStates);
-    const game: gameType = this.gamesStates.get(roomId);
-    const figure: string = game.board[+startPos[0]][+startPos[1]];
+    const gameRoom: gameRoomType = this.gamesStates.get(roomId);
+    const figure = gameRoom.board[+startPos[0]][+startPos[1]];
 
-    if (
-      this.validationService.validationMove(
-        client,
-        figure,
-        game,
-        startPos,
-        endPos,
-      )
-    ) {
+    const props: movePropsType = {
+      client,
+      gameRoom,
+      figure,
+      startPos,
+      endPos,
+    };
+
+    const isAllowed = this.validationService.validationMove(props);
+
+    if (isAllowed) {
       let clientColor, nextMove;
 
-      if (client.id === game.white.socket) {
+      if (client.id === gameRoom.white.socket) {
         clientColor = COLORS.WHITE;
         nextMove = COLORS.BLACK;
       }
 
-      if (client.id === game.black.socket) {
+      if (client.id === gameRoom.black.socket) {
         clientColor = COLORS.BLACK;
         nextMove = COLORS.WHITE;
       }
 
-      if (clientColor !== game.moveQueue) return;
-      if (clientColor === game.moveQueue) game.moveQueue = nextMove;
+      if (clientColor !== gameRoom.moveQueue) return;
+      if (clientColor === gameRoom.moveQueue) gameRoom.moveQueue = nextMove;
 
       this.logger.log('chessMove is worked');
 
-      game.board[endPos[0]][endPos[1]] = figure;
-      game.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
+      gameRoom.board[endPos[0]][endPos[1]] = figure;
+      gameRoom.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
 
-      alertBoard(this.logger, game.board, roomId);
+      alertBoard(this.logger, gameRoom.board, roomId);
 
       const { whiteBoard, blackBoard, whiteWays, blackWays } =
-        this.boardService.createBoardsForPlayers(game);
+        this.boardService.createBoardsForPlayers(gameRoom);
 
-      game.white.ways = whiteWays;
-      game.black.ways = blackWays;
+      gameRoom.white.ways = whiteWays;
+      gameRoom.black.ways = blackWays;
 
       alertBoard(this.logger, whiteBoard, 'white board');
       alertBoard(this.logger, blackBoard, 'black board');
 
-      this.initGateway.server.in(game.white.socket).emit('/game/move:get', {
+      this.initGateway.server.in(gameRoom.white.socket).emit('/game/move:get', {
         color: 'white',
         board: whiteBoard,
         ways: whiteWays,
       });
 
-      this.initGateway.server.in(game.black.socket).emit('/game/move:get', {
+      this.initGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
         color: 'black',
         board: blackBoard,
         ways: blackWays,

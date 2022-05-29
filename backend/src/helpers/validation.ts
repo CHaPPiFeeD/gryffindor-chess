@@ -1,11 +1,11 @@
-import { FIGURES } from '../enum/constants';
+import { movePropsType } from 'src/dto/validation.dto';
+import { ATTACKS_SCHEME, FIGURES } from '../enum/constants';
 
 export const checkVerticalAndHorizontalMove = (
-  board: string[][],
-  startPos: number[],
-  x: number,
-  y: number,
+  props: movePropsType,
 ): boolean => {
+  const { gameRoom, startPos, x, y } = props;
+
   const row = startPos[0];
   const column = startPos[1];
 
@@ -13,28 +13,28 @@ export const checkVerticalAndHorizontalMove = (
     case x < 0 && y == 0: // left
       for (let i = 1; -i > x; i++) {
         const column = startPos[1] - i;
-        if (board[row][column] !== FIGURES.EMPTY) return true;
+        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x > 0 && y == 0: // right
       for (let i = 1; i < x; i++) {
         const column = startPos[1] + i;
-        if (board[row][column] !== FIGURES.EMPTY) return true;
+        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x == 0 && y > 0: //top
       for (let i = 1; i < y; i++) {
         const row = startPos[0] - i;
-        if (board[row][column] !== FIGURES.EMPTY) return true;
+        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x == 0 && y < 0: // buttom
       for (let i = 1; -i > y; i++) {
         const row = startPos[0] + i;
-        if (board[row][column] !== FIGURES.EMPTY) return true;
+        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
 
@@ -43,18 +43,15 @@ export const checkVerticalAndHorizontalMove = (
   }
 };
 
-export const checkDiagonalMove = (
-  board: string[][],
-  startPos: number[],
-  x: number,
-  y: number,
-): boolean => {
+export const checkDiagonalMove = (props: movePropsType): boolean => {
+  const { gameRoom, startPos, x, y } = props;
+
   switch (true) {
     case x < 0 && y > 0: // top left
       for (let i = 1; -i > x && i < y; i++) {
         const column = startPos[1] - i;
         const row = startPos[0] - i;
-        if (board[row][column] !== FIGURES.EMPTY) return true;
+        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
 
@@ -62,7 +59,7 @@ export const checkDiagonalMove = (
       for (let i = 1; i < x && i < y; i++) {
         const column = startPos[1] + i;
         const row = startPos[0] - i;
-        if (board[row][column] !== FIGURES.EMPTY) return true;
+        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
 
@@ -70,7 +67,7 @@ export const checkDiagonalMove = (
       for (let i = 1; -i > x && -i > y; i++) {
         const column = startPos[1] - i;
         const row = startPos[0] + i;
-        if (board[row][column] !== FIGURES.EMPTY) return true;
+        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
 
@@ -78,7 +75,7 @@ export const checkDiagonalMove = (
       for (let i = 1; i < x && -i > y; i++) {
         const column = startPos[1] + i;
         const row = startPos[0] + i;
-        if (board[row][column] !== FIGURES.EMPTY) return true;
+        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
   }
@@ -86,4 +83,10 @@ export const checkDiagonalMove = (
 
 export const checkCoordinates = (wayRow: number, wayCol: number) => {
   return wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
+};
+
+export const checkSchemeAttack = (props: movePropsType): boolean => {
+  return ATTACKS_SCHEME[props.attackRow][props.attackCol].includes(
+    props.figure.toLowerCase(),
+  );
 };

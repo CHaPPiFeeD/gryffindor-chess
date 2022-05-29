@@ -4,48 +4,24 @@ export const COLORS = {
 };
 
 export const FIGURES = {
-  KING: 'k',
-  QUEEN: 'q',
-  BISHOP: 'b',
-  KNIGHT: 'n',
-  ROOK: 'r',
-  PAWN: 'p',
+  BLACK_KING: 'k',
+  BLACK_QUEEN: 'q',
+  BLACK_BISHOP: 'b',
+  BLACK_KNIGHT: 'n',
+  BLACK_ROOK: 'r',
+  BLACK_PAWN: 'p',
+  WHITE_KING: 'K',
+  WHITE_QUEEN: 'Q',
+  WHITE_BISHOP: 'B',
+  WHITE_KNIGHT: 'N',
+  WHITE_ROOK: 'R',
+  WHITE_PAWN: 'P',
   EMPTY: '.',
 };
 
-export const FIGURES_COLORS = {
-  WHITE: {
-    KING: 'K',
-    QUEEN: 'Q',
-    BISHOP: 'B',
-    KNIGHT: 'N',
-    ROOK: 'R',
-    PAWN: 'P',
-  },
-  BLACK: {
-    KING: 'k',
-    QUEEN: 'q',
-    BISHOP: 'b',
-    KNIGHT: 'n',
-    ROOK: 'r',
-    PAWN: 'p',
-  },
-};
-
-// export const BOARD: string[][] = [
-//   ['r', 'n', 'b', 'q', 'k', 'b', 'n', '.'], // lover case - black
-//   ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], // upper case - white
-//   ['.', '.', '.', '.', '.', '.', '.', '.'], // TODO Take it all back
-//   ['.', '.', '.', '.', '.', '.', '.', '.'],
-//   ['.', '.', '.', '.', '.', '.', '.', '.'],
-//   ['.', '.', '.', '.', 'q', '.', '.', 'r'],
-//   ['P', 'P', 'P', 'P', 'K', 'P', 'P', 'P'],
-//   ['R', 'N', 'B', 'Q', '.', 'B', 'N', 'R'],
-// ];
-
-export const BOARD = (): string[][] => [
-  ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], // lover case - black
-  ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], // upper case - white
+export const INIT_BOARD = (): string[][] => [
+  ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+  ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
   ['.', '.', '.', '.', '.', '.', '.', '.'],
   ['.', '.', '.', '.', '.', '.', '.', '.'],
   ['.', '.', '.', '.', '.', '.', '.', '.'],
@@ -55,7 +31,7 @@ export const BOARD = (): string[][] => [
 ];
 
 // prettier-ignore
-export const ATTACKS: string[][] = [
+export const ATTACKS_SCHEME: string[][] = [
   ['bq',  '',  '',  '',  '',  '',   '', 'rq',   '',  '',  '',  '',  '',  '','bq'],
   [  '','bq',  '',  '',  '',  '',   '', 'rq',   '',  '',  '',  '',  '','bq',  ''],
   [  '',  '','bq',  '',  '',  '',   '', 'rq',   '',  '',  '',  '','bq',  '',  ''],
@@ -74,7 +50,7 @@ export const ATTACKS: string[][] = [
 ];
 
 // prettier-ignore
-export const PAWN_ATTACKS: string[][] = [
+export const PAWN_ATTACKS_SCHEME: string[][] = [
   [ '', 'P',  ''],
   ['P', 'P', 'P'],
   [ '',  '',  ''],

@@ -13,7 +13,6 @@ import {
   WHITE_FIGURES,
   BLACK_FIGURES,
   FIGURES,
-  FIGURES_COLORS,
   FOG_BOARD,
 } from '../../enum/constants';
 import {
@@ -24,12 +23,12 @@ import {
   WHITE_PAWN_WAYS,
   BLACK_PAWN_WAYS,
 } from '../../enum/figureWays';
-import { gameType } from 'src/dto/game.dto';
+import { gameRoomType } from 'src/dto/game.dto';
 
 export class BoardService {
   private logger = new Logger(BoardService.name);
 
-  createBoardsForPlayers(game: gameType): createBoardsForPlayersType {
+  createBoardsForPlayers(game: gameRoomType): createBoardsForPlayersType {
     const generalBoard = game.board;
     const start = new Date();
     const whiteBoard = FOG_BOARD();
@@ -57,8 +56,8 @@ export class BoardService {
             playerBoard: whiteBoard,
             playerWays: initWhiteWays,
             ownFigures: WHITE_FIGURES,
-            ownKing: FIGURES_COLORS.WHITE.KING,
-            anotherPlayerKing: FIGURES_COLORS.BLACK.KING,
+            ownKing: FIGURES.WHITE_KING,
+            anotherPlayerKing: FIGURES.BLACK_KING,
             pawnWays: WHITE_PAWN_WAYS,
             kingWays: initWhiteKingWays,
           };
@@ -72,35 +71,35 @@ export class BoardService {
             playerBoard: blackBoard,
             playerWays: initBlackWays,
             ownFigures: BLACK_FIGURES,
-            ownKing: FIGURES_COLORS.BLACK.KING,
-            anotherPlayerKing: FIGURES_COLORS.WHITE.KING,
+            ownKing: FIGURES.BLACK_KING,
+            anotherPlayerKing: FIGURES.WHITE_KING,
             pawnWays: BLACK_PAWN_WAYS,
             kingWays: initBlackKingWays,
           };
         }
 
         switch (true) {
-          case cell.toLowerCase() === FIGURES.KING:
+          case cell.toLowerCase() === FIGURES.BLACK_KING:
             createKingWays(props);
             break;
 
-          case cell.toLowerCase() === FIGURES.QUEEN:
+          case cell.toLowerCase() === FIGURES.BLACK_QUEEN:
             this.checkWays(props, QUEEN_WAYS);
             break;
 
-          case cell.toLowerCase() === FIGURES.BISHOP:
+          case cell.toLowerCase() === FIGURES.BLACK_BISHOP:
             this.checkWays(props, BISHOP_WAYS);
             break;
 
-          case cell.toLowerCase() === FIGURES.KNIGHT:
+          case cell.toLowerCase() === FIGURES.BLACK_KNIGHT:
             this.checkKnightWays(props, KNIGHTS_WAYS);
             break;
 
-          case cell.toLowerCase() === FIGURES.ROOK:
+          case cell.toLowerCase() === FIGURES.BLACK_ROOK:
             this.checkWays(props, ROOK_WAYS);
             break;
 
-          case cell.toLowerCase() === FIGURES.PAWN:
+          case cell.toLowerCase() === FIGURES.BLACK_PAWN:
             this.checkPawnWays(props);
             break;
         }

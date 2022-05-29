@@ -1,15 +1,14 @@
 import { Socket } from 'socket.io';
-import { gameType } from './game.dto';
+import { gameRoomType } from './game.dto';
 
 export type movePropsType = {
   client: Socket;
-  figure: string;
-  game: gameType;
-  board: string[][];
   startPos: number[];
   endPos: number[];
-  row: number;
-  col: number;
-  x: number;
-  y: number;
+  gameRoom: gameRoomType;
+  figure: string;
+  attackRow?: number;
+  attackCol?: number;
+  x?: number;
+  y?: number;
 };

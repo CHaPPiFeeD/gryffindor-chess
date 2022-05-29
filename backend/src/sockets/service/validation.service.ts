@@ -1,176 +1,151 @@
 import { Logger } from '@nestjs/common';
-import { Socket } from 'socket.io';
-import {
-  ATTACKS,
-  BLACK_FIGURES,
-  FIGURES,
-  FIGURES_COLORS,
-  WHITE_FIGURES,
-} from '../../enum/constants';
-import { gameType } from '../../dto/game.dto';
+import { WsException } from '@nestjs/websockets';
+import { movePropsType } from 'src/dto/validation.dto';
+import { BLACK_FIGURES, FIGURES, WHITE_FIGURES } from '../../enum/constants';
 import {
   checkDiagonalMove,
+  checkSchemeAttack,
   checkVerticalAndHorizontalMove,
 } from '../../helpers/validation';
-import { movePropsType } from 'src/dto/validation.dto';
 
 export class ValidationService {
   private logger = new Logger();
   private initPos = 7;
 
-  validationMove(
-    client: Socket,
-    figure: string,
-    game: gameType,
-    startPos: number[],
-    endPos: number[],
-  ): boolean {
+  validationMove(props: any): boolean {
+    const { figure, endPos, startPos } = props;
+
     const x: number = endPos[1] - startPos[1];
     const y: number = startPos[0] - endPos[0];
-    const attacksRow: number = this.initPos + y;
-    const attacksCol: number = this.initPos + x;
+    const attackRow: number = this.initPos + y;
+    const attackCol: number = this.initPos + x;
 
-    const props: movePropsType = {
-      client,
-      figure,
-      game,
-      board: game.board,
-      startPos,
-      endPos,
-      row: attacksRow,
-      col: attacksCol,
+    props = {
+      ...props,
+      attackRow,
+      attackCol,
       x,
       y,
     };
 
-    if (this.basicСheck(props)) return;
-
-    this.logger.debug(figure);
+    this.basicСheck(props);
 
     switch (true) {
-      case figure.toLowerCase() === FIGURES.KING:
-        return ATTACKS[attacksRow][attacksCol].includes(FIGURES.KING);
+      case figure.toLowerCase() === FIGURES.BLACK_KING:
+        return checkSchemeAttack(props);
 
-      case figure.toLowerCase() === FIGURES.QUEEN:
+      case figure.toLowerCase() === FIGURES.BLACK_QUEEN:
         return this.checkQueen(props);
 
-      case figure.toLowerCase() === FIGURES.BISHOP:
+      case figure.toLowerCase() === FIGURES.BLACK_BISHOP:
         return this.checkBishop(props);
 
-      case figure.toLowerCase() === FIGURES.KNIGHT:
-        return ATTACKS[attacksRow][attacksCol].includes(FIGURES.KNIGHT);
+      case figure.toLowerCase() === FIGURES.BLACK_KNIGHT:
+        return checkSchemeAttack(props);
 
-      case figure.toLowerCase() === FIGURES.ROOK:
+      case figure.toLowerCase() === FIGURES.BLACK_ROOK:
         return this.checkRook(props);
 
-      case figure.toLowerCase() === FIGURES.PAWN:
+      case figure.toLowerCase() === FIGURES.BLACK_PAWN:
         return this.checkPawn(props);
     }
   }
 
-  basicСheck(props): boolean {
-    const { client, figure, game, endPos } = props;
+  private basicСheck(props: movePropsType): boolean {
+    const { client, figure, gameRoom, endPos } = props;
 
-    const endFigure: string = game.board[endPos[0]][endPos[1]];
+    const endFigure: string = gameRoom.board[endPos[0]][endPos[1]];
 
     const isWrongСoordinates =
       endPos[0] < 0 || endPos[0] > 7 || endPos[1] < 0 || endPos[1] > 7;
 
     const isFigureNotFound = figure === FIGURES.EMPTY;
 
-    const isToOwnFigure =
-      (client.id === game.white.socket && WHITE_FIGURES.includes(endFigure)) ||
-      (client.id === game.black.socket && BLACK_FIGURES.includes(endFigure));
+    const isMoveToOwnFigure =
+      (client.id === gameRoom.white.socket &&
+        WHITE_FIGURES.includes(endFigure)) ||
+      (client.id === gameRoom.black.socket &&
+        BLACK_FIGURES.includes(endFigure));
 
     const isOpponentFigure =
-      (client.id === game.white.socket && BLACK_FIGURES.includes(figure)) ||
-      (client.id === game.black.socket && WHITE_FIGURES.includes(figure));
+      (client.id === gameRoom.white.socket && BLACK_FIGURES.includes(figure)) ||
+      (client.id === gameRoom.black.socket && WHITE_FIGURES.includes(figure));
 
-    if (isWrongСoordinates)
-      this.logger.error('The coordinates are out of the board');
-    if (isFigureNotFound) this.logger.error('Figure not found');
-    if (isToOwnFigure) this.logger.error('Move to own figure');
-    if (isOpponentFigure) this.logger.error("Move opponent's figure");
+    if (isWrongСoordinates) throw new WsException('Wrong coordinates');
+    if (isFigureNotFound) throw new WsException('Figure not found');
+    if (isMoveToOwnFigure) throw new WsException('Move to own figure');
+    if (isOpponentFigure) throw new WsException("Move opponent's figure");
 
-    return (
-      isWrongСoordinates ||
-      isFigureNotFound ||
-      isToOwnFigure ||
-      isOpponentFigure
-    );
+    return false;
   }
 
-  checkQueen(props) {
-    const { board, startPos, row, col, x, y } = props;
-
-    const isSchemeAttack = ATTACKS[row][col].includes(FIGURES.QUEEN);
-
+  private checkQueen(props: movePropsType): boolean {
+    const isSchemeAttack = checkSchemeAttack(props);
     const isFigureOnWay =
-      checkDiagonalMove(board, startPos, x, y) ||
-      checkVerticalAndHorizontalMove(board, startPos, x, y);
+      checkDiagonalMove(props) || checkVerticalAndHorizontalMove(props);
 
-    if (!isSchemeAttack) this.logger.error('A figure cannot move to this cell');
+    if (!isSchemeAttack)
+      throw new WsException('A figure cannot move to this cell');
+
     if (isFigureOnWay)
-      this.logger.error(
+      throw new WsException(
         'A figure on the path does not allow you to go to this cell',
       );
 
-    return isSchemeAttack && !isFigureOnWay;
+    return true;
   }
 
-  checkBishop(props): boolean {
-    const { board, startPos, row, col, x, y } = props;
+  private checkBishop(props: movePropsType): boolean {
+    const isSchemeAttack = checkSchemeAttack(props);
+    const isFigureOnWay = checkDiagonalMove(props);
 
-    const isSchemeAttack = ATTACKS[row][col].includes(FIGURES.BISHOP);
+    if (!isSchemeAttack)
+      throw new WsException('A figure cannot move to this cell');
 
-    const isFigureOnWay = checkDiagonalMove(board, startPos, x, y);
-
-    if (!isSchemeAttack) this.logger.error('A figure cannot move to this cell');
     if (isFigureOnWay)
-      this.logger.error(
+      throw new WsException(
         'A figure on the path does not allow you to go to this cell',
       );
 
-    return isSchemeAttack && !isFigureOnWay;
+    return true;
   }
 
-  checkRook(props): boolean {
-    const { board, startPos, row, col, x, y } = props;
+  private checkRook(props): boolean {
+    const isSchemeAttack = checkSchemeAttack(props);
+    const isFigureOnWay = checkVerticalAndHorizontalMove(props);
 
-    const isSchemeAttack: boolean = ATTACKS[row][col].includes(FIGURES.ROOK);
-    const isFigureOnWay = checkVerticalAndHorizontalMove(board, startPos, x, y);
+    if (!isSchemeAttack)
+      throw new WsException('A figure cannot move to this cell');
 
-    if (!isSchemeAttack) this.logger.error('A figure cannot move to this cell');
     if (isFigureOnWay)
-      this.logger.error(
+      throw new WsException(
         'A figure on the path does not allow you to go to this cell',
       );
 
-    return isSchemeAttack && !isFigureOnWay;
+    return true;
   }
 
-  checkPawn(props): boolean {
-    const { figure, board, startPos, endPos, x, y } = props;
+  private checkPawn(props: movePropsType): boolean {
+    const { gameRoom, figure, startPos, endPos, x, y } = props;
 
-    const initPawnPos = figure === FIGURES_COLORS.WHITE.PAWN ? 6 : 1;
-    const step =
-      figure === FIGURES_COLORS.WHITE.PAWN ? endPos[0] + 1 : endPos[0] - 1;
+    const initPawnPos = figure === FIGURES.WHITE_PAWN ? 6 : 1;
+    const step = figure === FIGURES.WHITE_PAWN ? 1 : -1;
 
     const isStep =
       Math.abs(y) === 1 &&
       x === 0 &&
-      board[endPos[0]][endPos[1]] === FIGURES.EMPTY;
+      gameRoom.board[endPos[0]][endPos[1]] === FIGURES.EMPTY;
 
     const isDiagonal =
       Math.abs(x) === 1 &&
-      Math.abs(y) === 1 &&
-      board[endPos[0]][endPos[1]] !== FIGURES.EMPTY;
+      y === step &&
+      gameRoom.board[endPos[0]][endPos[1]] !== FIGURES.EMPTY;
 
     const isTwoSteps =
       startPos[0] === initPawnPos &&
       Math.abs(y) === 2 &&
-      board[endPos[0]][endPos[1]] === FIGURES.EMPTY &&
-      board[step][endPos[1]] === FIGURES.EMPTY;
+      gameRoom.board[endPos[0]][endPos[1]] === FIGURES.EMPTY &&
+      gameRoom.board[startPos[0] - step][endPos[1]] === FIGURES.EMPTY;
 
     return isStep || isDiagonal || isTwoSteps;
   }
