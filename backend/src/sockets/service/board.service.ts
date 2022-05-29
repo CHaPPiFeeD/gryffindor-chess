@@ -1,10 +1,7 @@
 import { Logger } from '@nestjs/common';
-import {
-  addWayAndVisibility,
-  createKingWays,
-  createWay,
-} from '../../helpers/board';
+import { gameRoomType } from 'src/dto/game.dto';
 import { checkCoordinates } from '../../helpers/validation';
+import { addWayAndVisibility, createWay } from '../../helpers/board';
 import {
   checkWaysPropsType,
   createBoardsForPlayersType,
@@ -22,27 +19,26 @@ import {
   ROOK_WAYS,
   WHITE_PAWN_WAYS,
   BLACK_PAWN_WAYS,
+  KING_WAYS,
 } from '../../enum/figureWays';
-import { gameRoomType } from 'src/dto/game.dto';
 
 export class BoardService {
   private logger = new Logger(BoardService.name);
 
-  createBoardsForPlayers(game: gameRoomType): createBoardsForPlayersType {
-    const generalBoard = game.board;
+  createFogBoards(gameRoom: gameRoomType): createBoardsForPlayersType {
+    const generalBoard = gameRoom.board;
     const start = new Date();
     const whiteBoard = FOG_BOARD();
     const blackBoard = FOG_BOARD();
     const initWhiteWays = [];
     const initBlackWays = [];
-    const initWhiteKingWays: number[][] = [];
-    const initBlackKingWays: number[][] = [];
 
     generalBoard.forEach((rowValue, checkRow) => {
       rowValue.forEach((colValue, checkCol) => {
         const cell = generalBoard[checkRow][checkCol];
+
         let props: checkWaysPropsType = {
-          game,
+          gameRoom,
           generalBoard,
           checkRow,
           checkCol,
@@ -57,9 +53,7 @@ export class BoardService {
             playerWays: initWhiteWays,
             ownFigures: WHITE_FIGURES,
             ownKing: FIGURES.WHITE_KING,
-            anotherPlayerKing: FIGURES.BLACK_KING,
             pawnWays: WHITE_PAWN_WAYS,
-            kingWays: initWhiteKingWays,
           };
         }
 
@@ -72,15 +66,13 @@ export class BoardService {
             playerWays: initBlackWays,
             ownFigures: BLACK_FIGURES,
             ownKing: FIGURES.BLACK_KING,
-            anotherPlayerKing: FIGURES.WHITE_KING,
             pawnWays: BLACK_PAWN_WAYS,
-            kingWays: initBlackKingWays,
           };
         }
 
         switch (true) {
           case cell.toLowerCase() === FIGURES.BLACK_KING:
-            createKingWays(props);
+            this.checkKingWays(props);
             break;
 
           case cell.toLowerCase() === FIGURES.BLACK_QUEEN:
@@ -112,18 +104,35 @@ export class BoardService {
     const whiteWays: string[] = [];
     const blackWays: string[] = [];
 
-    [...initWhiteKingWays, ...initWhiteWays].forEach((way) => {
+    initWhiteWays.forEach((way) => {
       whiteWays.push(createWay(way[0][0], way[0][1], way[1][0], way[1][1]));
     });
 
-    [...initBlackKingWays, ...initBlackWays].forEach((way) => {
+    initBlackWays.forEach((way) => {
       blackWays.push(createWay(way[0][0], way[0][1], way[1][0], way[1][1]));
     });
 
     return { whiteBoard, blackBoard, whiteWays, blackWays };
   }
 
-  checkKnightWays(props: checkWaysPropsType, figureWays: number[][]) {
+  private checkKingWays = (props: checkWaysPropsType) => {
+    const { checkRow, checkCol } = props;
+
+    KING_WAYS.forEach((way) => {
+      const wayRow = checkRow + way[0];
+      const wayCol = checkCol + way[1];
+
+      const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
+
+      if (isCorrectCoordinates)
+        addWayAndVisibility({ ...props, wayRow, wayCol });
+    });
+  };
+
+  private checkKnightWays = (
+    props: checkWaysPropsType,
+    figureWays: number[][],
+  ) => {
     const { checkRow, checkCol } = props;
 
     figureWays.forEach((way) => {
@@ -132,13 +141,12 @@ export class BoardService {
 
       const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
 
-      if (isCorrectCoordinates) {
+      if (isCorrectCoordinates)
         addWayAndVisibility({ ...props, wayRow, wayCol });
-      }
     });
-  }
+  };
 
-  checkWays(props: checkWaysPropsType, figureWays: number[][][]) {
+  private checkWays(props: checkWaysPropsType, figureWays: number[][][]) {
     const { generalBoard, checkRow, checkCol } = props;
 
     figureWays.forEach((side) => {
@@ -164,7 +172,7 @@ export class BoardService {
     });
   }
 
-  checkPawnWays(props: checkWaysPropsType) {
+  private checkPawnWays(props: checkWaysPropsType) {
     const { generalBoard, checkRow, checkCol, pawnWays } = props;
     const initPosPawn = pawnWays === WHITE_PAWN_WAYS ? 6 : 1;
 

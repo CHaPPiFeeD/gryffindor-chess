@@ -36,7 +36,7 @@ export class GameService {
     };
 
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
-      this.boardService.createBoardsForPlayers(gameRoom);
+      this.boardService.createFogBoards(gameRoom);
 
     gameRoom.white.ways = whiteWays;
     gameRoom.black.ways = blackWays;
@@ -87,7 +87,7 @@ export class GameService {
     gameRoom.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
 
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
-      this.boardService.createBoardsForPlayers(gameRoom);
+      this.boardService.createFogBoards(gameRoom);
 
     gameRoom.white.ways = whiteWays;
     gameRoom.black.ways = blackWays;
