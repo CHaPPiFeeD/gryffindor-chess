@@ -2,30 +2,33 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '..';
 import { move } from '../../api/socket';
-import { startGameDataType } from '../../api/types'
+import { gameDataType } from '../../api/types'
 
-export type boardType = {
+export type gameType = {
   board: string[][];
   ways: string[];
-  color: string;
+  color: 'white' | 'black' | null;
+  moveQueue: 'white' | 'black' | null;
   activePosition: number[] | null;
 }
 
-const initialState: boardType = {
+const initialState: gameType = {
   board: [],
   ways: [],
-  color: '',
+  color: null,
+  moveQueue: null,
   activePosition: null,
 }
 
-export const boardSlice = createSlice({
-  name: 'board',
+export const gameSlice = createSlice({
+  name: 'gameSlice',
   initialState,
   reducers: {
-    setBoard: (state, action: PayloadAction<startGameDataType>) => {
+    setBoard: (state, action: PayloadAction<gameDataType>) => {
       state.board = action.payload.board;
       state.ways = action.payload.ways;
-      state.color = action.payload.color;
+      state.moveQueue = action.payload.moveQueue;
+      state.color = action.payload?.color || state.color;
     },
     setActivePosition: (state, action) => {
       console.log(`active: ${action.payload}`);
@@ -61,7 +64,6 @@ export const setMove = (activePosition: number[] | null, payload: number[]) => a
   }
 }
 
-// Action creators are generated for each case reducer function
-export const { setBoard, setActivePosition } = boardSlice.actions;
+export const { setBoard, setActivePosition } = gameSlice.actions;
 
-export default boardSlice.reducer;
+export default gameSlice.reducer;

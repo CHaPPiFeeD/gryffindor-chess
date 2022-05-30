@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { movePropsType } from 'src/dto/validation.dto';
+import { colorsType, movePropsType } from 'src/dto/validation.dto';
 import {
   BLACK_FIGURES,
   COLORS,
@@ -17,13 +17,17 @@ export class ValidationService {
   private logger = new Logger();
   private initPos = 7;
 
-  validationMove(props: any): boolean {
-    const { figure, endPos, startPos } = props;
+  validationMove(props: movePropsType) {
+    const { gameRoom, figure, endPos, startPos, clientColor } = props;
 
     const x: number = endPos[1] - startPos[1];
     const y: number = endPos[0] - startPos[0];
     const attackRow: number = this.initPos + y;
     const attackCol: number = this.initPos + x;
+
+    this.basicСheck(props);
+
+    const endFigure: string = gameRoom.board[endPos[0]][endPos[1]];
 
     props = {
       ...props,
@@ -31,32 +35,39 @@ export class ValidationService {
       attackCol,
       x,
       y,
+      endFigure,
     };
-
-    this.basicСheck(props);
 
     switch (true) {
       case figure.toLowerCase() === FIGURES.BLACK_KING:
-        return checkSchemeAttack(props);
+        checkSchemeAttack(props);
+        break;
 
       case figure.toLowerCase() === FIGURES.BLACK_QUEEN:
-        return this.checkQueen(props);
+        this.checkQueen(props);
+        break;
 
       case figure.toLowerCase() === FIGURES.BLACK_BISHOP:
-        return this.checkBishop(props);
+        this.checkBishop(props);
+        break;
 
       case figure.toLowerCase() === FIGURES.BLACK_KNIGHT:
-        return checkSchemeAttack(props);
+        checkSchemeAttack(props);
+        break;
 
       case figure.toLowerCase() === FIGURES.BLACK_ROOK:
-        return this.checkRook(props);
+        this.checkRook(props);
+        break;
 
       case figure.toLowerCase() === FIGURES.BLACK_PAWN:
-        return this.checkPawn(props);
+        this.checkPawn(props);
+        break;
     }
+
+    this.checkEndGame({ ...props, clientColor, endFigure });
   }
 
-  checkMoveQueue = (props): string => {
+  checkMoveQueue = (props): colorsType[] => {
     const { client, gameRoom } = props;
 
     let clientColor, nextMove;
@@ -74,16 +85,17 @@ export class ValidationService {
     if (clientColor !== gameRoom.moveQueue)
       throw new WsException("Opponent's move order");
 
-    return nextMove;
+    return [clientColor, nextMove];
   };
 
-  private basicСheck(props: movePropsType): boolean {
+  private basicСheck(props: movePropsType) {
     const { client, figure, gameRoom, endPos } = props;
-
-    const endFigure: string = gameRoom.board[endPos[0]][endPos[1]];
 
     const isWrongСoordinates =
       endPos[0] < 0 || endPos[0] > 7 || endPos[1] < 0 || endPos[1] > 7;
+
+    if (isWrongСoordinates) throw new WsException('Wrong coordinates');
+    const endFigure: string = gameRoom.board[endPos[0]][endPos[1]];
 
     const isFigureNotFound = figure === FIGURES.EMPTY;
 
@@ -97,65 +109,50 @@ export class ValidationService {
       (client.id === gameRoom.white.socket && BLACK_FIGURES.includes(figure)) ||
       (client.id === gameRoom.black.socket && WHITE_FIGURES.includes(figure));
 
-    if (isWrongСoordinates) throw new WsException('Wrong coordinates');
     if (isFigureNotFound) throw new WsException('Figure not found');
     if (isMoveToOwnFigure) throw new WsException('Move to own figure');
     if (isOpponentFigure) throw new WsException("Move opponent's figure");
-
-    return false;
   }
 
-  private checkQueen(props: movePropsType): boolean {
-    const isSchemeAttack = checkSchemeAttack(props);
+  private checkQueen(props: movePropsType) {
+    checkSchemeAttack(props);
+
     const isFigureOnWay =
       checkDiagonalMove(props) || checkVerticalAndHorizontalMove(props);
 
-    if (!isSchemeAttack)
-      throw new WsException('A figure cannot move to this cell');
-
     if (isFigureOnWay)
       throw new WsException(
         'A figure on the path does not allow you to go to this cell',
       );
-
-    return true;
   }
 
-  private checkBishop(props: movePropsType): boolean {
-    const isSchemeAttack = checkSchemeAttack(props);
+  private checkBishop(props: movePropsType) {
+    checkSchemeAttack(props);
+
     const isFigureOnWay = checkDiagonalMove(props);
 
-    if (!isSchemeAttack)
-      throw new WsException('A figure cannot move to this cell');
-
     if (isFigureOnWay)
       throw new WsException(
         'A figure on the path does not allow you to go to this cell',
       );
-
-    return true;
   }
 
-  private checkRook(props): boolean {
-    const isSchemeAttack = checkSchemeAttack(props);
+  private checkRook(props) {
+    checkSchemeAttack(props);
+
     const isFigureOnWay = checkVerticalAndHorizontalMove(props);
 
-    if (!isSchemeAttack)
-      throw new WsException('A figure cannot move to this cell');
-
     if (isFigureOnWay)
       throw new WsException(
         'A figure on the path does not allow you to go to this cell',
       );
-
-    return true;
   }
 
-  private checkPawn(props: movePropsType): boolean {
+  private checkPawn(props: movePropsType) {
     const { gameRoom, figure, startPos, endPos, x, y } = props;
 
     const initPawnPos = figure === FIGURES.WHITE_PAWN ? 6 : 1;
-    const step = figure === FIGURES.WHITE_PAWN ? 1 : -1;
+    const step = figure === FIGURES.WHITE_PAWN ? -1 : 1;
 
     const isStep =
       Math.abs(y) === 1 &&
@@ -171,11 +168,19 @@ export class ValidationService {
       startPos[0] === initPawnPos &&
       Math.abs(y) === 2 &&
       gameRoom.board[endPos[0]][endPos[1]] === FIGURES.EMPTY &&
-      gameRoom.board[startPos[0] - step][endPos[1]] === FIGURES.EMPTY;
+      gameRoom.board[startPos[0] + step][endPos[1]] === FIGURES.EMPTY;
 
     if (!isStep && !isDiagonal && !isTwoSteps)
       throw new WsException('A figure cannot move to this cell');
-
-    return true;
   }
+
+  private checkEndGame = (props: movePropsType) => {
+    const { endFigure, clientColor, gameRoom } = props;
+
+    const isWinner = endFigure.toLowerCase() === FIGURES.BLACK_KING;
+
+    if (isWinner) {
+      gameRoom.winner = clientColor;
+    }
+  };
 }

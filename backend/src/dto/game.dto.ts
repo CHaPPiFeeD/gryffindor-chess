@@ -10,6 +10,7 @@ export type gameRoomType = {
   black: gamePlayerType;
   board: string[][];
   moveQueue: string;
+  winner: null | 'white' | 'black';
 };
 
 export type gameStateType = Map<string, gameRoomType>;

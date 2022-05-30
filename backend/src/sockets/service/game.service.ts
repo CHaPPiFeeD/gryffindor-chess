@@ -9,6 +9,7 @@ import { Socket } from 'socket.io';
 import { INIT_BOARD, COLORS, FIGURES } from 'src/enum/constants';
 import { BoardService } from './board.service';
 import { movePropsType } from 'src/dto/validation.dto';
+import { WsException } from '@nestjs/websockets';
 
 export class GameService {
   private gamesStates: gameStateType = new Map();
@@ -23,7 +24,7 @@ export class GameService {
   @Inject(BoardService)
   boardService: BoardService;
 
-  startGame(playerOne: UserQueueDto, playerTwo: UserQueueDto) {
+  startGame = (playerOne: UserQueueDto, playerTwo: UserQueueDto) => {
     const roomId: string = randomString(16);
     const { white, black } = findColors(playerOne, playerTwo);
 
@@ -33,6 +34,7 @@ export class GameService {
       black,
       board: INIT_BOARD(),
       moveQueue: COLORS.WHITE,
+      winner: null,
     };
 
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
@@ -62,9 +64,9 @@ export class GameService {
       board: blackBoard,
       ways: [],
     });
-  }
+  };
 
-  chessMove(client: Socket, data: MoveDto) {
+  chessMove = (client: Socket, data: MoveDto) => {
     const { startPos, endPos } = data;
     const roomId = findRoom(client, this.gamesStates);
     const gameRoom: gameRoomType = this.gamesStates.get(roomId);
@@ -78,9 +80,13 @@ export class GameService {
       endPos,
     };
 
-    const nextPlayerMove = this.validationService.checkMoveQueue(props);
+    if (gameRoom.winner)
+      throw new WsException("You can't move after the game is over");
 
-    this.validationService.validationMove(props);
+    const [clientColor, nextPlayerMove] =
+      this.validationService.checkMoveQueue(props);
+
+    this.validationService.validationMove({ ...props, clientColor });
 
     gameRoom.moveQueue = nextPlayerMove;
     gameRoom.board[endPos[0]][endPos[1]] = figure;
@@ -97,15 +103,29 @@ export class GameService {
     alertBoard(this.logger, blackBoard, 'black board');
 
     this.initGateway.server.in(gameRoom.white.socket).emit('/game/move:get', {
-      color: COLORS.WHITE,
       board: whiteBoard,
-      ways: nextPlayerMove === COLORS.WHITE ? whiteWays : [],
+      moveQueue: gameRoom.moveQueue,
+      ways:
+        nextPlayerMove === COLORS.WHITE && !gameRoom.winner ? whiteWays : [],
     });
 
     this.initGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
-      color: COLORS.BLACK,
       board: blackBoard,
-      ways: nextPlayerMove === COLORS.BLACK ? blackWays : [],
+      moveQueue: gameRoom.moveQueue,
+      ways:
+        nextPlayerMove === COLORS.BLACK && !gameRoom.winner ? blackWays : [],
     });
-  }
+
+    if (gameRoom.winner) {
+      this.logger.debug(gameRoom.winner);
+
+      this.initGateway.server
+        .in(gameRoom[clientColor].socket)
+        .emit('/game/end', 'You win');
+
+      this.initGateway.server
+        .in(gameRoom[nextPlayerMove].socket)
+        .emit('/game/end', 'You lost');
+    }
+  };
 }

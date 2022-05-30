@@ -1,5 +1,6 @@
-export type startGameDataType = {
+export type gameDataType = {
   board: string[][],
   ways: string[],
-  color: string
+  color: 'white' | 'black' | null,
+  moveQueue: 'white' | 'black' | null,
 };

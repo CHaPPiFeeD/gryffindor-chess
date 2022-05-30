@@ -2,23 +2,25 @@ import { Box } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { getBoard } from '../../../../api/socket';
-import { startGameDataType } from '../../../../api/types';
+import { gameDataType } from '../../../../api/types';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { RootState } from '../../../../store';
-import { setBoard, setMove } from '../../../../store/board/boardSlise';
+import { setBoard, setMove } from '../../../../store/game/gameSlise';
 import { Figure } from '../Figure';
 import styles from './styles.module.scss';
 
 export const RenderBoard = () => {
-  const boardStore = useSelector((state: RootState) => state.board.board)
-  const colorStore = useSelector((state: RootState) => state.board.color);
-  const activePositionStore = useSelector((state: RootState) => state.board.activePosition);
-  const waysStore = useSelector((state: RootState) => state.board.ways);
   const boardRef = useRef(document.getElementById('board'));
   const dispatch = useAppDispatch()
+  const {
+    board: boardStore,
+    color: colorStore,
+    activePosition: activePositionStore,
+    ways: waysStore,
+  } = useSelector((state: RootState) => state.game)
 
   useEffect(() => {
-    getBoard((data: startGameDataType) => dispatch(setBoard(data)))
+    getBoard((data: gameDataType) => dispatch(setBoard(data)))
   }, [])
 
   const getCoordinate = (row: number, col: number): number[] => {
@@ -48,9 +50,12 @@ export const RenderBoard = () => {
       const [rowBoard, colBoard] = getCoordinate(row, col);
       const cell = boardRef?.current?.children[rowBoard]?.children[colBoard];
 
+
+
       const isNotEmpty =
         cell !== undefined &&
-        cell.childElementCount;
+        cell.childElementCount &&
+        !cell.children[0].classList.value.includes('fog_wrapper');
 
       if (isNotEmpty) {
         cell.classList.add(styles.active);

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 import { regInQueue } from '../../../api/socket'
 import { path } from '../../../router/constants'
-import { setBoard } from '../../../store/board/boardSlise'
+import { setBoard } from '../../../store/game/gameSlise'
 import styles from './styles.module.scss'
 
 export const LoginForm = () => {

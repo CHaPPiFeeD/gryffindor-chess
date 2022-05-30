@@ -1,3 +1,4 @@
+import { WsException } from '@nestjs/websockets';
 import { movePropsType } from 'src/dto/validation.dto';
 import { ATTACKS_SCHEME, FIGURES } from '../enum/constants';
 
@@ -85,8 +86,13 @@ export const checkCoordinates = (wayRow: number, wayCol: number) => {
   return wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
 };
 
-export const checkSchemeAttack = (props: movePropsType): boolean => {
-  return ATTACKS_SCHEME[props.attackRow][props.attackCol].includes(
-    props.figure.toLowerCase(),
+export const checkSchemeAttack = (props: movePropsType) => {
+  const { attackRow, attackCol, figure } = props;
+
+  const isSchemeAttack = ATTACKS_SCHEME[attackRow][attackCol].includes(
+    figure.toLowerCase(),
   );
+
+  if (!isSchemeAttack)
+    throw new WsException('A figure cannot move to this cell');
 };
