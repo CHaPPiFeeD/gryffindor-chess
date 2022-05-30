@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { Action } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '..';
 import { move } from '../../api/socket';
@@ -10,6 +11,10 @@ export type gameType = {
   color: 'white' | 'black' | null;
   moveQueue: 'white' | 'black' | null;
   activePosition: number[] | null;
+  endGameMessage: {
+    title: string;
+    message: string;
+  }
 }
 
 const initialState: gameType = {
@@ -18,6 +23,10 @@ const initialState: gameType = {
   color: null,
   moveQueue: null,
   activePosition: null,
+  endGameMessage: {
+    title: '',
+    message: '',
+  },
 }
 
 export const gameSlice = createSlice({
@@ -25,6 +34,11 @@ export const gameSlice = createSlice({
   initialState,
   reducers: {
     setBoard: (state, action: PayloadAction<gameDataType>) => {
+      console.log(action.payload.board);
+      console.log(action.payload.ways);
+      console.log(action.payload.moveQueue);
+      console.log(action.payload?.color || state.color);
+      
       state.board = action.payload.board;
       state.ways = action.payload.ways;
       state.moveQueue = action.payload.moveQueue;
@@ -35,6 +49,10 @@ export const gameSlice = createSlice({
 
       state.activePosition = action.payload;
     },
+    setMessage: (state, action) => {
+      state.endGameMessage.title = action.payload.title;
+      state.endGameMessage.message = action.payload.message;
+    },
   },
 })
 
@@ -42,11 +60,11 @@ export const setMove = (activePosition: number[] | null, payload: number[]) => a
   const isNull = activePosition === null;
 
   if (isNull) dispatch(setActivePosition(payload));
-  
+
   if (!isNull) {
 
-    const isCancelMove = 
-      activePosition[0] === payload[0] && 
+    const isCancelMove =
+      activePosition[0] === payload[0] &&
       activePosition[1] === payload[1];
 
     if (isCancelMove) {
@@ -64,6 +82,6 @@ export const setMove = (activePosition: number[] | null, payload: number[]) => a
   }
 }
 
-export const { setBoard, setActivePosition } = gameSlice.actions;
+export const { setBoard, setActivePosition, setMessage } = gameSlice.actions;
 
 export default gameSlice.reducer;

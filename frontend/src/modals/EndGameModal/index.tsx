@@ -1,4 +1,4 @@
-import { Box, Modal, Typography } from '@mui/material'
+import { Box, Button, Modal, Typography } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '../../hooks/redux'
 import { setClose } from '../../store/modal/modalSlise';
 import styles from './styles.module.scss'
@@ -6,6 +6,7 @@ import styles from './styles.module.scss'
 export const EndGameModal = () => {
   const dispatch = useAppDispatch();
   const open = useAppSelector(state => state.modals.endGame);
+  const endGameMessage = useAppSelector(state => state.game.endGameMessage);
 
   const handleClose = () => {
     dispatch(setClose('endGame'))
@@ -17,9 +18,19 @@ export const EndGameModal = () => {
       onClose={handleClose}
     >
       <Box className={styles.modal} >
-        <Typography variant='h6' component='h2'>
-          The game is over!
+        <Typography variant='h6' component='h1'>
+          The game is over! {endGameMessage.title}
         </Typography>
+        <Typography>
+          {endGameMessage.message}
+        </Typography>
+        <Button 
+          onClick={() => window.location.href = '/'}
+          variant='contained'
+          className={styles.button}
+        >
+          Go back
+        </Button>
       </Box>
     </Modal>
   )

@@ -54,15 +54,17 @@ export class GameService {
       .socketsJoin(gameRoom.roomId);
 
     this.serverGateway.server.in(white.socket).emit('/game/start', {
-      color: 'white',
+      color: COLORS.WHITE,
       board: whiteBoard,
       ways: whiteWays,
+      moveQueue: COLORS.WHITE,
     });
 
     this.serverGateway.server.in(black.socket).emit('/game/start', {
-      color: 'black',
+      color: COLORS.BLACK,
       board: blackBoard,
       ways: [],
+      moveQueue: COLORS.WHITE,
     });
   };
 
@@ -111,6 +113,7 @@ export class GameService {
 
     this.serverGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
       board: blackBoard,
+      moveQueue: gameRoom.moveQueue,
       ways:
         nextPlayerMove === COLORS.BLACK && !gameRoom.winner ? blackWays : [],
     });
@@ -120,11 +123,17 @@ export class GameService {
 
       this.serverGateway.server
         .in(gameRoom[clientColor].socket)
-        .emit('/game/end', 'You win');
+        .emit('/game/end', {
+          title: 'You win!',
+          message: "You have eaten the opponent's king piece.",
+        });
 
       this.serverGateway.server
         .in(gameRoom[nextPlayerMove].socket)
-        .emit('/game/end', 'You lost');
+        .emit('/game/end', {
+          title: 'You lost!',
+          message: 'The opponent has eaten your king piece.',
+        });
     }
   };
 
@@ -135,32 +144,21 @@ export class GameService {
 
     const gameRoom: gameRoomType = this.gamesStates.get(roomId);
 
-    let winner, loser;
-
     for (const game of this.gamesStates.values()) {
-      if (game.white.socket === client.id) {
-        gameRoom.winner = 'black';
-        winner = 'black';
-        loser = 'white';
-      }
+      if (game.white.socket === client.id) gameRoom.winner = 'black';
 
-      if (game.black.socket === client.id) {
-        gameRoom.winner = 'white';
-        winner = 'white';
-        loser = 'black';
-      }
+      if (game.black.socket === client.id) gameRoom.winner = 'white';
     }
 
     if (gameRoom?.winner) {
       this.logger.debug(gameRoom.winner);
 
       this.serverGateway.server
-        .in(gameRoom[winner].socket)
-        .emit('/game/end', 'You win');
-
-      this.serverGateway.server
-        .in(gameRoom[loser].socket)
-        .emit('/game/end', 'You lost');
+        .in(gameRoom[gameRoom.winner].socket)
+        .emit('/game/end', {
+          title: 'You win!',
+          message: 'Opponent has disconnected from the game.',
+        });
     }
   };
 }
