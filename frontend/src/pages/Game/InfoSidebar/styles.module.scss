@@ -1,0 +1,20 @@
+.content {
+  width: 512px;
+  height: 790px;
+  background: #F0D9B5;
+  margin-left: 16px;
+  padding: 32px;
+  border: 10px solid #634833;
+
+  .move_queue {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .pawn {
+      width: 64px;
+      height: 64px;
+    }
+  }
+}

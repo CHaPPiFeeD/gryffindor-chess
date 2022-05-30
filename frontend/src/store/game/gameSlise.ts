@@ -34,11 +34,6 @@ export const gameSlice = createSlice({
   initialState,
   reducers: {
     setBoard: (state, action: PayloadAction<gameDataType>) => {
-      console.log(action.payload.board);
-      console.log(action.payload.ways);
-      console.log(action.payload.moveQueue);
-      console.log(action.payload?.color || state.color);
-      
       state.board = action.payload.board;
       state.ways = action.payload.ways;
       state.moveQueue = action.payload.moveQueue;

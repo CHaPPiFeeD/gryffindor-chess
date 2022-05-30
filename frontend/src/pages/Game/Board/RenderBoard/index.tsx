@@ -103,7 +103,8 @@ export const RenderBoard = () => {
         return <Box key={i} style={{ display: 'flex' }}>
           {v.map((v: any, j: number) => {
             const [row, col] = getCoordinate(i, j);
-            const number = i + j;
+            const l = colorStore === 'black' ? 1 : 0;
+            const number = i + j + l;
             const style = number % 2 === 0 ? styles.cell_white : styles.cell_black
 
             return (

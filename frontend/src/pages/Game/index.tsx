@@ -5,6 +5,7 @@ import { useAppDispatch } from '../../hooks/redux'
 import { setMessage } from '../../store/game/gameSlise'
 import { setOpen } from '../../store/modal/modalSlise'
 import { Board } from './Board'
+import { InfoSidebar } from './InfoSidebar/indes'
 import styles from './styles.module.scss'
 
 export const Game = () => {
@@ -22,6 +23,7 @@ export const Game = () => {
   return (
     <Box className={styles.wrapper}>
       <Board />
+      <InfoSidebar />
     </Box>
   )
 }
