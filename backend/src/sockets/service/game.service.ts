@@ -19,10 +19,10 @@ export class GameService {
   private serverGateway: ServerGateway;
 
   @Inject(ValidationService)
-  validationService: ValidationService;
+  private validationService: ValidationService;
 
   @Inject(BoardService)
-  boardService: BoardService;
+  private boardService: BoardService;
 
   startGame = (playerOne: UserQueueDto, playerTwo: UserQueueDto) => {
     const roomId: string = randomString(16);
@@ -66,7 +66,7 @@ export class GameService {
     });
   };
 
-  chessMove = (client: Socket, data: MoveDto) => {
+  moveChess = (client: Socket, data: MoveDto) => {
     const { startPos, endPos } = data;
     const roomId = findRoom(client, this.gamesStates);
     const gameRoom: gameRoomType = this.gamesStates.get(roomId);
@@ -124,6 +124,42 @@ export class GameService {
 
       this.serverGateway.server
         .in(gameRoom[nextPlayerMove].socket)
+        .emit('/game/end', 'You lost');
+    }
+  };
+
+  disconnect = (client: Socket) => {
+    const roomId = findRoom(client, this.gamesStates);
+
+    if (!roomId) return;
+
+    const gameRoom: gameRoomType = this.gamesStates.get(roomId);
+
+    let winner, loser;
+
+    for (const game of this.gamesStates.values()) {
+      if (game.white.socket === client.id) {
+        gameRoom.winner = 'black';
+        winner = 'black';
+        loser = 'white';
+      }
+
+      if (game.black.socket === client.id) {
+        gameRoom.winner = 'white';
+        winner = 'white';
+        loser = 'black';
+      }
+    }
+
+    if (gameRoom?.winner) {
+      this.logger.debug(gameRoom.winner);
+
+      this.serverGateway.server
+        .in(gameRoom[winner].socket)
+        .emit('/game/end', 'You win');
+
+      this.serverGateway.server
+        .in(gameRoom[loser].socket)
         .emit('/game/end', 'You lost');
     }
   };

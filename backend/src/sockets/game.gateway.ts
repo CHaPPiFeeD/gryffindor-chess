@@ -13,6 +13,6 @@ export class GameGateway {
 
   @SubscribeMessage('/game/move:post')
   chessMuve(client: Socket, data: MoveDto) {
-    this.gameService.chessMove(client, data);
+    this.gameService.moveChess(client, data);
   }
 }

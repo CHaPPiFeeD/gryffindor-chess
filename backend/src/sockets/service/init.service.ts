@@ -1,5 +1,6 @@
 import { Inject, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
+import { GameService } from './game.service';
 import { QueueService } from './queue.service';
 
 export class InitService {
@@ -8,7 +9,11 @@ export class InitService {
   @Inject(QueueService)
   private queueService: QueueService;
 
+  @Inject(GameService)
+  private gameService: GameService;
+
   handleDisconnect(client: Socket) {
-    this.queueService.removePlayerFromQueue(client);
+    this.queueService.disconnect(client);
+    this.gameService.disconnect(client);
   }
 }

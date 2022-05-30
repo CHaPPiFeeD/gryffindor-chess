@@ -43,7 +43,7 @@ export class QueueService {
     }
   }
 
-  removePlayerFromQueue = (socket: Socket) => {
+  disconnect = (socket: Socket) => {
     const isInQueue = getUserBySocket(this.queue, socket.id);
 
     if (!isInQueue) return;
