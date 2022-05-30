@@ -3,20 +3,20 @@ import { randomString } from '../../helpers';
 import { alertBoard, findColors, findRoom } from '../../helpers/game';
 import { UserQueueDto } from '../../dto/queue.dto';
 import { gameStateType, gameRoomType, MoveDto } from 'src/dto/game.dto';
-import { InitGateway } from '../init.gateway';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
 import { INIT_BOARD, COLORS, FIGURES } from 'src/enum/constants';
 import { BoardService } from './board.service';
 import { movePropsType } from 'src/dto/validation.dto';
 import { WsException } from '@nestjs/websockets';
+import { ServerGateway } from '../server.gateway';
 
 export class GameService {
-  private gamesStates: gameStateType = new Map();
   private logger = new Logger(GameService.name);
+  private gamesStates: gameStateType = new Map();
 
-  @Inject(InitGateway)
-  initGateway: InitGateway;
+  @Inject(ServerGateway)
+  private serverGateway: ServerGateway;
 
   @Inject(ValidationService)
   validationService: ValidationService;
@@ -49,17 +49,17 @@ export class GameService {
     alertBoard(this.logger, whiteBoard, 'white board');
     alertBoard(this.logger, blackBoard, 'black board');
 
-    this.initGateway.server
+    this.serverGateway.server
       .in([white.socket, black.socket])
       .socketsJoin(gameRoom.roomId);
 
-    this.initGateway.server.in(white.socket).emit('/game/start', {
+    this.serverGateway.server.in(white.socket).emit('/game/start', {
       color: 'white',
       board: whiteBoard,
       ways: whiteWays,
     });
 
-    this.initGateway.server.in(black.socket).emit('/game/start', {
+    this.serverGateway.server.in(black.socket).emit('/game/start', {
       color: 'black',
       board: blackBoard,
       ways: [],
@@ -102,16 +102,15 @@ export class GameService {
     alertBoard(this.logger, whiteBoard, 'white board');
     alertBoard(this.logger, blackBoard, 'black board');
 
-    this.initGateway.server.in(gameRoom.white.socket).emit('/game/move:get', {
+    this.serverGateway.server.in(gameRoom.white.socket).emit('/game/move:get', {
       board: whiteBoard,
       moveQueue: gameRoom.moveQueue,
       ways:
         nextPlayerMove === COLORS.WHITE && !gameRoom.winner ? whiteWays : [],
     });
 
-    this.initGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
+    this.serverGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
       board: blackBoard,
-      moveQueue: gameRoom.moveQueue,
       ways:
         nextPlayerMove === COLORS.BLACK && !gameRoom.winner ? blackWays : [],
     });
@@ -119,11 +118,11 @@ export class GameService {
     if (gameRoom.winner) {
       this.logger.debug(gameRoom.winner);
 
-      this.initGateway.server
+      this.serverGateway.server
         .in(gameRoom[clientColor].socket)
         .emit('/game/end', 'You win');
 
-      this.initGateway.server
+      this.serverGateway.server
         .in(gameRoom[nextPlayerMove].socket)
         .emit('/game/end', 'You lost');
     }

@@ -9,11 +9,11 @@ import { UserQueueDto, RegToQueueDto } from '../../dto/queue.dto';
 import { GameService } from './game.service';
 
 export class QueueService {
-  private logger = new Logger(GameService.name);
+  private logger = new Logger(QueueService.name);
   private queue: UserQueueDto[] = [];
 
   @Inject(GameService)
-  private gameService: GameService;
+  gameService: GameService;
 
   regToQueue(client: Socket, data: RegToQueueDto) {
     const playerOne: UserQueueDto = {
@@ -21,7 +21,7 @@ export class QueueService {
       ...data,
     };
 
-    if (getUserBySocket(this.queue, playerOne)) {
+    if (getUserBySocket(this.queue, client.id)) {
       this.logger.error('You are already in line');
       return;
     }
@@ -42,4 +42,14 @@ export class QueueService {
       this.gameService.startGame(playerOne, playerTwo);
     }
   }
+
+  removePlayerFromQueue = (socket: Socket) => {
+    const isInQueue = getUserBySocket(this.queue, socket.id);
+
+    if (!isInQueue) return;
+
+    this.queue.forEach((value, index) => {
+      if (value.socket === socket.id) this.queue.splice(index, 1);
+    });
+  };
 }

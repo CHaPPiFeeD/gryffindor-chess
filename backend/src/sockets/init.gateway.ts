@@ -1,18 +1,18 @@
-import { Logger } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import {
   WebSocketGateway,
-  WebSocketServer,
   OnGatewayDisconnect,
   OnGatewayConnection,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
+import { InitService } from './service/init.service';
 
 @WebSocketGateway({ cors: true })
 export class InitGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private logger = new Logger(InitGateway.name);
 
-  @WebSocketServer()
-  public server: Server;
+  @Inject(InitService)
+  initService: InitService;
 
   handleConnection(client: Socket) {
     this.logger.log(`User connection: ${client.id}`);
@@ -20,5 +20,7 @@ export class InitGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: Socket) {
     this.logger.log(`User disconnection: ${client.id}`);
+
+    this.initService.handleDisconnect(client);
   }
 }

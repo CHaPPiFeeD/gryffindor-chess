@@ -19,7 +19,7 @@ export const getUserByColor = (
 
 export const getUserBySocket = (
   queue: UserQueueDto[],
-  data: UserQueueDto,
+  socket: string,
 ): UserQueueDto => {
-  return queue.find((obj) => Object.is(obj.socket, data.socket));
+  return queue.find((obj) => obj.socket === socket);
 };

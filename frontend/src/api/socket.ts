@@ -45,5 +45,9 @@ export const checkEndGame = (cb: any) => {
   })
 }
 
+export const socketConnection = () => {
+  if (!socket) window.location.href = '/'
+}
+
 
 

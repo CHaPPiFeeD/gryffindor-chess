@@ -17,6 +17,7 @@ export const RenderBoard = () => {
     color: colorStore,
     activePosition: activePositionStore,
     ways: waysStore,
+    moveQueue: moveQueueStore,
   } = useSelector((state: RootState) => state.game)
 
   useEffect(() => {
@@ -32,6 +33,8 @@ export const RenderBoard = () => {
   const handleClick = (e: any) => {
     const row = +e.currentTarget.attributes.getNamedItem('data-row')?.value;
     const col = +e.currentTarget.attributes.getNamedItem('data-col')?.value;
+
+    if (moveQueueStore !== colorStore) return; 
 
     if (activePositionStore) {
       for (let i = 0; i < 8; i++) {
@@ -49,8 +52,6 @@ export const RenderBoard = () => {
     if (!activePositionStore) {
       const [rowBoard, colBoard] = getCoordinate(row, col);
       const cell = boardRef?.current?.children[rowBoard]?.children[colBoard];
-
-
 
       const isNotEmpty =
         cell !== undefined &&

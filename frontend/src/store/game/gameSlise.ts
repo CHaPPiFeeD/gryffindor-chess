@@ -46,7 +46,7 @@ export const setMove = (activePosition: number[] | null, payload: number[]) => a
   if (!isNull) {
 
     const isCancelMove = 
-    activePosition[0] === payload[0] && 
+      activePosition[0] === payload[0] && 
       activePosition[1] === payload[1];
 
     if (isCancelMove) {
