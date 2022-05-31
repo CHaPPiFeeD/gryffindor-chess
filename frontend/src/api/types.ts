@@ -16,3 +16,9 @@ export type moveDataType = {
   endPos: [number, number],
   change: changeFigureDataType,
 }
+
+export type usersQueueType = {
+  socket: string;
+  username: string;
+  color: string[];
+}
