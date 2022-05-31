@@ -4,17 +4,23 @@ export type gamePlayerType = {
   ways: string[];
 };
 
-export type gameType = {
+export type gameRoomType = {
   roomId: string;
   white: gamePlayerType;
   black: gamePlayerType;
   board: string[][];
   moveQueue: string;
+  winner: null | 'white' | 'black';
+  gameStart: Date;
 };
 
-export type gameStateType = Map<string, gameType>;
+export type gameStateType = Map<string, gameRoomType>;
 
 export class MoveDto {
   startPos: [number, number];
   endPos: [number, number];
+  change: {
+    isChange: boolean;
+    chooseFigure: null | string;
+  };
 }

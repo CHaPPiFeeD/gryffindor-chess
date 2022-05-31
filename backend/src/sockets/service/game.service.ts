@@ -2,127 +2,187 @@ import { Inject, Logger } from '@nestjs/common';
 import { randomString } from '../../helpers';
 import { alertBoard, findColors, findRoom } from '../../helpers/game';
 import { UserQueueDto } from '../../dto/queue.dto';
-import { gameStateType, gameType, MoveDto } from 'src/dto/game.dto';
-import { InitGateway } from '../init.gateway';
+import { gameStateType, gameRoomType, MoveDto } from 'src/dto/game.dto';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
-import { BOARD, COLORS, FIGURES } from 'src/enum/constants';
+import { INIT_BOARD, COLORS, FIGURES } from 'src/enum/constants';
 import { BoardService } from './board.service';
+import { movePropsType } from 'src/dto/validation.dto';
+import { WsException } from '@nestjs/websockets';
+import { ServerGateway } from '../server.gateway';
 
 export class GameService {
-  private gamesStates: gameStateType = new Map();
   private logger = new Logger(GameService.name);
+  private gamesStates: gameStateType = new Map();
 
-  @Inject(InitGateway)
-  initGateway: InitGateway;
+  @Inject(ServerGateway)
+  private serverGateway: ServerGateway;
 
   @Inject(ValidationService)
-  validationService: ValidationService;
+  private validationService: ValidationService;
 
   @Inject(BoardService)
-  boardService: BoardService;
+  private boardService: BoardService;
 
-  startGame(playerOne: UserQueueDto, playerTwo: UserQueueDto) {
+  startGame = (playerOne: UserQueueDto, playerTwo: UserQueueDto) => {
     const roomId: string = randomString(16);
     const { white, black } = findColors(playerOne, playerTwo);
-    const game: gameType = {
+
+    const gameRoom: gameRoomType = {
       roomId,
       white,
       black,
-      board: BOARD(),
+      board: INIT_BOARD(),
       moveQueue: COLORS.WHITE,
+      winner: null,
+      gameStart: new Date(),
     };
 
-    alertBoard(this.logger, game.board, game.roomId);
-
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
-      this.boardService.createBoardsForPlayers(game);
+      this.boardService.createFogBoards(gameRoom);
 
-    game.white.ways = whiteWays;
-    game.black.ways = blackWays;
+    gameRoom.white.ways = whiteWays;
+    gameRoom.black.ways = blackWays;
 
-    this.gamesStates.set(roomId, game);
+    this.gamesStates.set(roomId, gameRoom);
 
+    alertBoard(this.logger, gameRoom.board, gameRoom.roomId);
     alertBoard(this.logger, whiteBoard, 'white board');
-    this.logger.log(game.white.ways);
     alertBoard(this.logger, blackBoard, 'black board');
-    this.logger.log(game.black.ways);
 
-    this.initGateway.server
+    this.serverGateway.server
       .in([white.socket, black.socket])
-      .socketsJoin(game.roomId);
+      .socketsJoin(gameRoom.roomId);
 
-    this.initGateway.server.in(white.socket).emit('/game/start', {
-      color: 'white',
+    this.serverGateway.server.in(white.socket).emit('/game/start', {
+      color: COLORS.WHITE,
       board: whiteBoard,
       ways: whiteWays,
+      moveQueue: COLORS.WHITE,
+      gameStart: gameRoom.gameStart,
     });
 
-    this.initGateway.server.in(black.socket).emit('/game/start', {
-      color: 'black',
+    this.serverGateway.server.in(black.socket).emit('/game/start', {
+      color: COLORS.BLACK,
       board: blackBoard,
-      ways: blackWays,
+      ways: [],
+      moveQueue: COLORS.WHITE,
+      gameStart: gameRoom.gameStart,
     });
-  }
+  };
 
-  chessMove(client: Socket, data: MoveDto) {
+  moveChess = (client: Socket, data: MoveDto) => {
     const { startPos, endPos } = data;
-    this.logger.debug(data);
     const roomId = findRoom(client, this.gamesStates);
-    const game: gameType = this.gamesStates.get(roomId);
-    const figure: string = game.board[+startPos[0]][+startPos[1]];
+    const gameRoom: gameRoomType = this.gamesStates.get(roomId);
+    let figure = gameRoom.board[+startPos[0]][+startPos[1]];
 
-    if (
-      this.validationService.validationMove(
-        client,
-        figure,
-        game,
-        startPos,
-        endPos,
-      )
-    ) {
-      let clientColor, nextMove;
+    const props: movePropsType = {
+      ...data,
+      client,
+      gameRoom,
+      figure,
+    };
 
-      if (client.id === game.white.socket) {
-        clientColor = COLORS.WHITE;
-        nextMove = COLORS.BLACK;
-      }
+    if (gameRoom.winner)
+      throw new WsException("You can't move after the game is over");
 
-      if (client.id === game.black.socket) {
-        clientColor = COLORS.BLACK;
-        nextMove = COLORS.WHITE;
-      }
+    const [clientColor, nextPlayerMove] =
+      this.validationService.checkMoveQueue(props);
 
-      if (clientColor !== game.moveQueue) return;
-      if (clientColor === game.moveQueue) game.moveQueue = nextMove;
+    this.validationService.validationMove({ ...props, clientColor });
 
-      this.logger.log('chessMove is worked');
+    this.checkChange({ ...props, clientColor });
 
-      game.board[endPos[0]][endPos[1]] = figure;
-      game.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
+    figure = gameRoom.board[+startPos[0]][+startPos[1]]; // update
 
-      alertBoard(this.logger, game.board, roomId);
+    gameRoom.moveQueue = nextPlayerMove;
+    gameRoom.board[endPos[0]][endPos[1]] = figure;
+    gameRoom.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
 
-      const { whiteBoard, blackBoard, whiteWays, blackWays } =
-        this.boardService.createBoardsForPlayers(game);
+    const { whiteBoard, blackBoard, whiteWays, blackWays } =
+      this.boardService.createFogBoards(gameRoom);
 
-      game.white.ways = whiteWays;
-      game.black.ways = blackWays;
+    gameRoom.white.ways = whiteWays;
+    gameRoom.black.ways = blackWays;
 
-      alertBoard(this.logger, whiteBoard, 'white board');
-      alertBoard(this.logger, blackBoard, 'black board');
+    alertBoard(this.logger, gameRoom.board, roomId);
+    alertBoard(this.logger, whiteBoard, 'white board');
+    alertBoard(this.logger, blackBoard, 'black board');
 
-      this.initGateway.server.in(game.white.socket).emit('/game/move:get', {
-        color: 'white',
-        board: whiteBoard,
-        ways: whiteWays,
-      });
+    this.serverGateway.server.in(gameRoom.white.socket).emit('/game/move:get', {
+      board: whiteBoard,
+      moveQueue: gameRoom.moveQueue,
+      ways:
+        nextPlayerMove === COLORS.WHITE && !gameRoom.winner ? whiteWays : [],
+    });
 
-      this.initGateway.server.in(game.black.socket).emit('/game/move:get', {
-        color: 'black',
-        board: blackBoard,
-        ways: blackWays,
-      });
+    this.serverGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
+      board: blackBoard,
+      moveQueue: gameRoom.moveQueue,
+      ways:
+        nextPlayerMove === COLORS.BLACK && !gameRoom.winner ? blackWays : [],
+    });
+
+    if (gameRoom.winner) {
+      this.logger.debug(gameRoom.winner);
+
+      this.serverGateway.server
+        .in(gameRoom[clientColor].socket)
+        .emit('/game/end', {
+          title: 'You win!',
+          message: "You have eaten the opponent's king piece.",
+        });
+
+      this.serverGateway.server
+        .in(gameRoom[nextPlayerMove].socket)
+        .emit('/game/end', {
+          title: 'You lost!',
+          message: 'The opponent has eaten your king piece.',
+        });
     }
-  }
+  };
+
+  private checkChange = (props: movePropsType) => {
+    const { figure, endPos, clientColor, gameRoom, startPos, change } = props;
+
+    const pawn = clientColor === 'white' ? 'P' : 'p';
+
+    const isChange = figure === pawn && (endPos[0] === 0 || endPos[0] === 7);
+
+    if (isChange)
+      gameRoom.board[startPos[0]][startPos[1]] = change.chooseFigure;
+  };
+
+  disconnect = (client: Socket, message: string) => {
+    const roomId = findRoom(client, this.gamesStates);
+
+    if (!roomId) return;
+
+    const gameRoom: gameRoomType = this.gamesStates.get(roomId);
+    let loser;
+
+    for (const game of this.gamesStates.values()) {
+      if (game.white.socket === client.id) {
+        gameRoom.winner = 'black';
+        loser = COLORS.WHITE;
+      }
+
+      if (game.black.socket === client.id) {
+        gameRoom.winner = 'white';
+        loser = COLORS.BLACK;
+      }
+    }
+
+    if (gameRoom?.winner) {
+      this.serverGateway.server
+        .in(gameRoom[gameRoom.winner].socket)
+        .emit('/game/end', {
+          title: 'You win!',
+          message,
+        });
+
+      gameRoom[loser].socket = null;
+    }
+  };
 }

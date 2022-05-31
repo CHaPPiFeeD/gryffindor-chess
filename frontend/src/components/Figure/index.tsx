@@ -1,6 +1,6 @@
 import { Box } from '@mui/material'
 import { useSelector } from 'react-redux'
-import { RootState } from '../../../../store'
+import { RootState } from '../../store'
 import { Bishop } from './figures/Bishop'
 import { King } from './figures/King'
 import { Knight } from './figures/Knight'
@@ -11,7 +11,7 @@ import styles from './styles.module.scss'
 
 export const Figure = (props: coordinateType) => {
   const { row, col } = props;
-  const boardState = useSelector((state: RootState) => state.board.board);
+  const boardState = useSelector((state: RootState) => state.game.board);
   const cell = boardState[row][col];
 
   let fill;
@@ -22,7 +22,7 @@ export const Figure = (props: coordinateType) => {
   switch (true) {
     case cell === FIGURES.FOG:
       return (
-        <Box className={styles.wrapper}>
+        <Box className={styles.fog_wrapper}>
           <img src={require('./figures/fog.gif')} className={styles.figure} />
         </Box>
       )
