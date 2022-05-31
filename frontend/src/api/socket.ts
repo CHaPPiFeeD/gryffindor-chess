@@ -49,5 +49,9 @@ export const socketConnection = () => {
   if (!socket) window.location.href = '/'
 }
 
+export const surrender = () => {
+  socket.emit('/game/surrender')
+}
+
 
 

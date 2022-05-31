@@ -140,17 +140,24 @@ export class GameService {
     }
   };
 
-  disconnect = (client: Socket) => {
+  disconnect = (client: Socket, message: string) => {
     const roomId = findRoom(client, this.gamesStates);
 
     if (!roomId) return;
 
     const gameRoom: gameRoomType = this.gamesStates.get(roomId);
+    let loser;
 
     for (const game of this.gamesStates.values()) {
-      if (game.white.socket === client.id) gameRoom.winner = 'black';
+      if (game.white.socket === client.id) {
+        gameRoom.winner = 'black';
+        loser = COLORS.WHITE;
+      }
 
-      if (game.black.socket === client.id) gameRoom.winner = 'white';
+      if (game.black.socket === client.id) {
+        gameRoom.winner = 'white';
+        loser = COLORS.BLACK;
+      }
     }
 
     if (gameRoom?.winner) {
@@ -160,8 +167,10 @@ export class GameService {
         .in(gameRoom[gameRoom.winner].socket)
         .emit('/game/end', {
           title: 'You win!',
-          message: 'Opponent has disconnected from the game.',
+          message,
         });
+
+      gameRoom[loser].socket = null;
     }
   };
 }

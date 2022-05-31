@@ -2,6 +2,7 @@ import { Button, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { surrender } from '../../../api/socket';
 import { getDifferenceTime } from '../../../helpers';
 import { useAppSelector } from '../../../hooks/redux';
 import { path } from '../../../router/constants';
@@ -14,6 +15,11 @@ export const InfoSidebar = () => {
   const {
     moveQueue: moveQueueStore,
   } = useAppSelector(store => store.game)
+
+  const handleClick = () => {
+    surrender()
+    navigate(path.login())
+  }
 
   return (
     <Box className={styles.content}>
@@ -29,10 +35,10 @@ export const InfoSidebar = () => {
         <TimeTypography />
       </Box>
       <Button
-        onClick={() => navigate(path.login())}
+        onClick={handleClick}
         variant='contained'
       >
-        Go back
+        Surrender or go back
       </Button>
     </Box>
   )

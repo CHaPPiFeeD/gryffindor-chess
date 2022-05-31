@@ -14,6 +14,9 @@ export class InitService {
 
   handleDisconnect(client: Socket) {
     this.queueService.disconnect(client);
-    this.gameService.disconnect(client);
+    this.gameService.disconnect(
+      client,
+      'Opponent has disconnected from the game.',
+    );
   }
 }
