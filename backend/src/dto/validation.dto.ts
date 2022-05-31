@@ -16,4 +16,8 @@ export type movePropsType = {
   endFigure?: string;
   nextPlayerMove?: colorsType;
   clientColor?: colorsType;
+  change: {
+    isChange: boolean;
+    chooseFigure: null | string;
+  };
 };

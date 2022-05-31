@@ -75,14 +75,13 @@ export class GameService {
     const { startPos, endPos } = data;
     const roomId = findRoom(client, this.gamesStates);
     const gameRoom: gameRoomType = this.gamesStates.get(roomId);
-    const figure = gameRoom.board[+startPos[0]][+startPos[1]];
+    let figure = gameRoom.board[+startPos[0]][+startPos[1]];
 
     const props: movePropsType = {
+      ...data,
       client,
       gameRoom,
       figure,
-      startPos,
-      endPos,
     };
 
     if (gameRoom.winner)
@@ -92,6 +91,10 @@ export class GameService {
       this.validationService.checkMoveQueue(props);
 
     this.validationService.validationMove({ ...props, clientColor });
+
+    this.checkChange({ ...props, clientColor });
+
+    figure = gameRoom.board[+startPos[0]][+startPos[1]]; // update
 
     gameRoom.moveQueue = nextPlayerMove;
     gameRoom.board[endPos[0]][endPos[1]] = figure;
@@ -140,6 +143,17 @@ export class GameService {
     }
   };
 
+  private checkChange = (props: movePropsType) => {
+    const { figure, endPos, clientColor, gameRoom, startPos, change } = props;
+
+    const pawn = clientColor === 'white' ? 'P' : 'p';
+
+    const isChange = figure === pawn && (endPos[0] === 0 || endPos[0] === 7);
+
+    if (isChange)
+      gameRoom.board[startPos[0]][startPos[1]] = change.chooseFigure;
+  };
+
   disconnect = (client: Socket, message: string) => {
     const roomId = findRoom(client, this.gamesStates);
 
@@ -161,8 +175,6 @@ export class GameService {
     }
 
     if (gameRoom?.winner) {
-      this.logger.debug(gameRoom.winner);
-
       this.serverGateway.server
         .in(gameRoom[gameRoom.winner].socket)
         .emit('/game/end', {

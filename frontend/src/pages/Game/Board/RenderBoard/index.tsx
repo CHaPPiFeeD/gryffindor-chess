@@ -5,9 +5,10 @@ import { getBoard } from '../../../../api/socket';
 import { gameDataType } from '../../../../api/types';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { RootState } from '../../../../store';
-import { setBoard, setMove } from '../../../../store/game/gameSlise';
+import { setBoard, setEndPosition, setMove } from '../../../../store/game/gameSlise';
 import { Figure } from '../../../../components';
 import styles from './styles.module.scss';
+import { setOpen } from '../../../../store/modal/modalSlise';
 
 export const RenderBoard = () => {
   const boardRef = useRef(document.getElementById('board'));
@@ -33,8 +34,9 @@ export const RenderBoard = () => {
   const handleClick = (e: any) => {
     const row = +e.currentTarget.attributes.getNamedItem('data-row')?.value;
     const col = +e.currentTarget.attributes.getNamedItem('data-col')?.value;
+    let isChangeFigure;
 
-    if (moveQueueStore !== colorStore) return; 
+    if (moveQueueStore !== colorStore) return;
 
     if (activePositionStore) {
       for (let i = 0; i < 8; i++) {
@@ -47,6 +49,11 @@ export const RenderBoard = () => {
           )
         }
       }
+
+      const [startRow, startCol] = activePositionStore;
+      const figure = boardStore[startRow][startCol];
+      const pawn = colorStore === 'white' ? 'P' : 'p';
+      isChangeFigure = figure === pawn && row === 0 || row === 7;
     }
 
     if (!activePositionStore) {
@@ -94,7 +101,20 @@ export const RenderBoard = () => {
       })
     }
 
-    dispatch(setMove(activePositionStore, [row, col]));
+    console.log(isChangeFigure);
+
+    if (isChangeFigure) {
+      dispatch(setEndPosition([row, col]))
+      dispatch(setOpen('changeFigure'))
+    }
+    
+    if (!isChangeFigure) {
+      dispatch(setMove(
+        activePositionStore,
+        [row, col],
+        { isChange: false, chooseFigure: null },
+      ))
+    }
   }
 
   return (

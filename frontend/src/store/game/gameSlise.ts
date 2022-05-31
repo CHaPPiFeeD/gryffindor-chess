@@ -1,16 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Action } from 'history';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '..';
 import { move } from '../../api/socket';
-import { gameDataType } from '../../api/types'
+import { changeFigureDataType, gameDataType } from '../../api/types'
 
 export type gameType = {
   board: string[][];
   ways: string[];
   color: 'white' | 'black' | null;
   moveQueue: 'white' | 'black' | null;
-  activePosition: number[] | null;
+  activePosition: [number, number] | null;
+  endPosition: [number, number] | null;
   gameStartTime: Date | null;
   endGameMessage: {
     title: string;
@@ -24,6 +22,7 @@ const initialState: gameType = {
   color: null,
   moveQueue: null,
   activePosition: null,
+  endPosition: null,
   gameStartTime: null,
   endGameMessage: {
     title: '',
@@ -45,18 +44,23 @@ export const gameSlice = createSlice({
 
     },
     setActivePosition: (state, action) => {
-      console.log(`active: ${action.payload}`);
-
       state.activePosition = action.payload;
     },
     setMessage: (state, action) => {
       state.endGameMessage.title = action.payload.title;
       state.endGameMessage.message = action.payload.message;
     },
+    setEndPosition: (state, action) => {
+      state.endPosition = action.payload;
+    },
   },
 })
 
-export const setMove = (activePosition: number[] | null, payload: number[]) => async (dispatch: any) => {
+export const setMove = (
+  activePosition: [number, number] | null,
+  payload: [number, number],
+  change: changeFigureDataType,
+) => async (dispatch: any) => {
   const isNull = activePosition === null;
 
   if (isNull) dispatch(setActivePosition(payload));
@@ -72,7 +76,7 @@ export const setMove = (activePosition: number[] | null, payload: number[]) => a
       return;
     }
 
-    const data = { startPos: activePosition, endPos: payload };
+    const data = { startPos: activePosition, endPos: payload, change };
 
     console.log(`move ${JSON.stringify(data.startPos)} to ${JSON.stringify(data.endPos)}`);
 
@@ -82,6 +86,6 @@ export const setMove = (activePosition: number[] | null, payload: number[]) => a
   }
 }
 
-export const { setBoard, setActivePosition, setMessage } = gameSlice.actions;
+export const { setBoard, setActivePosition, setMessage, setEndPosition } = gameSlice.actions;
 
 export default gameSlice.reducer;

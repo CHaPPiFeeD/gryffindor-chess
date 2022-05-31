@@ -19,4 +19,8 @@ export type gameStateType = Map<string, gameRoomType>;
 export class MoveDto {
   startPos: [number, number];
   endPos: [number, number];
+  change: {
+    isChange: boolean;
+    chooseFigure: null | string;
+  };
 }

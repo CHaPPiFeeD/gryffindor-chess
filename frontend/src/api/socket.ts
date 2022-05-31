@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client'
 import { setBoard } from '../store/game/gameSlise';
-import { gameDataType } from './types';
+import { gameDataType, moveDataType } from './types';
 
 
 let socket: Socket;
@@ -29,7 +29,7 @@ export const regInQueue = (data: any) => {
   })
 }
 
-export const move = (data: any) => {
+export const move = (data: moveDataType) => {
   socket.emit('/game/move:post', data)
 }
 
