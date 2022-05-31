@@ -54,6 +54,7 @@ export const LoginForm = () => {
         onChange={formik.handleChange}
         error={formik.touched.username && !!formik.errors.username}
         helperText={(formik.touched.username && formik.errors.username) || ''}
+        style={{ background: '#f0f0f0', borderRadius: '5px' }}
       />
 
       <Autocomplete
@@ -69,6 +70,7 @@ export const LoginForm = () => {
             label='Color'
             error={formik.touched.color && !!formik.errors.color}
             helperText={(formik.touched.color && formik.errors.color) || ''}
+            style={{ background: '#f0f0f0', borderRadius: '5px' }}
           />
         }
       />

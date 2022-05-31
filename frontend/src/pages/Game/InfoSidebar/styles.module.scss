@@ -5,6 +5,11 @@
   margin-left: 16px;
   padding: 32px;
   border: 10px solid #634833;
+  border-radius: 5px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
   .move_queue {
     text-align: center;
