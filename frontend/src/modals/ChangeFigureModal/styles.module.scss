@@ -1,0 +1,30 @@
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  outline: none !important;
+  border-radius: 5px;
+  padding: 50px;
+  background: #F0D9B5;
+  border: 10px solid #634833;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .figures_box {
+    display: flex;
+    margin: 24px 0;
+
+    .figure_button {
+      width: 100px;
+      height: 100px;
+    }
+
+    .figure_button_active {
+      box-shadow: inset 0px 0px 30px 0 rgba(0,0,0,0.3);
+    }
+  }
+}

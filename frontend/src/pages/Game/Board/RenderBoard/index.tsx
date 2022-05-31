@@ -6,7 +6,7 @@ import { gameDataType } from '../../../../api/types';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { RootState } from '../../../../store';
 import { setBoard, setMove } from '../../../../store/game/gameSlise';
-import { Figure } from '../Figure';
+import { Figure } from '../../../../components';
 import styles from './styles.module.scss';
 
 export const RenderBoard = () => {

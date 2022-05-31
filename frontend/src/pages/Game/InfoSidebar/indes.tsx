@@ -1,12 +1,10 @@
 import { Button, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { surrender } from '../../../api/socket';
-import { getDifferenceTime } from '../../../helpers';
 import { useAppSelector } from '../../../hooks/redux';
 import { path } from '../../../router/constants';
-import { Pawn } from '../Board/Figure/figures/Pawn';
+import { Pawn } from '../../../components/Figure/figures/Pawn';
 import styles from './styles.module.scss'
 import { TimeTypography } from './TimeTypography';
 

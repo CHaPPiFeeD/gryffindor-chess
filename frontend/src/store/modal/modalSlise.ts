@@ -6,6 +6,7 @@ type modalStateType = {
 
 const initialState: modalStateType = {
   endGame: false,
+  changeFigure: false,
 }
 
 export const modalSlice = createSlice({

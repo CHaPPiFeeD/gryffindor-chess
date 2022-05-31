@@ -1,6 +1,6 @@
 import { Box } from '@mui/material'
 import { useSelector } from 'react-redux'
-import { RootState } from '../../../../store'
+import { RootState } from '../../store'
 import { Bishop } from './figures/Bishop'
 import { King } from './figures/King'
 import { Knight } from './figures/Knight'

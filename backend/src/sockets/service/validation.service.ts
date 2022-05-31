@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { colorsType, movePropsType } from 'src/dto/validation.dto';
 import {
@@ -12,10 +12,14 @@ import {
   checkSchemeAttack,
   checkVerticalAndHorizontalMove,
 } from '../../helpers/validation';
+import { ServerGateway } from '../server.gateway';
 
 export class ValidationService {
   private logger = new Logger();
   private initPos = 7;
+
+  @Inject(ServerGateway)
+  serverGateway: ServerGateway;
 
   validationMove(props: movePropsType) {
     const { gameRoom, figure, endPos, startPos, clientColor } = props;
@@ -153,21 +157,17 @@ export class ValidationService {
 
     const initPawnPos = figure === FIGURES.WHITE_PAWN ? 6 : 1;
     const step = figure === FIGURES.WHITE_PAWN ? -1 : 1;
+    const endFigure = gameRoom.board[endPos[0]][endPos[1]];
 
-    const isStep =
-      Math.abs(y) === 1 &&
-      x === 0 &&
-      gameRoom.board[endPos[0]][endPos[1]] === FIGURES.EMPTY;
+    const isStep = Math.abs(y) === 1 && x === 0 && endFigure === FIGURES.EMPTY;
 
     const isDiagonal =
-      Math.abs(x) === 1 &&
-      y === step &&
-      gameRoom.board[endPos[0]][endPos[1]] !== FIGURES.EMPTY;
+      Math.abs(x) === 1 && y === step && endFigure !== FIGURES.EMPTY;
 
     const isTwoSteps =
       startPos[0] === initPawnPos &&
       Math.abs(y) === 2 &&
-      gameRoom.board[endPos[0]][endPos[1]] === FIGURES.EMPTY &&
+      endFigure === FIGURES.EMPTY &&
       gameRoom.board[startPos[0] + step][endPos[1]] === FIGURES.EMPTY;
 
     if (!isStep && !isDiagonal && !isTwoSteps)
