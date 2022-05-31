@@ -5,28 +5,28 @@ import { Knight } from '../../components/Figure/figures/Knight';
 import { Queen } from '../../components/Figure/figures/Queen';
 import { Rook } from '../../components/Figure/figures/Rook';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux'
+import { setEndPosition, setMove } from '../../store/game/gameSlise';
 import { setClose } from '../../store/modal/modalSlise';
 import styles from './styles.module.scss'
 
 export const ChangeFigureModal = () => {
   const dispatch = useAppDispatch();
   const open = useAppSelector(state => state.modals.changeFigure);
-  const colorStore = useAppSelector(state => state.game.color);
+  const {
+    color: colorStore,
+    activePosition: activePositionStore,
+    endPosition: endPositionStore,
+  } = useAppSelector(state => state.game);
   const [stateValue, setStateValue] = useState('');
-
-  const handleClose = () => {
-    console.log(stateValue);
-
-
-    if (!stateValue) return;
-
-    dispatch(setClose('changeFigure'))
-  }
 
   const fill = colorStore === 'white' ? 'white' : '#333333';
 
   const handleClick = (child: number, figure: string): void => {
-    setStateValue(figure)
+    setStateValue(
+      colorStore === 'white'
+        ? figure.toUpperCase()
+        : figure,
+    )
 
     const box = document.getElementById('figures_box')
 
@@ -35,6 +35,18 @@ export const ChangeFigureModal = () => {
     }
 
     box?.children[child].classList.add(styles.figure_button_active)
+  }
+
+  const handleClose = () => {
+    if (!stateValue || endPositionStore === null) return;
+
+    dispatch(setMove(
+      activePositionStore,
+      endPositionStore,
+      { isChange: true, chooseFigure: stateValue },
+    ))
+    dispatch(setEndPosition(null))
+    dispatch(setClose('changeFigure'))
   }
 
   return (
@@ -91,8 +103,8 @@ export const ChangeFigureModal = () => {
 }
 
 const FIGURES = {
-  QUEEN: 'queen',
-  BISHOP: 'bishop',
-  KNIGHT: 'knight',
-  ROOK: 'rook',
+  QUEEN: 'q',
+  BISHOP: 'b',
+  KNIGHT: 'n',
+  ROOK: 'r',
 }
