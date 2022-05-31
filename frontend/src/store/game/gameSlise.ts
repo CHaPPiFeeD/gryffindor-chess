@@ -11,6 +11,7 @@ export type gameType = {
   color: 'white' | 'black' | null;
   moveQueue: 'white' | 'black' | null;
   activePosition: number[] | null;
+  gameStartTime: Date | null;
   endGameMessage: {
     title: string;
     message: string;
@@ -23,6 +24,7 @@ const initialState: gameType = {
   color: null,
   moveQueue: null,
   activePosition: null,
+  gameStartTime: null,
   endGameMessage: {
     title: '',
     message: '',
@@ -38,6 +40,9 @@ export const gameSlice = createSlice({
       state.ways = action.payload.ways;
       state.moveQueue = action.payload.moveQueue;
       state.color = action.payload?.color || state.color;
+      state.gameStartTime = action.payload?.gameStart || state.gameStartTime || null;
+      console.log(action.payload?.gameStart);
+
     },
     setActivePosition: (state, action) => {
       console.log(`active: ${action.payload}`);

@@ -11,6 +11,7 @@ export type gameRoomType = {
   board: string[][];
   moveQueue: string;
   winner: null | 'white' | 'black';
+  gameStart: Date;
 };
 
 export type gameStateType = Map<string, gameRoomType>;

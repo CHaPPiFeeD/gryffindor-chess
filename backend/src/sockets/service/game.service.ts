@@ -35,6 +35,7 @@ export class GameService {
       board: INIT_BOARD(),
       moveQueue: COLORS.WHITE,
       winner: null,
+      gameStart: new Date(),
     };
 
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
@@ -58,6 +59,7 @@ export class GameService {
       board: whiteBoard,
       ways: whiteWays,
       moveQueue: COLORS.WHITE,
+      gameStart: gameRoom.gameStart,
     });
 
     this.serverGateway.server.in(black.socket).emit('/game/start', {
@@ -65,6 +67,7 @@ export class GameService {
       board: blackBoard,
       ways: [],
       moveQueue: COLORS.WHITE,
+      gameStart: gameRoom.gameStart,
     });
   };
 
