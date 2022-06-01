@@ -53,7 +53,7 @@ export const RenderBoard = () => {
       const [startRow, startCol] = activePositionStore;
       const figure = boardStore[startRow][startCol];
       const pawn = colorStore === 'white' ? 'P' : 'p';
-      isChangeFigure = figure === pawn && row === 0 || row === 7;
+      isChangeFigure = figure === pawn && (row === 0 || row === 7);
     }
 
     if (!activePositionStore) {

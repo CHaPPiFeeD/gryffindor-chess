@@ -41,7 +41,10 @@ const setColors = (
     name: whitePlayer.username,
     ways: [],
     rules: {
-      castling: true,
+      castling: {
+        long: true,
+        short: true,
+      },
     },
   };
 
@@ -50,7 +53,10 @@ const setColors = (
     name: blackPlayer.username,
     ways: [],
     rules: {
-      castling: true,
+      castling: {
+        long: true,
+        short: true,
+      },
     },
   };
 

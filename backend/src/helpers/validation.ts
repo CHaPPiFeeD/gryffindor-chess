@@ -107,7 +107,7 @@ export const checkSchemeAttack = (props: movePropsType) => {
 export const checkKingCastle = (props: movePropsType) => {
   const { clientColor, gameRoom, endPos } = props;
 
-  let castling: boolean, initRow;
+  let castling, initRow;
 
   if (clientColor === COLORS.WHITE) {
     castling = gameRoom.white.rules.castling;
@@ -134,8 +134,9 @@ export const checkKingCastle = (props: movePropsType) => {
   const isShort = endPos[0] === initRow && endPos[1] === 6;
   const isLong = endPos[0] === initRow && endPos[1] === 2;
 
-  if (isLongCastlingAllow && castling && isLong) {
-    gameRoom[clientColor].rules.castling = false;
+  if (isLongCastlingAllow && castling.long && isLong) {
+    gameRoom[clientColor].rules.castling.long = false;
+    gameRoom[clientColor].rules.castling.short = false;
     const rook = gameRoom.board[initRow][0];
     gameRoom.board[initRow][3] = rook;
     gameRoom.board[initRow][0] = FIGURES.EMPTY;
@@ -143,7 +144,8 @@ export const checkKingCastle = (props: movePropsType) => {
   }
 
   if (isShortCastlingAllow && castling && isShort) {
-    gameRoom[clientColor].rules.castling = false;
+    gameRoom[clientColor].rules.castling.long = false;
+    gameRoom[clientColor].rules.castling.short = false;
     const rook = gameRoom.board[initRow][0];
     gameRoom.board[initRow][5] = rook;
     gameRoom.board[initRow][7] = FIGURES.EMPTY;

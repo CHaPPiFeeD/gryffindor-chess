@@ -148,10 +148,18 @@ export class ValidationService {
       );
   }
 
-  private checkRook(props) {
+  private checkRook(props: movePropsType) {
+    const { startPos, gameRoom, clientColor } = props;
+
     checkSchemeAttack(props);
 
     const isFigureOnWay = checkVerticalAndHorizontalMove(props);
+
+    if (startPos[1] === 0) gameRoom[clientColor].rules.castling.long = false;
+    if (startPos[1] === 7) gameRoom[clientColor].rules.castling.short = false;
+
+    this.logger.debug(gameRoom[clientColor].rules.castling.long);
+    this.logger.debug(gameRoom[clientColor].rules.castling.short);
 
     if (isFigureOnWay)
       throw new WsException(

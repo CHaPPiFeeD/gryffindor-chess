@@ -3,7 +3,10 @@ export type gamePlayerType = {
   name: string;
   ways: string[];
   rules: {
-    castling: boolean;
+    castling: {
+      long: boolean;
+      short: boolean;
+    };
   };
 };
 
