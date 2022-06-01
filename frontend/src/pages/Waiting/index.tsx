@@ -1,13 +1,15 @@
-import { Typography } from '@mui/material'
+import { Button, LinearProgress, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { getUsers, socketConnection, startGame } from '../../api/socket'
+import { getUsers, checkSocketConnection, startGame, leaveQueue } from '../../api/socket'
 import { gameDataType, usersQueueType } from '../../api/types'
+import { Pawn } from '../../components/Figure/figures/Pawn'
 import { useAppDispatch, useAppSelector } from '../../hooks/redux'
 import { path } from '../../router/constants'
 import { setBoard, setQueue } from '../../store/game/gameSlise'
+import { QueueList } from './QueueList'
 import styles from './styles.module.scss'
 
 export const Waiting = () => {
@@ -15,9 +17,9 @@ export const Waiting = () => {
   const navigate = useNavigate();
   const queue = useAppSelector(store => store.game.queue);
 
-  useEffect(() => socketConnection(), [])
-
   useEffect(() => {
+    checkSocketConnection();
+
     startGame((payload: gameDataType) => {
       dispatch(setBoard(payload))
       dispatch(setQueue(null));
@@ -28,6 +30,10 @@ export const Waiting = () => {
       console.log(payload);
       dispatch(setQueue(payload));
     })
+
+    return () => {
+      leaveQueue();
+    }
   }, [])
 
   return (
@@ -42,15 +48,18 @@ export const Waiting = () => {
           Queue
         </Typography>
 
-        <Box>
-          {queue?.map((value, index) => {
-            return (
-              <Box key={index}>
-                {value.username} | {value.color.join(', ')}
-              </Box>
-            )
-          })}
-        </Box>
+        <QueueList />
+
+        <LinearProgress className={styles.progress} />
+
+        <Button
+          variant='contained'
+          type='submit'
+          className={styles.button}
+          onClick={() => navigate(path.login())}
+        >
+          Cancel
+        </Button>
 
       </Box>
     </Box>

@@ -1,0 +1,30 @@
+.list {
+  border: 2px solid #634833;
+  width: 512px;
+
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 10px;
+    border-bottom: 1px solid #634833;
+    user-select: none;
+
+    .name {
+      max-width: 508px;
+    }
+
+    .figure_box {
+      display: flex;
+      width: 96px;
+
+      .figure {
+        width: 48px;
+      }
+    }
+  }
+
+  :last-child {
+    border-bottom: none;
+  }
+}

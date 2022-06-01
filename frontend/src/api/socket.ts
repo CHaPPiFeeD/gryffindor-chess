@@ -1,5 +1,4 @@
 import { io, Socket } from 'socket.io-client'
-import { setBoard } from '../store/game/gameSlise';
 import { gameDataType, moveDataType, usersQueueType } from './types';
 
 
@@ -21,6 +20,18 @@ export const joinSocket = () => {
 
 export const regInQueue = (data: any, cb: Function) => {
   socket.emit('/queue/search', data)
+
+  socket.on('/queue:get', (data: usersQueueType[]) => {
+    cb(data);
+  })
+}
+
+export const leaveQueue = () => {
+  socket.emit('/queue/leave')
+}
+
+export const getUsers = (cb: Function) => {
+  socket.emit('/queue:post')
 
   socket.on('/queue:get', (data: usersQueueType[]) => {
     cb(data);
@@ -49,20 +60,11 @@ export const checkEndGame = (cb: Function) => {
   })
 }
 
-export const socketConnection = () => {
+export const checkSocketConnection = () => {
   if (!socket) window.location.href = '/'
 }
 
 export const surrender = () => {
   socket.emit('/game/surrender')
 }
-
-export const getUsers = (cb: Function) => {
-  socket.emit('/queue:post')
-
-  socket.on('/queue:get', (data: usersQueueType[]) => {
-    cb(data);
-  })
-}
-
 

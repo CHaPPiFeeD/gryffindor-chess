@@ -59,5 +59,7 @@ export class QueueService {
     this.queue.forEach((value, index) => {
       if (value.socket === socket.id) this.queue.splice(index, 1);
     });
+
+    this.serverGateway.server.emit('/queue:get', this.queue);
   };
 }

@@ -20,7 +20,8 @@ export const LoginForm = () => {
   const validationSchema = Yup.object({
     username: Yup.string()
       .required('Username is a required field')
-      .min(3, 'Must be more than 3 characters'),
+      .min(3, 'Must be more than 3 characters')
+      .max(24, 'No more than 24 characters'),
     color: Yup.array()
       .required('Color is a required field')
       .nullable(),

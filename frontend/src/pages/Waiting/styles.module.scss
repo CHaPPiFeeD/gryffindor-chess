@@ -12,7 +12,20 @@
   flex-direction: column;
   align-items: center;
   background: #F0D9B5;
-  // background: #f0f0f0;
   min-width: 256px;
   border: 10px solid #634833;
+
+  .progress {
+    width: 256px;
+    margin-top: 15px;
+    background-color: #a5957d;
+
+    span {
+      background-color: #634833;
+    }
+  }
+
+  .button {
+    margin-top: 15px;
+  }
 }
