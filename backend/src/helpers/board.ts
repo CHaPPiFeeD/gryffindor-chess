@@ -89,9 +89,6 @@ const checkCastlingSide = (
     const wayRow = checkRow + way[0];
     const wayCol = checkCol + way[1];
 
-    console.log(wayRow);
-    console.log(wayCol);
-
     const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
 
     if (isCorrectCoordinates) {

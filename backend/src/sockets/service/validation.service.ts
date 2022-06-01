@@ -1,6 +1,6 @@
 import { Inject, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { colorsType, movePropsType } from 'src/dto/validation.dto';
+import { movePropsType } from 'src/dto/validation.dto';
 import {
   BLACK_FIGURES,
   COLORS,
@@ -72,7 +72,7 @@ export class ValidationService {
     this.checkEndGame({ ...props, clientColor, endFigure });
   }
 
-  checkMoveQueue = (props): colorsType[] => {
+  checkMoveQueue = (props): string[] => {
     const { client, gameRoom } = props;
 
     let clientColor, nextMove;

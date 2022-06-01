@@ -1,6 +1,4 @@
-import { colorsType } from 'src/dto';
-
-export const COLORS: colorsType = {
+export const COLORS = {
   WHITE: 'white',
   BLACK: 'black',
 };
@@ -28,8 +26,8 @@ export const INIT_BOARD = (): string[][] => [
   ['.', '.', '.', '.', '.', '.', '.', '.'],
   ['.', '.', '.', '.', '.', '.', '.', '.'],
   ['.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-  ['R', 'N', '.', '.', 'K', '.', '.', 'R'],
+  ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+  ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
 ];
 
 // prettier-ignore
@@ -74,3 +72,25 @@ export const FOG_BOARD = (): string[][] => [
 export const WHITE_FIGURES = 'KQBNRP';
 
 export const BLACK_FIGURES = 'kqbnrp';
+
+export const FIRST_LETTER = {
+  0: '8',
+  1: '7',
+  2: '6',
+  3: '5',
+  4: '4',
+  5: '3',
+  6: '2',
+  7: '1',
+};
+
+export const SECOND_LETTER = {
+  0: 'a',
+  1: 'b',
+  2: 'c',
+  3: 'd',
+  4: 'e',
+  5: 'f',
+  6: 'g',
+  7: 'h',
+};

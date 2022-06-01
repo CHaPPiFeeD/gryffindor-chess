@@ -8,6 +8,7 @@ import {
 import { UserQueueDto, RegToQueueDto } from '../../dto/queue.dto';
 import { GameService } from './game.service';
 import { ServerGateway } from '../server.gateway';
+import { WsException } from '@nestjs/websockets';
 
 export class QueueService {
   private logger = new Logger(QueueService.name);
@@ -25,12 +26,8 @@ export class QueueService {
       ...data,
     };
 
-    if (getUserBySocket(this.queue, client.id)) {
-      this.logger.error('You are already in line');
-      return;
-    }
-
-    this.logger.log(playerOne);
+    if (getUserBySocket(this.queue, client.id))
+      throw new WsException('You are already in line');
 
     const desiredColors: string[] = getFindsColors(playerOne.color);
     const playerTwo: UserQueueDto = getUserByColor(this.queue, desiredColors);
@@ -47,8 +44,6 @@ export class QueueService {
     }
 
     this.serverGateway.server.emit('/queue:get', this.queue);
-
-    this.logger.debug(this.queue);
   }
 
   disconnect = (socket: Socket) => {

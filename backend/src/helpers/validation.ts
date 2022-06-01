@@ -119,8 +119,6 @@ export const checkKingCastle = (props: movePropsType) => {
     initRow = 0;
   }
 
-  console.log(castling);
-
   const isLongCastlingAllow = checkCastlingSide(
     props,
     KING_WAYS_CASTLING.TO_LONG_SIDE,
@@ -166,8 +164,6 @@ const checkCastlingSide = (props: movePropsType, side): boolean => {
   side.forEach((way) => {
     const wayRow = startPos[0] + way[0];
     const wayCol = startPos[1] + way[1];
-
-    console.log(`${wayRow}:${wayCol}`);
 
     const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
 

@@ -1,8 +1,6 @@
 import { Socket } from 'socket.io';
 import { gameRoomType } from './game.dto';
 
-export type colorsType = 'white' | 'black';
-
 export type movePropsType = {
   client: Socket;
   startPos: number[];
@@ -14,8 +12,8 @@ export type movePropsType = {
   x?: number;
   y?: number;
   endFigure?: string;
-  nextPlayerMove?: colorsType;
-  clientColor?: colorsType;
+  nextPlayerMove?: string;
+  clientColor?: string;
   change: {
     isChange: boolean;
     chooseFigure: null | string;

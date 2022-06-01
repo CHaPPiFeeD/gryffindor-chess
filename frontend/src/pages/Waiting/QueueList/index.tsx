@@ -16,8 +16,8 @@ export const QueueList = () => {
             </Typography>
             <Box className={styles.figure_box}>
               {value.color.map((v) => {
-                if (v === 'white') return <Box className={styles.figure}><Pawn fill='white' /></Box>
-                if (v === 'black') return <Box className={styles.figure}><Pawn fill='#333333' /></Box>
+                if (v === 'white') return <Box className={styles.figure} key='0'><Pawn fill='white' /></Box>
+                if (v === 'black') return <Box className={styles.figure} key='1'><Pawn fill='#333333' /></Box>
               })}
             </Box>
           </Box>

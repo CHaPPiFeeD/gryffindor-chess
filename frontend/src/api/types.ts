@@ -4,7 +4,13 @@ export type gameDataType = {
   color?: 'white' | 'black' | null,
   moveQueue: 'white' | 'black' | null,
   gameStart?: Date | null,
+  log?: logType,
 };
+
+type logType = {
+  color: string,
+  log: string,
+}
 
 export type changeFigureDataType = {
   isChange: boolean,

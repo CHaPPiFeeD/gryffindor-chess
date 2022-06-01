@@ -2,10 +2,21 @@ import { Inject, Logger } from '@nestjs/common';
 import { randomString } from '../../helpers';
 import { alertBoard, findColors, findRoom } from '../../helpers/game';
 import { UserQueueDto } from '../../dto/queue.dto';
-import { gameStateType, gameRoomType, MoveDto } from 'src/dto/game.dto';
+import {
+  gameStateType,
+  gameRoomType,
+  MoveDto,
+  logType,
+} from 'src/dto/game.dto';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
-import { INIT_BOARD, COLORS, FIGURES } from 'src/enum/constants';
+import {
+  INIT_BOARD,
+  COLORS,
+  FIGURES,
+  SECOND_LETTER,
+  FIRST_LETTER,
+} from 'src/enum/constants';
 import { BoardService } from './board.service';
 import { movePropsType } from 'src/dto/validation.dto';
 import { WsException } from '@nestjs/websockets';
@@ -36,6 +47,7 @@ export class GameService {
       moveQueue: COLORS.WHITE,
       winner: null,
       gameStart: new Date(),
+      log: [],
     };
 
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
@@ -102,6 +114,12 @@ export class GameService {
     gameRoom.board[endPos[0]][endPos[1]] = figure;
     gameRoom.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
 
+    const [whiteLog, blackLog] = this.updateLog({
+      ...props,
+      figure,
+      clientColor,
+    });
+
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
       this.boardService.createFogBoards(gameRoom);
 
@@ -117,13 +135,18 @@ export class GameService {
       moveQueue: gameRoom.moveQueue,
       ways:
         nextPlayerMove === COLORS.WHITE && !gameRoom.winner ? whiteWays : [],
+      log: whiteLog,
     });
+
+    this.logger.debug(blackLog);
+    this.logger.debug(whiteLog);
 
     this.serverGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
       board: blackBoard,
       moveQueue: gameRoom.moveQueue,
       ways:
         nextPlayerMove === COLORS.BLACK && !gameRoom.winner ? blackWays : [],
+      log: blackLog,
     });
 
     if (gameRoom.winner) {
@@ -154,6 +177,52 @@ export class GameService {
 
     if (isChange)
       gameRoom.board[startPos[0]][startPos[1]] = change.chooseFigure;
+  };
+
+  private updateLog = (props: movePropsType) => {
+    const { figure, startPos, endPos, gameRoom, clientColor } = props;
+
+    const startFirstLetter = FIRST_LETTER[startPos[0]];
+    const startSecondLetter = SECOND_LETTER[startPos[1]];
+
+    const endFirstLetter = FIRST_LETTER[endPos[0]];
+    const endSecondLetter = SECOND_LETTER[endPos[1]];
+
+    const newLog = [
+      figure,
+      startFirstLetter,
+      startSecondLetter,
+      endFirstLetter,
+      endSecondLetter,
+    ].join('');
+
+    const log: logType = {
+      color: clientColor,
+      log: newLog,
+    };
+
+    this.logger.debug(log);
+
+    gameRoom.log.push(log);
+
+    this.logger.debug(JSON.stringify(gameRoom.log));
+
+    const whiteLog = [];
+    const blackLog = [];
+
+    gameRoom.log.forEach((v) => {
+      if (v.color === COLORS.WHITE) whiteLog.push(v);
+      if (v.color === COLORS.BLACK) blackLog.push(v);
+
+      this.logger.debug(v);
+      this.logger.debug(v.color);
+      this.logger.debug(COLORS.WHITE);
+      this.logger.debug(v.color);
+      this.logger.debug(COLORS.BLACK);
+      this.logger.debug('===');
+    });
+
+    return [whiteLog, blackLog];
   };
 
   disconnect = (client: Socket, message: string) => {
