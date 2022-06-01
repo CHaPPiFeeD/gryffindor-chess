@@ -2,6 +2,9 @@ export type gamePlayerType = {
   socket: string;
   name: string;
   ways: string[];
+  rules: {
+    castling: boolean;
+  };
 };
 
 export type gameRoomType = {

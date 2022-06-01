@@ -17,7 +17,6 @@ export const Game = () => {
   useEffect(() => {
     checkSocketConnection();
 
-
     checkEndGame((data: any) => {
       dispatch(setMessage(data))
       dispatch(setOpen('endGame'))

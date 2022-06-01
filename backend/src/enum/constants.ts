@@ -1,4 +1,6 @@
-export const COLORS = {
+import { colorsType } from 'src/dto';
+
+export const COLORS: colorsType = {
   WHITE: 'white',
   BLACK: 'black',
 };
@@ -27,7 +29,7 @@ export const INIT_BOARD = (): string[][] => [
   ['.', '.', '.', '.', '.', '.', '.', '.'],
   ['.', '.', '.', '.', '.', '.', '.', '.'],
   ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-  ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+  ['R', 'N', '.', '.', 'K', '.', '.', 'R'],
 ];
 
 // prettier-ignore

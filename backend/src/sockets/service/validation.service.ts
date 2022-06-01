@@ -9,6 +9,7 @@ import {
 } from '../../enum/constants';
 import {
   checkDiagonalMove,
+  // checkKingCastle,
   checkSchemeAttack,
   checkVerticalAndHorizontalMove,
 } from '../../helpers/validation';
@@ -44,7 +45,7 @@ export class ValidationService {
 
     switch (true) {
       case figure.toLowerCase() === FIGURES.BLACK_KING:
-        checkSchemeAttack(props);
+        this.checkKing(props);
         break;
 
       case figure.toLowerCase() === FIGURES.BLACK_QUEEN:
@@ -117,6 +118,12 @@ export class ValidationService {
     if (isMoveToOwnFigure) throw new WsException('Move to own figure');
     if (isOpponentFigure) throw new WsException("Move opponent's figure");
   }
+
+  private checkKing = (props: movePropsType) => {
+    checkSchemeAttack(props);
+
+    // checkKingCastle(props);
+  };
 
   private checkQueen(props: movePropsType) {
     checkSchemeAttack(props);

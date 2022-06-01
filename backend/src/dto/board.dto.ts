@@ -4,6 +4,7 @@ export type checkWaysPropsType = {
   gameRoom: gameRoomType;
   generalBoard: string[][];
   playerBoard?: string[][];
+  playerColor?: 'white' | 'black';
   checkRow: number;
   checkCol: number;
   playerWays?: number[][][];

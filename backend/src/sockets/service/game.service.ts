@@ -48,7 +48,9 @@ export class GameService {
 
     alertBoard(this.logger, gameRoom.board, gameRoom.roomId);
     alertBoard(this.logger, whiteBoard, 'white board');
+    this.logger.debug(whiteWays);
     alertBoard(this.logger, blackBoard, 'black board');
+    this.logger.debug(blackWays);
 
     this.serverGateway.server
       .in([white.socket, black.socket])
