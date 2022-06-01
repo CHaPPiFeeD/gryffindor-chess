@@ -1,6 +1,6 @@
 import { Inject, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { colorsType, movePropsType } from 'src/dto/validation.dto';
+import { movePropsType } from 'src/dto/validation.dto';
 import {
   BLACK_FIGURES,
   COLORS,
@@ -9,6 +9,7 @@ import {
 } from '../../enum/constants';
 import {
   checkDiagonalMove,
+  // checkKingCastle,
   checkSchemeAttack,
   checkVerticalAndHorizontalMove,
 } from '../../helpers/validation';
@@ -44,7 +45,7 @@ export class ValidationService {
 
     switch (true) {
       case figure.toLowerCase() === FIGURES.BLACK_KING:
-        checkSchemeAttack(props);
+        this.checkKing(props);
         break;
 
       case figure.toLowerCase() === FIGURES.BLACK_QUEEN:
@@ -71,7 +72,7 @@ export class ValidationService {
     this.checkEndGame({ ...props, clientColor, endFigure });
   }
 
-  checkMoveQueue = (props): colorsType[] => {
+  checkMoveQueue = (props): string[] => {
     const { client, gameRoom } = props;
 
     let clientColor, nextMove;
@@ -118,6 +119,12 @@ export class ValidationService {
     if (isOpponentFigure) throw new WsException("Move opponent's figure");
   }
 
+  private checkKing = (props: movePropsType) => {
+    checkSchemeAttack(props);
+
+    // checkKingCastle(props);
+  };
+
   private checkQueen(props: movePropsType) {
     checkSchemeAttack(props);
 
@@ -141,10 +148,18 @@ export class ValidationService {
       );
   }
 
-  private checkRook(props) {
+  private checkRook(props: movePropsType) {
+    const { startPos, gameRoom, clientColor } = props;
+
     checkSchemeAttack(props);
 
     const isFigureOnWay = checkVerticalAndHorizontalMove(props);
+
+    if (startPos[1] === 0) gameRoom[clientColor].rules.castling.long = false;
+    if (startPos[1] === 7) gameRoom[clientColor].rules.castling.short = false;
+
+    this.logger.debug(gameRoom[clientColor].rules.castling.long);
+    this.logger.debug(gameRoom[clientColor].rules.castling.short);
 
     if (isFigureOnWay)
       throw new WsException(

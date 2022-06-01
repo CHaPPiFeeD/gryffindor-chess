@@ -7,6 +7,8 @@ import {
 } from '../../helpers/queue';
 import { UserQueueDto, RegToQueueDto } from '../../dto/queue.dto';
 import { GameService } from './game.service';
+import { ServerGateway } from '../server.gateway';
+import { WsException } from '@nestjs/websockets';
 
 export class QueueService {
   private logger = new Logger(QueueService.name);
@@ -15,18 +17,17 @@ export class QueueService {
   @Inject(GameService)
   gameService: GameService;
 
+  @Inject(ServerGateway)
+  serverGateway: ServerGateway;
+
   regToQueue(client: Socket, data: RegToQueueDto) {
     const playerOne: UserQueueDto = {
       socket: client.id,
       ...data,
     };
 
-    if (getUserBySocket(this.queue, client.id)) {
-      this.logger.error('You are already in line');
-      return;
-    }
-
-    this.logger.log(playerOne);
+    if (getUserBySocket(this.queue, client.id))
+      throw new WsException('You are already in line');
 
     const desiredColors: string[] = getFindsColors(playerOne.color);
     const playerTwo: UserQueueDto = getUserByColor(this.queue, desiredColors);
@@ -41,6 +42,8 @@ export class QueueService {
       if (index >= 0) this.queue.splice(index, 1);
       this.gameService.startGame(playerOne, playerTwo);
     }
+
+    this.serverGateway.server.emit('/queue:get', this.queue);
   }
 
   disconnect = (socket: Socket) => {
@@ -51,5 +54,7 @@ export class QueueService {
     this.queue.forEach((value, index) => {
       if (value.socket === socket.id) this.queue.splice(index, 1);
     });
+
+    this.serverGateway.server.emit('/queue:get', this.queue);
   };
 }

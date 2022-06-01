@@ -38,14 +38,26 @@ const setColors = (
 } => {
   const white: gamePlayerType = {
     socket: whitePlayer.socket,
-    name: whitePlayer.name,
+    name: whitePlayer.username,
     ways: [],
+    rules: {
+      castling: {
+        long: true,
+        short: true,
+      },
+    },
   };
 
   const black: gamePlayerType = {
     socket: blackPlayer.socket,
-    name: blackPlayer.name,
+    name: blackPlayer.username,
     ways: [],
+    rules: {
+      castling: {
+        long: true,
+        short: true,
+      },
+    },
   };
 
   return { white, black };

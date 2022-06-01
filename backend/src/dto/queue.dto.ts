@@ -1,10 +1,10 @@
 export class RegToQueueDto {
-  name: string;
+  username: string;
   color: string[];
 }
 
 export class UserQueueDto {
   socket: string;
-  name: string;
+  username: string;
   color: string[];
 }

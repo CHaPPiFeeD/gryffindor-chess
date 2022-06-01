@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { move } from '../../api/socket';
-import { changeFigureDataType, gameDataType } from '../../api/types'
+import { changeFigureDataType, gameDataType, usersQueueType } from '../../api/types'
 
 export type gameType = {
   board: string[][];
@@ -14,6 +14,7 @@ export type gameType = {
     title: string;
     message: string;
   }
+  queue: usersQueueType[] | null;
 }
 
 const initialState: gameType = {
@@ -28,6 +29,7 @@ const initialState: gameType = {
     title: '',
     message: '',
   },
+  queue: null,
 }
 
 export const gameSlice = createSlice({
@@ -52,6 +54,9 @@ export const gameSlice = createSlice({
     },
     setEndPosition: (state, action) => {
       state.endPosition = action.payload;
+    },
+    setQueue: (state, action) => {
+      state.queue = action.payload;
     },
   },
 })
@@ -86,6 +91,6 @@ export const setMove = (
   }
 }
 
-export const { setBoard, setActivePosition, setMessage, setEndPosition } = gameSlice.actions;
+export const { setBoard, setActivePosition, setMessage, setEndPosition, setQueue } = gameSlice.actions;
 
 export default gameSlice.reducer;

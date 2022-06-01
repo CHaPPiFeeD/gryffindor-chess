@@ -15,4 +15,9 @@ export class QueueGateway {
   regToQueue(client: Socket, data: RegToQueueDto) {
     this.queueService.regToQueue(client, data);
   }
+
+  @SubscribeMessage('/queue/leave')
+  leave(client: Socket) {
+    this.queueService.disconnect(client);
+  }
 }

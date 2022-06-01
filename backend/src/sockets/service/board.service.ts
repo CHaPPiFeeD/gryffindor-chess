@@ -1,7 +1,11 @@
 import { Logger } from '@nestjs/common';
 import { gameRoomType } from 'src/dto/game.dto';
 import { checkCoordinates } from '../../helpers/validation';
-import { addWayAndVisibility, createWay } from '../../helpers/board';
+import {
+  addWayAndVisibility,
+  checkCastling,
+  createWay,
+} from '../../helpers/board';
 import {
   checkWaysPropsType,
   createBoardsForPlayersType,
@@ -11,6 +15,7 @@ import {
   BLACK_FIGURES,
   FIGURES,
   FOG_BOARD,
+  COLORS,
 } from '../../enum/constants';
 import {
   QUEEN_WAYS,
@@ -49,6 +54,7 @@ export class BoardService {
 
           props = {
             ...props,
+            playerColor: COLORS.WHITE,
             playerBoard: whiteBoard,
             playerWays: initWhiteWays,
             ownFigures: WHITE_FIGURES,
@@ -127,6 +133,8 @@ export class BoardService {
       if (isCorrectCoordinates)
         addWayAndVisibility({ ...props, wayRow, wayCol });
     });
+
+    checkCastling(props);
   };
 
   private checkKnightWays = (

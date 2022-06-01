@@ -1,16 +1,16 @@
 import { Autocomplete, Box, Button, TextField } from '@mui/material'
 import { useFormik } from 'formik'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 import { regInQueue } from '../../../api/socket'
+import { useAppDispatch } from '../../../hooks/redux'
 import { path } from '../../../router/constants'
-import { setBoard } from '../../../store/game/gameSlise'
+import { setQueue } from '../../../store/game/gameSlise'
 import styles from './styles.module.scss'
 
 export const LoginForm = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const initialValues: initialValuesType = {
     username: '',
@@ -20,18 +20,18 @@ export const LoginForm = () => {
   const validationSchema = Yup.object({
     username: Yup.string()
       .required('Username is a required field')
-      .min(3, 'Must be more than 3 characters'),
+      .min(3, 'Must be more than 3 characters')
+      .max(24, 'No more than 24 characters'),
     color: Yup.array()
       .required('Color is a required field')
       .nullable(),
   });
 
   const onSubmit = (values: initialValuesType) => {
-    regInQueue(values)
-      .then((data: any) => {
-        dispatch(setBoard(data));
-        navigate(path.game());
-      })
+    regInQueue(values, (queue: any) => {
+      dispatch(setQueue(queue));
+    })
+    navigate(path.waiting());
   };
 
   const formik = useFormik({

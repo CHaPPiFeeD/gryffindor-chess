@@ -9,6 +9,18 @@ export const KNIGHTS_WAYS = [
   [2, 1],
 ];
 
+export const KING_WAYS_CASTLING = {
+  TO_LONG_SIDE: [
+    [0, -1],
+    [0, -2],
+    [0, -3],
+  ],
+  TO_SHORT_SIDE: [
+    [0, 1],
+    [0, 2],
+  ],
+};
+
 export const ROOK_WAYS = [
   [
     [-1, 0],

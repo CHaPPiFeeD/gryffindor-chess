@@ -30,8 +30,10 @@ export const InfoSidebar = () => {
               : <Pawn fill='#333333' />}
           </Box>
         </Typography>
+        
         <TimeTypography />
       </Box>
+
       <Button
         onClick={handleClick}
         variant='contained'
