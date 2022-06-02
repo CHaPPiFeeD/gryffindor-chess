@@ -107,7 +107,7 @@ export const RenderBoard = () => {
       dispatch(setEndPosition([row, col]))
       dispatch(setOpen('changeFigure'))
     }
-    
+
     if (!isChangeFigure) {
       dispatch(setMove(
         activePositionStore,
@@ -136,7 +136,7 @@ export const RenderBoard = () => {
                 data-col={col}
                 onClick={handleClick}
               >
-                <Figure row={row} col={col} />
+                <Figure cell={boardStore[row][col]} />
               </Box>
             )
           })}

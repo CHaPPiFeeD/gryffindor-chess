@@ -58,10 +58,10 @@ export class GameService {
 
     this.gamesStates.set(roomId, gameRoom);
 
-    // alertBoard(this.logger, gameRoom.board, gameRoom.roomId);
-    // alertBoard(this.logger, whiteBoard, 'white board');
+    alertBoard(this.logger, gameRoom.board, gameRoom.roomId);
+    alertBoard(this.logger, whiteBoard, 'white board');
     // this.logger.debug(whiteWays);
-    // alertBoard(this.logger, blackBoard, 'black board');
+    alertBoard(this.logger, blackBoard, 'black board');
     // this.logger.debug(blackWays);
 
     this.serverGateway.server
@@ -126,9 +126,9 @@ export class GameService {
     gameRoom.white.ways = whiteWays;
     gameRoom.black.ways = blackWays;
 
-    // alertBoard(this.logger, gameRoom.board, roomId);
-    // alertBoard(this.logger, whiteBoard, 'white board');
-    // alertBoard(this.logger, blackBoard, 'black board');
+    alertBoard(this.logger, gameRoom.board, roomId);
+    alertBoard(this.logger, whiteBoard, 'white board');
+    alertBoard(this.logger, blackBoard, 'black board');
 
     this.serverGateway.server.in(gameRoom.white.socket).emit('/game/move:get', {
       board: whiteBoard,

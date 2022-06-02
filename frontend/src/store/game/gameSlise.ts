@@ -5,8 +5,8 @@ import { changeFigureDataType, gameDataType, usersQueueType } from '../../api/ty
 export type gameType = {
   board: string[][];
   ways: string[];
-  color: 'white' | 'black' | null;
-  moveQueue: 'white' | 'black' | null;
+  color: string | null;
+  moveQueue: string | null;
   activePosition: [number, number] | null;
   endPosition: [number, number] | null;
   gameStartTime: Date | null;
@@ -15,6 +15,7 @@ export type gameType = {
     message: string;
   }
   queue: usersQueueType[] | null;
+  log: any;
 }
 
 const initialState: gameType = {
@@ -30,6 +31,7 @@ const initialState: gameType = {
     message: '',
   },
   queue: null,
+  log: [],
 }
 
 export const gameSlice = createSlice({
@@ -42,8 +44,7 @@ export const gameSlice = createSlice({
       state.moveQueue = action.payload.moveQueue;
       state.color = action.payload?.color || state.color;
       state.gameStartTime = action.payload?.gameStart || state.gameStartTime || null;
-      console.log(action.payload?.gameStart);
-
+      state.log = action.payload?.log || state.log;
     },
     setActivePosition: (state, action) => {
       state.activePosition = action.payload;

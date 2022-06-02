@@ -66,6 +66,6 @@ export const checkSocketConnection = () => {
 }
 
 export const surrender = () => {
-  socket.emit('/game/surrender')
+  socket.emit('/game/leave')
 }
 

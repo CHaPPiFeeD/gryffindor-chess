@@ -7,6 +7,8 @@ import { path } from '../../../router/constants';
 import { Pawn } from '../../../components/Figure/figures/Pawn';
 import styles from './styles.module.scss'
 import { TimeTypography } from './TimeTypography';
+import { Figure } from '../../../components';
+import { Logs } from './Logs';
 
 export const InfoSidebar = () => {
   const navigate = useNavigate()
@@ -30,9 +32,11 @@ export const InfoSidebar = () => {
               : <Pawn fill='#333333' />}
           </Box>
         </Typography>
-        
+
         <TimeTypography />
       </Box>
+
+      <Logs />
 
       <Button
         onClick={handleClick}

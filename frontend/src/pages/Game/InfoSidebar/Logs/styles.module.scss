@@ -1,0 +1,27 @@
+.logs {
+  height: 512px;
+  width: 50%;
+  overflow: auto;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+    background: rgba(255, 255, 255, 0.5),
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #B58863;
+  }
+
+  .log_item {
+    display: flex;
+    align-items: center;
+  
+    .figure_box {
+      width: 48px;
+    }
+  }
+}
+
+
+
+
