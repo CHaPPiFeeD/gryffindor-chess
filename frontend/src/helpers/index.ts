@@ -1,13 +1,11 @@
-export const getDifferenceTime = (time: Date | null, endTime: Date | null) => {
-
-  if (!time) time = new Date();
+export const getDifferenceTime = (startTime: Date | null, endTime: Date | null) => {
+  if (!startTime) startTime = new Date();
   if (!endTime) endTime = new Date();
 
+  const gameStartTime = new Date(startTime);
   const currentTime = new Date(endTime);
 
-  const gameStart = new Date(time);
-
-  const diffMls = currentTime.getTime() - gameStart.getTime();
+  const diffMls = currentTime.getTime() - gameStartTime.getTime();
 
   return formatBalanceInTime(diffMls);
 }

@@ -10,7 +10,6 @@ export const VerticalAxis = (props: any) => {
 
   const axis = isReverse ? verticalAxisReverse : verticalAxis;
 
-
   return (
     <Box className={styles.axis}>
       {axis.map((v, i) => (

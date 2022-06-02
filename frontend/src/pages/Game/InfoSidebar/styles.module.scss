@@ -11,18 +11,6 @@
   flex-direction: column;
   justify-content: space-between;
 
-  .move_queue {
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .pawn {
-      width: 48px;
-      height: 48px;
-    }
-  }
-
   .time {
     text-align: center;
   }

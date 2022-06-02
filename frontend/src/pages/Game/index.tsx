@@ -1,7 +1,7 @@
 import { Box } from '@mui/system'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { checkEndGame, checkSocketConnection, surrender } from '../../api/socket'
+import { checkEndGame, checkSocketConnection, leaveGame } from '../../api/socket'
 import { useAppDispatch } from '../../hooks/redux'
 import { path } from '../../router/constants'
 import { setEndTime, setMessage } from '../../store/game/gameSlise'
@@ -9,6 +9,7 @@ import { setOpen } from '../../store/modal/modalSlise'
 import { Board } from './Board'
 import { InfoSidebar } from './InfoSidebar/indes'
 import styles from './styles.module.scss'
+
 
 export const Game = () => {
   const dispatch = useAppDispatch();
@@ -24,7 +25,7 @@ export const Game = () => {
     })
 
     return () => {
-      surrender();
+      leaveGame();
       navigate(path.login())
     }
   }, [])

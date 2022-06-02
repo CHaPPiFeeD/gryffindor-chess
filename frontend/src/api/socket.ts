@@ -64,7 +64,7 @@ export const checkSocketConnection = () => {
   if (!socket) window.location.href = '/'
 }
 
-export const surrender = () => {
+export const leaveGame = () => {
   socket.emit('/game/leave')
 }
 

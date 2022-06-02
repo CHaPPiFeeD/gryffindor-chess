@@ -11,13 +11,16 @@ export const EatFigures = () => {
   return (
     <Box className={styles.wrapper}>
       <Box className={styles.figures_container} >
+
         {eatFiguresStore.map((v, i) => {
+          
           return (
             <Box className={styles.figure_box} key={i} >
               <Figure cell={v} />
             </Box>
           )
         })}
+
       </Box>
     </Box>
 

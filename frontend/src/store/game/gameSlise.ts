@@ -5,7 +5,7 @@ import { changeFigureDataType, gameDataType, usersQueueType } from '../../api/ty
 export type gameType = {
   board: string[][];
   ways: string[];
-  color: string | null;
+  color: string;
   moveQueue: string | null;
   activePosition: [number, number] | null;
   endPosition: [number, number] | null;
@@ -17,13 +17,13 @@ export type gameType = {
   }
   queue: usersQueueType[] | null;
   log: any;
-  eatFigures: string[] | null;
+  eatFigures: string[];
 }
 
 const initialState: gameType = {
   board: [],
   ways: [],
-  color: null,
+  color: '',
   moveQueue: null,
   activePosition: null,
   endPosition: null,
@@ -35,7 +35,7 @@ const initialState: gameType = {
   },
   queue: null,
   log: [],
-  eatFigures: null,
+  eatFigures: [],
 }
 
 export const gameSlice = createSlice({

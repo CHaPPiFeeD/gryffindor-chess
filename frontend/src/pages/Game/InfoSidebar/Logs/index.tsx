@@ -15,10 +15,10 @@ export const Logs = () => {
   useEffect(() => {
     scrollToBottom()
   }, [logStore]);
-  
 
   return (
     <Box className={styles.logs}>
+
       {logStore.map((v: any, i: number) => {
         const letters = v?.log.split('');
         const startPos = '' + letters[1] + letters[2];
@@ -36,6 +36,7 @@ export const Logs = () => {
           </Box>
         )
       })}
+
       <Box ref={logsEndRef} id='logsEnd' />
     </Box>
   )

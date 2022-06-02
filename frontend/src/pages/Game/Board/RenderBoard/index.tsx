@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { getBoard } from '../../../../api/socket';
 import { gameDataType } from '../../../../api/types';
@@ -9,6 +9,7 @@ import { setBoard, setEndPosition, setMove } from '../../../../store/game/gameSl
 import { Figure } from '../../../../components';
 import styles from './styles.module.scss';
 import { setOpen } from '../../../../store/modal/modalSlise';
+
 
 export const RenderBoard = () => {
   const boardRef = useRef(document.getElementById('board'));
@@ -25,90 +26,34 @@ export const RenderBoard = () => {
     getBoard((data: gameDataType) => dispatch(setBoard(data)))
   }, [])
 
-  const getCoordinate = (row: number, col: number): number[] => {
-    const isReverse = colorStore === 'black';
-    if (isReverse) return [Math.abs(row - 7), Math.abs(col - 7)];
-    return [row, col];
-  }
-
   const handleClick = (e: any) => {
     const row = +e.currentTarget.attributes.getNamedItem('data-row')?.value;
     const col = +e.currentTarget.attributes.getNamedItem('data-col')?.value;
-    let isChangeFigure;
+    let isTransformPawn;
 
-    if (moveQueueStore !== colorStore || !waysStore.length ) return;
+    if (moveQueueStore !== colorStore || !waysStore.length) return;
 
     if (activePositionStore) {
-      for (let i = 0; i < 8; i++) {
-        for (let j = 0; j < 8; j++) {
-          boardRef?.current?.children[i]?.children[j].classList.remove(
-            styles.active,
-            styles.ellips,
-            styles.circle,
-            styles.active,
-          )
-        }
-      }
+      removeAllClasses(boardRef);
 
-      const [startRow, startCol] = activePositionStore;
-      const figure = boardStore[startRow][startCol];
-      const pawn = colorStore === 'white' ? 'P' : 'p';
-      isChangeFigure = figure === pawn && (row === 0 || row === 7);
+      isTransformPawn =
+        checkTransformPawn(activePositionStore, boardStore, colorStore, row);
     }
 
     if (!activePositionStore) {
-      const [rowBoard, colBoard] = getCoordinate(row, col);
-      const cell = boardRef?.current?.children[rowBoard]?.children[colBoard];
+      const [rowBoard, colBoard] = getCoordinate(row, col, colorStore);
 
-      const isNotEmpty =
-        cell !== undefined &&
-        cell.childElementCount &&
-        !cell.children[0].classList.value.includes('fog_wrapper');
+      addActiveClass(boardRef, rowBoard, colBoard);
 
-      if (isNotEmpty) {
-        cell.classList.add(styles.active);
-      } else return;
-
-      waysStore.forEach((v) => {
-        const way = v.split('');
-        const [start, end] = [
-          [+way[0], +way[1]],
-          [+way[2], +way[3]],
-        ]
-
-        const isAllowWay =
-          row === start[0] &&
-          col === start[1];
-
-        if (isAllowWay) {
-          const [rowBoard, colBoard] = getCoordinate(end[0], end[1])
-          const cell = boardRef?.current?.children[rowBoard]?.children[colBoard]
-
-          const isNotUndefined = cell !== undefined;
-
-          if (isNotUndefined) {
-            const isNotEmpty = cell.childElementCount;
-
-            if (isNotEmpty) {
-              cell.classList.add(styles.circle);
-            }
-
-            if (!isNotEmpty) {
-              cell.classList.add(styles.ellips);
-            }
-          }
-        }
-      })
+      addWaysClasses(waysStore, row, col, colorStore, boardRef)
     }
 
-    console.log(isChangeFigure);
-
-    if (isChangeFigure) {
+    if (isTransformPawn) {
       dispatch(setEndPosition([row, col]))
       dispatch(setOpen('changeFigure'))
     }
 
-    if (!isChangeFigure) {
+    if (!isTransformPawn) {
       dispatch(setMove(
         activePositionStore,
         [row, col],
@@ -122,7 +67,7 @@ export const RenderBoard = () => {
       {boardStore.map((v, i) => {
         return <Box key={i} style={{ display: 'flex' }}>
           {v.map((v: any, j: number) => {
-            const [row, col] = getCoordinate(i, j);
+            const [row, col] = getCoordinate(i, j, colorStore);
             const l = colorStore === 'black' ? 1 : 0;
             const number = i + j + l;
             const style = number % 2 === 0 ? styles.cell_white : styles.cell_black
@@ -144,4 +89,91 @@ export const RenderBoard = () => {
       })}
     </Box>
   );
+}
+
+const removeAllClasses = (boardRef: React.MutableRefObject<HTMLElement | null>) => {
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      boardRef?.current?.children[i]?.children[j].classList.remove(
+        styles.active,
+        styles.ellips,
+        styles.circle,
+        styles.active,
+      )
+    }
+  }
+}
+
+const checkTransformPawn = (
+  activePos: number[],
+  boardStore: string[][],
+  color: string,
+  row: number,
+) => {
+  const [startRow, startCol] = activePos;
+  const figure = boardStore[startRow][startCol];
+  const pawn = color === 'white' ? 'P' : 'p';
+  return figure === pawn && (row === 0 || row === 7);
+}
+
+const getCoordinate = (row: number, col: number, color: string): number[] => {
+  const isReverse = color === 'black';
+  if (isReverse) return [Math.abs(row - 7), Math.abs(col - 7)];
+  return [row, col];
+}
+
+const addActiveClass = (
+  boardRef: React.MutableRefObject<HTMLElement | null>,
+  row: number,
+  col: number,
+) => {
+  const cell = boardRef?.current?.children[row]?.children[col];
+
+  const isNotEmpty =
+    cell !== undefined &&
+    cell.childElementCount &&
+    !cell.children[0].classList.value.includes('fog_wrapper');
+
+  if (isNotEmpty) {
+    cell.classList.add(styles.active);
+  } else return;
+}
+
+const addWaysClasses = (
+  ways: string[],
+  row: number,
+  col: number,
+  color: string,
+  boardRef: React.MutableRefObject<HTMLElement | null>,
+) => {
+  ways.forEach((v) => {
+    const way = v.split('');
+    const [start, end] = [
+      [+way[0], +way[1]],
+      [+way[2], +way[3]],
+    ]
+
+    const isAllowWay =
+      row === start[0] &&
+      col === start[1];
+
+    if (isAllowWay) {
+      const [rowBoard, colBoard] = getCoordinate(end[0], end[1], color)
+      const cell = boardRef?.current?.children[rowBoard]?.children[colBoard]
+
+      const isNotUndefined = cell !== undefined;
+
+      if (isNotUndefined) {
+        const isNotEmpty = cell.childElementCount;
+
+        if (isNotEmpty) {
+          cell.classList.add(styles.circle);
+        }
+
+        if (!isNotEmpty) {
+          cell.classList.add(styles.ellips);
+        }
+      }
+    }
+  })
 }

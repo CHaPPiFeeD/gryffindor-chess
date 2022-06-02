@@ -4,6 +4,7 @@ import { RenderBoard } from './RenderBoard';
 import { VerticalAxis } from './VerticalAxis';
 import styles from './styles.module.scss';
 
+
 export const Board = () => {
 
   return (
