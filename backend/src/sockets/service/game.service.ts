@@ -1,6 +1,12 @@
 import { Inject, Logger } from '@nestjs/common';
 import { randomString } from '../../helpers';
-import { alertBoard, findColors, findRoom } from '../../helpers/game';
+import {
+  alertBoard,
+  Game,
+  findColors,
+  findRoom,
+  getPlayersColors,
+} from '../../helpers/game';
 import { UserQueueDto } from '../../dto/queue.dto';
 import {
   gameStateType,
@@ -11,7 +17,6 @@ import {
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
 import {
-  INIT_BOARD,
   COLORS,
   FIGURES,
   SECOND_LETTER,
@@ -41,16 +46,7 @@ export class GameService {
     const roomId: string = randomString(16);
     const { white, black } = findColors(playerOne, playerTwo);
 
-    const gameRoom: gameRoomType = {
-      roomId,
-      white,
-      black,
-      board: INIT_BOARD(),
-      moveQueue: COLORS.WHITE,
-      winner: null,
-      gameStart: new Date(),
-      log: [],
-    };
+    const gameRoom: gameRoomType = new Game(roomId, white, black);
 
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
       this.boardService.createFogBoards(gameRoom);
@@ -62,9 +58,7 @@ export class GameService {
 
     alertBoard(this.logger, gameRoom.board, gameRoom.roomId);
     alertBoard(this.logger, whiteBoard, 'white board');
-    // this.logger.debug(whiteWays);
     alertBoard(this.logger, blackBoard, 'black board');
-    // this.logger.debug(blackWays);
 
     this.serverGateway.server
       .in([white.socket, black.socket])
@@ -103,26 +97,21 @@ export class GameService {
     if (gameRoom.winner)
       throw new WsException("You can't move after the game is over");
 
-    const [clientColor, nextPlayerMove] =
-      this.validationService.checkMoveQueue(props);
+    const [clientColor, enemyColor] = getPlayersColors(client, gameRoom);
 
+    this.validationService.checkMoveQueue(props);
     this.validationService.validationMove({ ...props, clientColor });
 
     this.checkChangeFigure({ ...props, clientColor });
-
     this.checkEatFigure({ ...props, clientColor });
 
     figure = gameRoom.board[+startPos[0]][+startPos[1]]; // update
 
-    gameRoom.moveQueue = nextPlayerMove;
+    gameRoom.moveQueue = enemyColor;
     gameRoom.board[endPos[0]][endPos[1]] = figure;
     gameRoom.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
 
-    const [whiteLog, blackLog] = this.updateLog({
-      ...props,
-      figure,
-      clientColor,
-    });
+    const [whiteLog, blackLog] = this.updateLog({ ...props, clientColor });
 
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
       this.boardService.createFogBoards(gameRoom);
@@ -137,8 +126,7 @@ export class GameService {
     this.serverGateway.server.in(gameRoom.white.socket).emit('/game/move:get', {
       board: gameRoom.winner ? gameRoom.board : whiteBoard,
       moveQueue: gameRoom.moveQueue,
-      ways:
-        nextPlayerMove === COLORS.WHITE && !gameRoom.winner ? whiteWays : [],
+      ways: enemyColor === COLORS.WHITE && !gameRoom.winner ? whiteWays : [],
       log: gameRoom.winner ? gameRoom.log : whiteLog,
       eatFigures: gameRoom.white.eatenFigures,
     });
@@ -146,79 +134,12 @@ export class GameService {
     this.serverGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
       board: gameRoom.winner ? gameRoom.board : blackBoard,
       moveQueue: gameRoom.moveQueue,
-      ways:
-        nextPlayerMove === COLORS.BLACK && !gameRoom.winner ? blackWays : [],
+      ways: enemyColor === COLORS.BLACK && !gameRoom.winner ? blackWays : [],
       log: gameRoom.winner ? gameRoom.log : blackLog,
       eatFigures: gameRoom.black.eatenFigures,
     });
 
-    if (gameRoom.winner) {
-      this.logger.debug(gameRoom.winner);
-
-      this.serverGateway.server
-        .in(gameRoom[clientColor].socket)
-        .emit('/game/end', {
-          title: 'You win!',
-          message: "You have eaten the opponent's king piece.",
-          gameEnd: gameRoom.gameEnd,
-        });
-
-      this.serverGateway.server
-        .in(gameRoom[nextPlayerMove].socket)
-        .emit('/game/end', {
-          title: 'You lost!',
-          message: 'The opponent has eaten your king piece.',
-          gameEnd: gameRoom.gameEnd,
-        });
-    }
-  };
-
-  private checkChangeFigure = (props: movePropsType) => {
-    const { figure, endPos, clientColor, gameRoom, startPos, change } = props;
-
-    const pawn = clientColor === 'white' ? 'P' : 'p';
-
-    const isChange = figure === pawn && (endPos[0] === 0 || endPos[0] === 7);
-
-    if (isChange)
-      gameRoom.board[startPos[0]][startPos[1]] = change.chooseFigure;
-  };
-
-  private checkEatFigure = (props: movePropsType) => {
-    const { gameRoom, endPos, clientColor } = props;
-    const endFigure = gameRoom.board[endPos[0]][endPos[1]];
-
-    if (BLACK_FIGURES.includes(endFigure) || WHITE_FIGURES.includes(endFigure))
-      gameRoom[clientColor].eatenFigures.push(endFigure);
-  };
-
-  private updateLog = (props: movePropsType) => {
-    const { figure, startPos, endPos, gameRoom, clientColor } = props;
-
-    const newLog = [
-      figure,
-      FIRST_LETTER[startPos[1]],
-      SECOND_LETTER[startPos[0]],
-      FIRST_LETTER[endPos[1]],
-      SECOND_LETTER[endPos[0]],
-    ].join('');
-
-    const log: logType = {
-      color: clientColor,
-      log: newLog,
-    };
-
-    gameRoom.log.push(log);
-
-    const whiteLog = [];
-    const blackLog = [];
-
-    gameRoom.log.forEach((v) => {
-      if (v.color === COLORS.WHITE) whiteLog.push(v);
-      if (v.color === COLORS.BLACK) blackLog.push(v);
-    });
-
-    return [whiteLog, blackLog];
+    this.checkEndGame({ ...props, enemyColor });
   };
 
   disconnect = (client: Socket, message: string) => {
@@ -253,5 +174,79 @@ export class GameService {
     });
 
     this.logger.debug(gameRoom.winner);
+  };
+
+  private checkEndGame = (props) => {
+    const { gameRoom, clientColor, enemyColor } = props;
+
+    if (gameRoom.winner) {
+      this.logger.debug(gameRoom.winner);
+
+      this.serverGateway.server
+        .in(gameRoom[clientColor].socket)
+        .emit('/game/end', {
+          title: 'You win!',
+          message: "You have eaten the opponent's king piece.",
+          gameEnd: gameRoom.gameEnd,
+        });
+
+      this.serverGateway.server
+        .in(gameRoom[enemyColor].socket)
+        .emit('/game/end', {
+          title: 'You lost!',
+          message: 'The opponent has eaten your king piece.',
+          gameEnd: gameRoom.gameEnd,
+        });
+    }
+  };
+
+  private checkChangeFigure = (props: movePropsType) => {
+    const { figure, endPos, clientColor, gameRoom, startPos, change } = props;
+
+    const pawn = clientColor === 'white' ? 'P' : 'p';
+
+    const isChange = figure === pawn && (endPos[0] === 0 || endPos[0] === 7);
+
+    if (isChange)
+      gameRoom.board[startPos[0]][startPos[1]] = change.chooseFigure;
+  };
+
+  private checkEatFigure = (props: movePropsType) => {
+    const { gameRoom, endPos, clientColor } = props;
+    const endFigure = gameRoom.board[endPos[0]][endPos[1]];
+
+    if (BLACK_FIGURES.includes(endFigure) || WHITE_FIGURES.includes(endFigure))
+      gameRoom[clientColor].eatenFigures.push(endFigure);
+  };
+
+  private updateLog = (props: movePropsType) => {
+    const { startPos, endPos, gameRoom, clientColor } = props;
+
+    const figure = gameRoom.board[+startPos[0]][+startPos[1]];
+
+    const newLog = [
+      figure,
+      FIRST_LETTER[startPos[1]],
+      SECOND_LETTER[startPos[0]],
+      FIRST_LETTER[endPos[1]],
+      SECOND_LETTER[endPos[0]],
+    ].join('');
+
+    const log: logType = {
+      color: clientColor,
+      log: newLog,
+    };
+
+    gameRoom.log.push(log);
+
+    const whiteLog = [];
+    const blackLog = [];
+
+    gameRoom.log.forEach((v) => {
+      if (v.color === COLORS.WHITE) whiteLog.push(v);
+      if (v.color === COLORS.BLACK) blackLog.push(v);
+    });
+
+    return [whiteLog, blackLog];
   };
 }

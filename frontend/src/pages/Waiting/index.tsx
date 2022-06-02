@@ -28,7 +28,7 @@ export const Waiting = () => {
       dispatch(setQueue(payload));
     })
 
-    return leaveQueue()
+    return () => leaveQueue()
   }, [])
 
   return (
