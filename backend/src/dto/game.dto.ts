@@ -8,6 +8,7 @@ export type gamePlayerType = {
       short: boolean;
     };
   };
+  eatenFigures: string[];
 };
 
 export type gameRoomType = {

@@ -46,6 +46,7 @@ const setColors = (
         short: true,
       },
     },
+    eatenFigures: [],
   };
 
   const black: gamePlayerType = {
@@ -58,6 +59,7 @@ const setColors = (
         short: true,
       },
     },
+    eatenFigures: [],
   };
 
   return { white, black };

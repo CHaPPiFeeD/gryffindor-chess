@@ -17,6 +17,7 @@ export type gameType = {
   }
   queue: usersQueueType[] | null;
   log: any;
+  eatFigures: string[] | null;
 }
 
 const initialState: gameType = {
@@ -34,6 +35,7 @@ const initialState: gameType = {
   },
   queue: null,
   log: [],
+  eatFigures: null,
 }
 
 export const gameSlice = createSlice({
@@ -47,6 +49,7 @@ export const gameSlice = createSlice({
       state.color = action.payload?.color || state.color;
       state.gameStartTime = action.payload?.gameStart || state.gameStartTime;
       state.log = action.payload?.log || state.log;
+      state.eatFigures = action.payload.eatFigures || null;
     },
     setActivePosition: (state, action) => {
       state.activePosition = action.payload;

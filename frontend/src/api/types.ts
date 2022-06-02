@@ -6,6 +6,7 @@ export type gameDataType = {
   gameStart?: Date | null,
   gameEnd?: Date | null,
   log?: logType,
+  eatFigures: string[],
 };
 
 type logType = {

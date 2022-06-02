@@ -5,9 +5,7 @@ import { useAppSelector } from '../../../../hooks/redux'
 import styles from './styles.module.scss'
 
 export const Logs = () => {
-  const {
-    log: logStore,
-  } = useAppSelector(store => store.game)
+  const { log: logStore } = useAppSelector(store => store.game)
   const logsEndRef = useRef(document.getElementById('logsEnd'))
 
   console.log(logsEndRef);

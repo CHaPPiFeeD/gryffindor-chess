@@ -9,6 +9,7 @@ import styles from './styles.module.scss'
 import { TimeTypography } from './TimeTypography';
 import { Figure } from '../../../components';
 import { Logs } from './Logs';
+import { EatFigures } from './EatFigures';
 
 export const InfoSidebar = () => {
   const navigate = useNavigate()
@@ -36,7 +37,13 @@ export const InfoSidebar = () => {
         <TimeTypography />
       </Box>
 
-      <Logs />
+      <Box className={styles.info_box}>
+        <Logs />
+
+        <EatFigures />
+
+      </Box>
+
 
       <Button
         onClick={handleClick}

@@ -16,6 +16,8 @@ import {
   FIGURES,
   SECOND_LETTER,
   FIRST_LETTER,
+  BLACK_FIGURES,
+  WHITE_FIGURES,
 } from 'src/enum/constants';
 import { BoardService } from './board.service';
 import { movePropsType } from 'src/dto/validation.dto';
@@ -108,6 +110,8 @@ export class GameService {
 
     this.checkChangeFigure({ ...props, clientColor });
 
+    this.checkEatFigure({ ...props, clientColor });
+
     figure = gameRoom.board[+startPos[0]][+startPos[1]]; // update
 
     gameRoom.moveQueue = nextPlayerMove;
@@ -136,6 +140,7 @@ export class GameService {
       ways:
         nextPlayerMove === COLORS.WHITE && !gameRoom.winner ? whiteWays : [],
       log: gameRoom.winner ? gameRoom.log : whiteLog,
+      eatFigures: gameRoom.white.eatenFigures,
     });
 
     this.serverGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
@@ -144,6 +149,7 @@ export class GameService {
       ways:
         nextPlayerMove === COLORS.BLACK && !gameRoom.winner ? blackWays : [],
       log: gameRoom.winner ? gameRoom.log : blackLog,
+      eatFigures: gameRoom.black.eatenFigures,
     });
 
     if (gameRoom.winner) {
@@ -176,6 +182,14 @@ export class GameService {
 
     if (isChange)
       gameRoom.board[startPos[0]][startPos[1]] = change.chooseFigure;
+  };
+
+  private checkEatFigure = (props: movePropsType) => {
+    const { gameRoom, endPos, clientColor } = props;
+    const endFigure = gameRoom.board[endPos[0]][endPos[1]];
+
+    if (BLACK_FIGURES.includes(endFigure) || WHITE_FIGURES.includes(endFigure))
+      gameRoom[clientColor].eatenFigures.push(endFigure);
   };
 
   private updateLog = (props: movePropsType) => {
