@@ -197,10 +197,10 @@ export class GameService {
 
     const newLog = [
       figure,
-      FIRST_LETTER[startPos[0]],
-      SECOND_LETTER[startPos[1]],
-      FIRST_LETTER[endPos[0]],
-      SECOND_LETTER[endPos[1]],
+      FIRST_LETTER[startPos[1]],
+      SECOND_LETTER[startPos[0]],
+      FIRST_LETTER[endPos[1]],
+      SECOND_LETTER[endPos[0]],
     ].join('');
 
     const log: logType = {

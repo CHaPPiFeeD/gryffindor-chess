@@ -8,8 +8,6 @@ export const Logs = () => {
   const { log: logStore } = useAppSelector(store => store.game)
   const logsEndRef = useRef(document.getElementById('logsEnd'))
 
-  console.log(logsEndRef);
-
   const scrollToBottom = () => {
     logsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }

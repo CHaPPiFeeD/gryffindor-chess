@@ -27,7 +27,6 @@ export const Waiting = () => {
     })
 
     getUsers((payload: any) => {
-      console.log(payload);
       dispatch(setQueue(payload));
     })
 
