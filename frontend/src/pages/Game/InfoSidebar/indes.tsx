@@ -1,37 +1,39 @@
 import { Button, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
-import { surrender } from '../../../api/socket';
-import { useAppSelector } from '../../../hooks/redux';
+import { leaveGame } from '../../../api/socket';
 import { path } from '../../../router/constants';
-import { Pawn } from '../../../components/Figure/figures/Pawn';
 import styles from './styles.module.scss'
 import { TimeTypography } from './TimeTypography';
+import { Logs } from './Logs';
+import { EatFigures } from './EatFigures';
+import { MoveQueueTypography } from './MoveQueueTypofraphy';
+import { PlayersName } from './PlayersNames';
+
 
 export const InfoSidebar = () => {
   const navigate = useNavigate()
-  const {
-    moveQueue: moveQueueStore,
-  } = useAppSelector(store => store.game)
 
   const handleClick = () => {
-    surrender()
+    leaveGame()
     navigate(path.login())
   }
 
   return (
     <Box className={styles.content}>
-      <Box>
-        <Typography component='h5' variant='h5' className={styles.move_queue}>
-          Move: {moveQueueStore}
-          <Box className={styles.pawn}>
-            {moveQueueStore === 'white'
-              ? <Pawn fill='white' />
-              : <Pawn fill='#333333' />}
-          </Box>
-        </Typography>
-        
-        <TimeTypography />
+
+      <Box className={styles.info}>
+        <PlayersName />
+
+        <Box className={styles.info_box_one}>
+          <MoveQueueTypography />
+          <TimeTypography />
+        </Box>
+
+        <Box className={styles.info_box_two}>
+          <Logs />
+          <EatFigures />
+        </Box>
       </Box>
 
       <Button

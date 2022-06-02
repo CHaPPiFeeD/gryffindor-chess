@@ -1,6 +1,4 @@
 import { Box } from '@mui/material'
-import { useSelector } from 'react-redux'
-import { RootState } from '../../store'
 import { Bishop } from './figures/Bishop'
 import { King } from './figures/King'
 import { Knight } from './figures/Knight'
@@ -9,10 +7,8 @@ import { Queen } from './figures/Queen'
 import { Rook } from './figures/Rook'
 import styles from './styles.module.scss'
 
-export const Figure = (props: coordinateType) => {
-  const { row, col } = props;
-  const boardState = useSelector((state: RootState) => state.game.board);
-  const cell = boardState[row][col];
+export const Figure = (props: figurePropsType) => {
+  const { cell } = props;
 
   let fill;
 
@@ -63,7 +59,6 @@ const FIGURES = {
 const WHITE_FIGURES = 'KQBNRP';
 const BLACK_FIGURES = 'rqbnrp';
 
-type coordinateType = {
-  row: number;
-  col: number;
+type figurePropsType = {
+  cell: string;
 }

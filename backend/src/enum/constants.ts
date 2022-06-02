@@ -74,17 +74,6 @@ export const WHITE_FIGURES = 'KQBNRP';
 export const BLACK_FIGURES = 'kqbnrp';
 
 export const FIRST_LETTER = {
-  0: '8',
-  1: '7',
-  2: '6',
-  3: '5',
-  4: '4',
-  5: '3',
-  6: '2',
-  7: '1',
-};
-
-export const SECOND_LETTER = {
   0: 'a',
   1: 'b',
   2: 'c',
@@ -93,4 +82,15 @@ export const SECOND_LETTER = {
   5: 'f',
   6: 'g',
   7: 'h',
+};
+
+export const SECOND_LETTER = {
+  0: '8',
+  1: '7',
+  2: '6',
+  3: '5',
+  4: '4',
+  5: '3',
+  6: '2',
+  7: '1',
 };

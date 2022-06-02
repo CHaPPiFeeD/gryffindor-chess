@@ -8,6 +8,7 @@ export type gamePlayerType = {
       short: boolean;
     };
   };
+  eatenFigures: string[];
 };
 
 export type gameRoomType = {
@@ -18,6 +19,7 @@ export type gameRoomType = {
   moveQueue: string;
   winner: string | null;
   gameStart: Date;
+  gameEnd?: Date;
   log: logType[];
 };
 

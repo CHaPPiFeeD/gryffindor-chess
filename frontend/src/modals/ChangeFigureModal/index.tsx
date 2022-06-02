@@ -12,12 +12,12 @@ import styles from './styles.module.scss'
 export const ChangeFigureModal = () => {
   const dispatch = useAppDispatch();
   const open = useAppSelector(state => state.modals.changeFigure);
+  const [stateValue, setStateValue] = useState('');
   const {
     color: colorStore,
     activePosition: activePositionStore,
     endPosition: endPositionStore,
   } = useAppSelector(state => state.game);
-  const [stateValue, setStateValue] = useState('');
 
   const fill = colorStore === 'white' ? 'white' : '#333333';
 
@@ -70,18 +70,21 @@ export const ChangeFigureModal = () => {
           >
             <Queen fill={fill} />
           </Box>
+
           <Box
             className={styles.figure_button}
             onClick={() => handleClick(1, FIGURES.BISHOP)}
           >
             <Bishop fill={fill} />
           </Box>
+
           <Box
             className={styles.figure_button}
             onClick={() => handleClick(2, FIGURES.KNIGHT)}
           >
             <Knight fill={fill} />
           </Box>
+          
           <Box
             className={styles.figure_button}
             onClick={() => handleClick(3, FIGURES.ROOK)}

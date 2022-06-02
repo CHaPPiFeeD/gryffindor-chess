@@ -1,15 +1,10 @@
 import { Inject, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { movePropsType } from 'src/dto/validation.dto';
-import {
-  BLACK_FIGURES,
-  COLORS,
-  FIGURES,
-  WHITE_FIGURES,
-} from '../../enum/constants';
+import { getPlayersColors } from 'src/helpers/game';
+import { BLACK_FIGURES, FIGURES, WHITE_FIGURES } from '../../enum/constants';
 import {
   checkDiagonalMove,
-  // checkKingCastle,
   checkSchemeAttack,
   checkVerticalAndHorizontalMove,
 } from '../../helpers/validation';
@@ -72,25 +67,13 @@ export class ValidationService {
     this.checkEndGame({ ...props, clientColor, endFigure });
   }
 
-  checkMoveQueue = (props): string[] => {
+  checkMoveQueue = (props) => {
     const { client, gameRoom } = props;
 
-    let clientColor, nextMove;
-
-    if (client.id === gameRoom.white.socket) {
-      clientColor = COLORS.WHITE;
-      nextMove = COLORS.BLACK;
-    }
-
-    if (client.id === gameRoom.black.socket) {
-      clientColor = COLORS.BLACK;
-      nextMove = COLORS.WHITE;
-    }
+    const [clientColor] = getPlayersColors(client, gameRoom);
 
     if (clientColor !== gameRoom.moveQueue)
       throw new WsException("Opponent's move order");
-
-    return [clientColor, nextMove];
   };
 
   private basicСheck(props: movePropsType) {
@@ -196,6 +179,7 @@ export class ValidationService {
 
     if (isWinner) {
       gameRoom.winner = clientColor;
+      gameRoom.gameEnd = new Date();
     }
   };
 }

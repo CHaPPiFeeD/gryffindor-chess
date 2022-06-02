@@ -24,13 +24,25 @@ export const EndGameModal = () => {
         <Typography>
           {endGameMessage.message}
         </Typography>
-        <Button 
-          onClick={() => window.location.href = '/'}
-          variant='contained'
-          className={styles.button}
-        >
-          Go back
-        </Button>
+
+        <Box>
+          <Button
+            onClick={() => window.location.href = '/'}
+            variant='contained'
+            className={styles.button}
+          >
+            Go back
+          </Button>
+          
+          <Button
+            onClick={handleClose}
+            variant='contained'
+            className={styles.button}
+          >
+            I want to stay
+          </Button>
+        </Box>
+
       </Box>
     </Modal>
   )

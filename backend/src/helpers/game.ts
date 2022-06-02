@@ -1,7 +1,34 @@
 import { Socket } from 'socket.io';
 import { gamePlayerType, gameStateType } from '../dto/game.dto';
 import { UserQueueDto } from '../dto/queue.dto';
-import { COLORS } from '../enum/constants';
+import { COLORS, INIT_BOARD } from '../enum/constants';
+
+export function Game(roomId, whitePlayer, blackPlayer) {
+  this.roomId = roomId;
+  this.white = whitePlayer;
+  this.black = blackPlayer;
+  this.board = INIT_BOARD();
+  this.moveQueue = COLORS.WHITE;
+  this.winner = null;
+  this.gameStart = new Date();
+  this.log = [];
+}
+
+export const getPlayersColors = (client, gameRoom): string[] => {
+  let clientColor, enemyColor;
+
+  if (client.id === gameRoom.white.socket) {
+    clientColor = COLORS.WHITE;
+    enemyColor = COLORS.BLACK;
+  }
+
+  if (client.id === gameRoom.black.socket) {
+    clientColor = COLORS.BLACK;
+    enemyColor = COLORS.WHITE;
+  }
+
+  return [clientColor, enemyColor];
+};
 
 export const findColors = (
   playerOne: UserQueueDto,
@@ -46,6 +73,7 @@ const setColors = (
         short: true,
       },
     },
+    eatenFigures: [],
   };
 
   const black: gamePlayerType = {
@@ -58,6 +86,7 @@ const setColors = (
         short: true,
       },
     },
+    eatenFigures: [],
   };
 
   return { white, black };

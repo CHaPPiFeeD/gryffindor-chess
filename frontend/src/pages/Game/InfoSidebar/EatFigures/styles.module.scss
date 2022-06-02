@@ -1,0 +1,18 @@
+.wrapper {
+  width: 50%;
+
+  .figures_container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+  
+    .figure_box {
+      width: 48px;
+    }
+  }
+}
+
+
+
+
