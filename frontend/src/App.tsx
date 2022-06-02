@@ -1,5 +1,5 @@
 import './App.css'
-import { renderRoutes } from './router'
+import { RenderRoutes } from './router'
 import { joinSocket } from './api/socket'
 import { useEffect } from 'react'
 import { Provider } from 'react-redux'
@@ -12,7 +12,7 @@ function App() {
   return (
     <Provider store={store}>
       <Modals />
-      {renderRoutes()}
+      <RenderRoutes/>
     </Provider>
   )
 }

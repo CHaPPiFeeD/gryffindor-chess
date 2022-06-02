@@ -16,7 +16,7 @@ export class GameGateway {
     this.gameService.moveChess(client, data);
   }
 
-  @SubscribeMessage('/game/surrender')
+  @SubscribeMessage('/game/leave')
   surrender(client: Socket) {
     this.gameService.disconnect(client, 'Your opponent has surrendered.');
   }
