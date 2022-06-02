@@ -11,11 +11,25 @@
   flex-direction: column;
   justify-content: space-between;
 
-  .time {
-    text-align: center;
-  }
-
-  .info_box {
+  .info {
     display: flex;
+    flex-direction: column;
+
+    .info_box_one {
+      display: flex;
+      margin: 10px 0;
+      justify-content: space-around;
+      align-items: center;
+
+      border-top: #634833 1px solid;
+      border-bottom: #634833 1px solid;
+    }
+
+    .info_box_two {
+      display: flex;
+      height: 100%;
+      margin-bottom: 20px;
+      height: min-content;
+    }
   }
 }

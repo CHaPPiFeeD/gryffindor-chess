@@ -3,10 +3,10 @@ import { Box } from '@mui/system'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getUsers, checkSocketConnection, startGame, leaveQueue } from '../../api/socket'
-import { gameDataType } from '../../api/types'
+import { gameStartDataType } from '../../api/types'
 import { useAppDispatch } from '../../hooks/redux'
 import { path } from '../../router/constants'
-import { setBoard, setQueue } from '../../store/game/gameSlise'
+import { setGameStart, setQueue } from '../../store/game/gameSlise'
 import { QueueList } from './QueueList'
 import styles from './styles.module.scss'
 
@@ -18,8 +18,8 @@ export const Waiting = () => {
   useEffect(() => {
     checkSocketConnection();
 
-    startGame((payload: gameDataType) => {
-      dispatch(setBoard(payload))
+    startGame((payload: gameStartDataType) => {
+      dispatch(setGameStart(payload))
       dispatch(setQueue(null));
       navigate(path.game())
     })

@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client'
-import { gameDataType, moveDataType, usersQueueType } from './types';
+import { gameDataType, gameStartDataType, moveDataType, usersQueueType } from './types';
 
 
 let socket: Socket;
@@ -39,8 +39,10 @@ export const getUsers = (cb: Function) => {
 }
 
 export const startGame = (cb: Function) => {
-  socket.on('/game/start', (data: gameDataType) => {
-    cb(data)
+  socket.on('/game/start', (payload: gameStartDataType) => {
+    console.log(payload);
+
+    cb(payload)
   })
 }
 
@@ -49,7 +51,7 @@ export const move = (data: moveDataType) => {
 }
 
 export const getBoard = (cb: Function) => {
-  socket.on('/game/move:get', (payload: gameDataType) => {
+  socket.on('/game/move:get', (payload: gameDataType) => {    
     cb(payload)
   })
 }

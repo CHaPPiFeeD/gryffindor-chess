@@ -1,8 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { move } from '../../api/socket';
-import { changeFigureDataType, gameDataType, usersQueueType } from '../../api/types'
+import { changeFigureDataType, gameDataType, gameStartDataType, usersQueueType } from '../../api/types'
 
 export type gameType = {
+  players: {
+    white: string,
+    black: string,
+  },
   board: string[][];
   ways: string[];
   color: string;
@@ -21,6 +25,10 @@ export type gameType = {
 }
 
 const initialState: gameType = {
+  players: {
+    white: '',
+    black: '',
+  },
   board: [],
   ways: [],
   color: '',
@@ -42,14 +50,20 @@ export const gameSlice = createSlice({
   name: 'gameSlice',
   initialState,
   reducers: {
-    setBoard: (state, action: PayloadAction<gameDataType>) => {
+    setGameStart: (state, action: PayloadAction<gameStartDataType>) => {
+      state.players = action.payload.players;
+      state.color = action.payload.color;
       state.board = action.payload.board;
       state.ways = action.payload.ways;
       state.moveQueue = action.payload.moveQueue;
-      state.color = action.payload?.color || state.color;
-      state.gameStartTime = action.payload?.gameStart || state.gameStartTime;
+      state.gameStartTime = action.payload.gameStart;
+    },
+    setGame: (state, action: PayloadAction<gameDataType>) => {
+      state.board = action.payload.board;
+      state.ways = action.payload.ways;
+      state.moveQueue = action.payload.moveQueue;
       state.log = action.payload?.log || state.log;
-      state.eatFigures = action.payload.eatFigures || null;
+      state.eatFigures = action.payload.eatFigures;
     },
     setActivePosition: (state, action) => {
       state.activePosition = action.payload;
@@ -100,6 +114,15 @@ export const setMove = (
   }
 }
 
-export const { setBoard, setActivePosition, setMessage, setEndPosition, setQueue, setEndTime } = gameSlice.actions;
+export const { 
+  setGameStart, 
+  setGame, 
+  setActivePosition, 
+  setMessage, 
+  setEndPosition, 
+  setQueue, 
+  setEndTime,
+} = gameSlice.actions;
+
 
 export default gameSlice.reducer;

@@ -8,6 +8,7 @@ import { TimeTypography } from './TimeTypography';
 import { Logs } from './Logs';
 import { EatFigures } from './EatFigures';
 import { MoveQueueTypography } from './MoveQueueTypofraphy';
+import { PlayersName } from './PlayersNames';
 
 
 export const InfoSidebar = () => {
@@ -20,14 +21,19 @@ export const InfoSidebar = () => {
 
   return (
     <Box className={styles.content}>
-      <Box>
-        <MoveQueueTypography />
-        <TimeTypography />
-      </Box>
 
-      <Box className={styles.info_box}>
-        <Logs />
-        <EatFigures />
+      <Box className={styles.info}>
+        <PlayersName />
+
+        <Box className={styles.info_box_one}>
+          <MoveQueueTypography />
+          <TimeTypography />
+        </Box>
+
+        <Box className={styles.info_box_two}>
+          <Logs />
+          <EatFigures />
+        </Box>
       </Box>
 
       <Button

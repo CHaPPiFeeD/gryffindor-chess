@@ -10,7 +10,7 @@ export function Game(roomId, whitePlayer, blackPlayer) {
   this.board = INIT_BOARD();
   this.moveQueue = COLORS.WHITE;
   this.winner = null;
-  this.gameStartTime = new Date();
+  this.gameStart = new Date();
   this.log = [];
 }
 

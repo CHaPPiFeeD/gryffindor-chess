@@ -5,7 +5,7 @@ import { getBoard } from '../../../../api/socket';
 import { gameDataType } from '../../../../api/types';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { RootState } from '../../../../store';
-import { setBoard, setEndPosition, setMove } from '../../../../store/game/gameSlise';
+import { setGame, setEndPosition, setMove } from '../../../../store/game/gameSlise';
 import { Figure } from '../../../../components';
 import styles from './styles.module.scss';
 import { setOpen } from '../../../../store/modal/modalSlise';
@@ -23,7 +23,7 @@ export const RenderBoard = () => {
   } = useSelector((state: RootState) => state.game)
 
   useEffect(() => {
-    getBoard((data: gameDataType) => dispatch(setBoard(data)))
+    getBoard((data: gameDataType) => dispatch(setGame(data)))
   }, [])
 
   const handleClick = (e: any) => {

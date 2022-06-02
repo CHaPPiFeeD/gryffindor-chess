@@ -9,7 +9,7 @@ export const MoveQueueTypography = () => {
 
   return (
     <Typography component='h5' variant='h5' className={styles.move_queue}>
-      Move: {moveQueueStore}
+      {/* Move: {moveQueueStore} */}
       <Box className={styles.pawn}>
         {moveQueueStore === 'white'
           ? <Pawn fill='white' />

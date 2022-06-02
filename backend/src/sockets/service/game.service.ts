@@ -65,6 +65,10 @@ export class GameService {
       .socketsJoin(gameRoom.roomId);
 
     this.serverGateway.server.in(white.socket).emit('/game/start', {
+      players: {
+        white: white.name,
+        black: black.name,
+      },
       color: COLORS.WHITE,
       board: whiteBoard,
       ways: whiteWays,
@@ -73,6 +77,10 @@ export class GameService {
     });
 
     this.serverGateway.server.in(black.socket).emit('/game/start', {
+      players: {
+        white: white.name,
+        black: black.name,
+      },
       color: COLORS.BLACK,
       board: blackBoard,
       ways: [],
@@ -107,11 +115,11 @@ export class GameService {
 
     figure = gameRoom.board[+startPos[0]][+startPos[1]]; // update
 
+    const [whiteLog, blackLog] = this.updateLog({ ...props, clientColor });
+
     gameRoom.moveQueue = enemyColor;
     gameRoom.board[endPos[0]][endPos[1]] = figure;
     gameRoom.board[startPos[0]][startPos[1]] = FIGURES.EMPTY;
-
-    const [whiteLog, blackLog] = this.updateLog({ ...props, clientColor });
 
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
       this.boardService.createFogBoards(gameRoom);
