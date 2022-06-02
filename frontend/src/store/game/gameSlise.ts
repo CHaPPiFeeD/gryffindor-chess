@@ -81,6 +81,23 @@ export const gameSlice = createSlice({
     setQueue: (state, action) => {
       state.queue = action.payload;
     },
+    clearGameSlise: (state) => {
+      state.players.white = '';
+      state.players.black = '';
+      state.color = '';
+      state.board = [];
+      state.ways = [];
+      state.moveQueue = null;
+      state.gameStartTime = null;
+      state.log = null;
+      state.eatFigures = [];
+      state.activePosition = null;
+      state.endGameMessage.title = '';
+      state.endGameMessage.message = '';
+      state.gameEndTime = null;
+      state.endPosition = null;
+      state.queue = null;
+    },
   },
 })
 
@@ -114,14 +131,15 @@ export const setMove = (
   }
 }
 
-export const { 
-  setGameStart, 
-  setGame, 
-  setActivePosition, 
-  setMessage, 
-  setEndPosition, 
-  setQueue, 
+export const {
+  setGameStart,
+  setGame,
+  setActivePosition,
+  setMessage,
+  setEndPosition,
+  setQueue,
   setEndTime,
+  clearGameSlise,
 } = gameSlice.actions;
 
 

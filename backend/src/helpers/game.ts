@@ -14,7 +14,7 @@ export function Game(roomId, whitePlayer, blackPlayer) {
   this.log = [];
 }
 
-export const getPlayersColors = (client, gameRoom) => {
+export const getPlayersColors = (client, gameRoom): string[] => {
   let clientColor, enemyColor;
 
   if (client.id === gameRoom.white.socket) {
