@@ -135,7 +135,7 @@ export class GameService {
     alertBoard(this.logger, blackBoard, 'black board');
 
     this.serverGateway.server.in(gameRoom.white.socket).emit('/game/move:get', {
-      board: whiteBoard,
+      board: gameRoom.winner ? gameRoom.board : whiteBoard,
       moveQueue: gameRoom.moveQueue,
       ways:
         nextPlayerMove === COLORS.WHITE && !gameRoom.winner ? whiteWays : [],
@@ -144,7 +144,7 @@ export class GameService {
     });
 
     this.serverGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
-      board: blackBoard,
+      board: gameRoom.winner ? gameRoom.board : blackBoard,
       moveQueue: gameRoom.moveQueue,
       ways:
         nextPlayerMove === COLORS.BLACK && !gameRoom.winner ? blackWays : [],

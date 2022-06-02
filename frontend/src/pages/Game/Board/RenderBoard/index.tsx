@@ -36,7 +36,7 @@ export const RenderBoard = () => {
     const col = +e.currentTarget.attributes.getNamedItem('data-col')?.value;
     let isChangeFigure;
 
-    if (moveQueueStore !== colorStore) return;
+    if (moveQueueStore !== colorStore || !waysStore.length ) return;
 
     if (activePositionStore) {
       for (let i = 0; i < 8; i++) {
