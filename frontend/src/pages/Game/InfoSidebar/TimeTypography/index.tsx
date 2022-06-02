@@ -4,14 +4,15 @@ import { getDifferenceTime } from '../../../../helpers'
 import { useAppSelector } from '../../../../hooks/redux'
 
 export const TimeTypography = () => {
-  const [stateTime, setStateTime] = useState('00:00:00')
+  const [stateTime, setStateTime] = useState('00:00')
   const {
     gameStartTime: gameStartTimeStore,
+    gameEndTime: gameEndTimeStore,
   } = useAppSelector(store => store.game)
 
   useEffect(() => {
     setTimeout(() => {
-      setStateTime(getDifferenceTime(gameStartTimeStore))
+      setStateTime(getDifferenceTime(gameStartTimeStore, gameEndTimeStore));
     }, 1000)
   })
 

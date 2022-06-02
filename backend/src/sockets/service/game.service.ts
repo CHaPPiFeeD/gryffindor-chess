@@ -135,7 +135,7 @@ export class GameService {
       moveQueue: gameRoom.moveQueue,
       ways:
         nextPlayerMove === COLORS.WHITE && !gameRoom.winner ? whiteWays : [],
-      log: whiteLog,
+      log: gameRoom.winner ? gameRoom.log : whiteLog,
     });
 
     this.serverGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
@@ -143,7 +143,7 @@ export class GameService {
       moveQueue: gameRoom.moveQueue,
       ways:
         nextPlayerMove === COLORS.BLACK && !gameRoom.winner ? blackWays : [],
-      log: blackLog,
+      log: gameRoom.winner ? gameRoom.log : blackLog,
     });
 
     if (gameRoom.winner) {
@@ -154,6 +154,7 @@ export class GameService {
         .emit('/game/end', {
           title: 'You win!',
           message: "You have eaten the opponent's king piece.",
+          gameEnd: gameRoom.gameEnd,
         });
 
       this.serverGateway.server
@@ -161,6 +162,7 @@ export class GameService {
         .emit('/game/end', {
           title: 'You lost!',
           message: 'The opponent has eaten your king piece.',
+          gameEnd: gameRoom.gameEnd,
         });
     }
   };

@@ -196,6 +196,7 @@ export class ValidationService {
 
     if (isWinner) {
       gameRoom.winner = clientColor;
+      gameRoom.gameEnd = new Date();
     }
   };
 }

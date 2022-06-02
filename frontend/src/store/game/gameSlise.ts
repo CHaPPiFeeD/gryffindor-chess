@@ -10,6 +10,7 @@ export type gameType = {
   activePosition: [number, number] | null;
   endPosition: [number, number] | null;
   gameStartTime: Date | null;
+  gameEndTime: Date | null;
   endGameMessage: {
     title: string;
     message: string;
@@ -26,6 +27,7 @@ const initialState: gameType = {
   activePosition: null,
   endPosition: null,
   gameStartTime: null,
+  gameEndTime: null,
   endGameMessage: {
     title: '',
     message: '',
@@ -43,7 +45,7 @@ export const gameSlice = createSlice({
       state.ways = action.payload.ways;
       state.moveQueue = action.payload.moveQueue;
       state.color = action.payload?.color || state.color;
-      state.gameStartTime = action.payload?.gameStart || state.gameStartTime || null;
+      state.gameStartTime = action.payload?.gameStart || state.gameStartTime;
       state.log = action.payload?.log || state.log;
     },
     setActivePosition: (state, action) => {
@@ -52,6 +54,9 @@ export const gameSlice = createSlice({
     setMessage: (state, action) => {
       state.endGameMessage.title = action.payload.title;
       state.endGameMessage.message = action.payload.message;
+    },
+    setEndTime: (state, action) => {
+      state.gameEndTime = action.payload?.gameEnd || state.gameEndTime;
     },
     setEndPosition: (state, action) => {
       state.endPosition = action.payload;
@@ -92,6 +97,6 @@ export const setMove = (
   }
 }
 
-export const { setBoard, setActivePosition, setMessage, setEndPosition, setQueue } = gameSlice.actions;
+export const { setBoard, setActivePosition, setMessage, setEndPosition, setQueue, setEndTime } = gameSlice.actions;
 
 export default gameSlice.reducer;

@@ -1,8 +1,9 @@
-export const getDifferenceTime = (time: Date | null) => {
-  
-  if (!time) time = new Date();
+export const getDifferenceTime = (time: Date | null, endTime: Date | null) => {
 
-  const currentTime = new Date();
+  if (!time) time = new Date();
+  if (!endTime) endTime = new Date();
+
+  const currentTime = new Date(endTime);
 
   const gameStart = new Date(time);
 

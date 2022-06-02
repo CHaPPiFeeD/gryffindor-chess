@@ -4,6 +4,7 @@ export type gameDataType = {
   color?: 'white' | 'black' | null,
   moveQueue: 'white' | 'black' | null,
   gameStart?: Date | null,
+  gameEnd?: Date | null,
   log?: logType,
 };
 
