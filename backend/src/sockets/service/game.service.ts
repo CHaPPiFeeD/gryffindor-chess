@@ -74,6 +74,9 @@ export class GameService {
       ways: whiteWays,
       moveQueue: COLORS.WHITE,
       gameStart: gameRoom.gameStart,
+      // gameEnd: null,
+      // eatFigures: [],
+      // log: [],
     });
 
     this.serverGateway.server.in(black.socket).emit('/game/start', {
@@ -86,6 +89,9 @@ export class GameService {
       ways: [],
       moveQueue: COLORS.WHITE,
       gameStart: gameRoom.gameStart,
+      // gameEnd: null,
+      // eatFigures: [],
+      // log: [],
     });
   };
 
@@ -147,7 +153,25 @@ export class GameService {
       eatFigures: gameRoom.black.eatenFigures,
     });
 
-    this.checkEndGame({ ...props, enemyColor });
+    if (gameRoom.winner) {
+      this.logger.debug(gameRoom.winner);
+
+      this.serverGateway.server
+        .in(gameRoom[clientColor].socket)
+        .emit('/game/end', {
+          title: 'You win!',
+          message: "You have eaten the opponent's king piece.",
+          gameEnd: gameRoom.gameEnd,
+        });
+
+      this.serverGateway.server
+        .in(gameRoom[enemyColor].socket)
+        .emit('/game/end', {
+          title: 'You lost!',
+          message: 'The opponent has eaten your king piece.',
+          gameEnd: gameRoom.gameEnd,
+        });
+    }
   };
 
   disconnect = (client: Socket, message: string) => {
@@ -182,30 +206,6 @@ export class GameService {
     });
 
     this.logger.debug(gameRoom.winner);
-  };
-
-  private checkEndGame = (props) => {
-    const { gameRoom, clientColor, enemyColor } = props;
-
-    if (gameRoom.winner) {
-      this.logger.debug(gameRoom.winner);
-
-      this.serverGateway.server
-        .in(gameRoom[clientColor].socket)
-        .emit('/game/end', {
-          title: 'You win!',
-          message: "You have eaten the opponent's king piece.",
-          gameEnd: gameRoom.gameEnd,
-        });
-
-      this.serverGateway.server
-        .in(gameRoom[enemyColor].socket)
-        .emit('/game/end', {
-          title: 'You lost!',
-          message: 'The opponent has eaten your king piece.',
-          gameEnd: gameRoom.gameEnd,
-        });
-    }
   };
 
   private checkChangeFigure = (props: movePropsType) => {

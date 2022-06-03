@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { checkEndGame, checkSocketConnection, leaveGame } from '../../api/socket'
 import { useAppDispatch } from '../../hooks/redux'
 import { path } from '../../router/constants'
-import { clearGameSlise, setEndTime, setMessage } from '../../store/game/gameSlise'
+import { setEndTime, setMessage } from '../../store/game/gameSlise'
 import { setOpen } from '../../store/modal/modalSlise'
 import { Board } from './Board'
 import { InfoSidebar } from './InfoSidebar/indes'
@@ -27,7 +27,6 @@ export const Game = () => {
     return () => {
       leaveGame();
       navigate(path.login());
-      clearGameSlise();
     }
   }, [])
 
