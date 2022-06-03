@@ -136,7 +136,7 @@ export class GameService {
       moveQueue: gameRoom.moveQueue,
       ways: enemyColor === COLORS.WHITE && !gameRoom.winner ? whiteWays : [],
       log: gameRoom.winner ? gameRoom.log : whiteLog,
-      eatFigures: gameRoom.white.eatenFigures,
+      eatFigures: gameRoom.eatenFigures,
     });
 
     this.serverGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
@@ -144,7 +144,7 @@ export class GameService {
       moveQueue: gameRoom.moveQueue,
       ways: enemyColor === COLORS.BLACK && !gameRoom.winner ? blackWays : [],
       log: gameRoom.winner ? gameRoom.log : blackLog,
-      eatFigures: gameRoom.black.eatenFigures,
+      eatFigures: gameRoom.eatenFigures,
     });
 
     if (gameRoom.winner) {
@@ -218,7 +218,7 @@ export class GameService {
     const endFigure = gameRoom.board[endPos[0]][endPos[1]];
 
     if (BLACK_FIGURES.includes(endFigure) || WHITE_FIGURES.includes(endFigure))
-      gameRoom[clientColor].eatenFigures.push(endFigure);
+      gameRoom.eatenFigures[clientColor].push(endFigure);
   };
 
   private updateLog = (props: movePropsType) => {

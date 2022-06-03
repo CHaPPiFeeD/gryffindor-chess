@@ -7,6 +7,10 @@ export function Game(roomId, whitePlayer, blackPlayer) {
   this.roomId = roomId;
   this.white = whitePlayer;
   this.black = blackPlayer;
+  this.eatenFigures = {
+    white: [],
+    black: [],
+  };
   this.board = INIT_BOARD();
   this.moveQueue = COLORS.WHITE;
   this.winner = null;
@@ -73,7 +77,6 @@ const setColors = (
         short: true,
       },
     },
-    eatenFigures: [],
   };
 
   const black: gamePlayerType = {
@@ -86,7 +89,6 @@ const setColors = (
         short: true,
       },
     },
-    eatenFigures: [],
   };
 
   return { white, black };

@@ -4,7 +4,10 @@ export type gameDataType = {
   moveQueue: 'white' | 'black' | null,
   gameEnd?: Date | null,
   log?: logType,
-  eatFigures: string[],
+  eatFigures: {
+    white: string[],
+    black: string[],
+  },
 };
 
 export type gameStartDataType = {

@@ -21,7 +21,10 @@ export type gameType = {
   }
   queue: usersQueueType[] | null;
   log: any;
-  eatFigures: string[];
+  eatFigures: {
+    white: string[],
+    black: string[],
+  };
 }
 
 const initialState: gameType = {
@@ -43,7 +46,10 @@ const initialState: gameType = {
   },
   queue: null,
   log: [],
-  eatFigures: [],
+  eatFigures: {
+    white: [],
+    black: [],
+  },
 }
 
 export const gameSlice = createSlice({

@@ -46,6 +46,9 @@ export const RenderBoard = () => {
     if (!activePositionStore) {
       const [rowBoard, colBoard] = getCoordinate(row, col, colorStore);
 
+      console.log('work');
+      
+
       if (color !== colorStore) return;
 
       addActiveClass(boardRef, rowBoard, colBoard);

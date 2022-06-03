@@ -8,7 +8,6 @@ export type gamePlayerType = {
       short: boolean;
     };
   };
-  eatenFigures: string[];
 };
 
 export type gameRoomType = {
@@ -21,6 +20,10 @@ export type gameRoomType = {
   gameStart: Date;
   gameEnd?: Date;
   log: logType[];
+  eatenFigures: {
+    white: string[];
+    black: string[];
+  };
 };
 
 export type gameStateType = Map<string, gameRoomType>;

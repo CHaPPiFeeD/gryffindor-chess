@@ -1,5 +1,5 @@
 export const WHITE_FIGURES = 'KQBNRP';
-export const BLACK_FIGURES = 'rqbnrp';
+export const BLACK_FIGURES = 'kqbnrp';
 
 export const FIGURES = {
   KING: 'k',
