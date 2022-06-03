@@ -186,6 +186,8 @@ export class GameService {
     if (gameRoom[clientColor].offersDraw && gameRoom[enemyColor].offersDraw)
       return;
 
+    if (!isDrawing) gameRoom[enemyColor].offersDraw = false;
+
     gameRoom[clientColor].offersDraw = isDrawing;
 
     if (gameRoom[clientColor].offersDraw && gameRoom[enemyColor].offersDraw) {
@@ -200,7 +202,7 @@ export class GameService {
         ways: [],
         moveQueue: null,
       });
-    } else {
+    } else if (isDrawing) {
       this.serverGateway.server
         .in(gameRoom[enemyColor].socket)
         .emit('/game/draw');
