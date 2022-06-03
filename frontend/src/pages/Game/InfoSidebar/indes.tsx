@@ -1,7 +1,7 @@
-import { Button, Typography } from '@mui/material';
+import { Button } from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
-import { leaveGame } from '../../../api/socket';
+import { leaveGame, offerDraw } from '../../../api/socket';
 import { path } from '../../../router/constants';
 import styles from './styles.module.scss'
 import { TimeTypography } from './TimeTypography';
@@ -9,10 +9,21 @@ import { Logs } from './Logs';
 import { EatFigures } from './EatFigures';
 import { MoveQueueTypography } from './MoveQueueTypofraphy';
 import { PlayersName } from './PlayersNames';
+import { useState } from 'react';
 
 
 export const InfoSidebar = () => {
   const navigate = useNavigate()
+  const [stateDisabled, setStateDisabled] = useState(false);
+
+  const handleClickDraw = () => {
+    setStateDisabled(true);
+    offerDraw(true);
+
+    setTimeout(() => {
+      setStateDisabled(false);
+    }, 60000)
+  }
 
   const handleClick = () => {
     leaveGame()
@@ -35,6 +46,14 @@ export const InfoSidebar = () => {
           <EatFigures />
         </Box>
       </Box>
+
+      <Button
+        onClick={handleClickDraw}
+        variant='contained'
+        disabled={stateDisabled}
+      >
+        Offer a draw
+      </Button>
 
       <Button
         onClick={handleClick}

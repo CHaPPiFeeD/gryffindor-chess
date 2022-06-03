@@ -71,6 +71,7 @@ const setColors = (
     socket: whitePlayer.socket,
     name: whitePlayer.username,
     ways: [],
+    offersDraw: false,
     rules: {
       castling: {
         long: true,
@@ -83,6 +84,7 @@ const setColors = (
     socket: blackPlayer.socket,
     name: blackPlayer.username,
     ways: [],
+    offersDraw: false,
     rules: {
       castling: {
         long: true,

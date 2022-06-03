@@ -2,6 +2,7 @@ export type gamePlayerType = {
   socket: string;
   name: string;
   ways: string[];
+  offersDraw: boolean;
   rules: {
     castling: {
       long: boolean;

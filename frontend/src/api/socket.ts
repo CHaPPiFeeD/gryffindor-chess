@@ -44,8 +44,6 @@ export const getUsers = (cb: Function) => {
 
 export const startGame = (cb: Function) => {
   socket.on('/game/start', (payload: gameStartDataType) => {
-    console.log(payload);
-
     cb(payload)
   })
 }
@@ -72,5 +70,15 @@ export const checkSocketConnection = () => {
 
 export const leaveGame = () => {
   socket.emit('/game/leave')
+}
+
+export const offerDraw = (isDrawing: boolean) => {
+  socket.emit('/game/draw', isDrawing);
+}
+
+export const getOfferDraw = (cb: Function) => {
+  socket.on('/game/draw', () => {
+    cb()
+  })
 }
 

@@ -132,18 +132,18 @@ export class GameService {
     alertBoard(this.logger, blackBoard, 'black board');
 
     this.serverGateway.server.in(gameRoom.white.socket).emit('/game/move:get', {
-      board: gameRoom.winner ? gameRoom.board : whiteBoard,
+      board: whiteBoard,
       moveQueue: gameRoom.moveQueue,
-      ways: enemyColor === COLORS.WHITE && !gameRoom.winner ? whiteWays : [],
-      log: gameRoom.winner ? gameRoom.log : whiteLog,
+      ways: enemyColor === COLORS.WHITE ? whiteWays : [],
+      log: whiteLog,
       eatFigures: gameRoom.eatenFigures,
     });
 
     this.serverGateway.server.in(gameRoom.black.socket).emit('/game/move:get', {
-      board: gameRoom.winner ? gameRoom.board : blackBoard,
+      board: blackBoard,
       moveQueue: gameRoom.moveQueue,
-      ways: enemyColor === COLORS.BLACK && !gameRoom.winner ? blackWays : [],
-      log: gameRoom.winner ? gameRoom.log : blackLog,
+      ways: enemyColor === COLORS.BLACK ? blackWays : [],
+      log: blackLog,
       eatFigures: gameRoom.eatenFigures,
     });
 
@@ -156,6 +156,9 @@ export class GameService {
           title: 'You win!',
           message: "You have eaten the opponent's king piece.",
           gameEnd: gameRoom.gameEnd,
+          board: gameRoom.board,
+          ways: [],
+          log: gameRoom.log,
         });
 
       this.serverGateway.server
@@ -164,7 +167,43 @@ export class GameService {
           title: 'You lost!',
           message: 'The opponent has eaten your king piece.',
           gameEnd: gameRoom.gameEnd,
+          board: gameRoom.board,
+          ways: [],
+          log: gameRoom.log,
         });
+    }
+  };
+
+  draw = (client: Socket, isDrawing: boolean) => {
+    const roomId = findRoom(client, this.gamesStates);
+
+    if (!roomId) return;
+
+    const gameRoom: gameRoomType = this.gamesStates.get(roomId);
+
+    const [clientColor, enemyColor] = getPlayersColors(client, gameRoom);
+
+    if (gameRoom[clientColor].offersDraw && gameRoom[enemyColor].offersDraw)
+      return;
+
+    gameRoom[clientColor].offersDraw = isDrawing;
+
+    if (gameRoom[clientColor].offersDraw && gameRoom[enemyColor].offersDraw) {
+      gameRoom.gameEnd = new Date();
+      gameRoom.winner = 'draw';
+
+      this.serverGateway.server.in(roomId).emit('/game/end', {
+        title: 'Draw!',
+        message: 'You agreed to a draw',
+        gameEnd: gameRoom.gameEnd,
+        board: gameRoom.board,
+        ways: [],
+        moveQueue: null,
+      });
+    } else {
+      this.serverGateway.server
+        .in(gameRoom[enemyColor].socket)
+        .emit('/game/draw');
     }
   };
 
@@ -193,10 +232,15 @@ export class GameService {
     if (gameRoom.winner) return;
 
     gameRoom.winner = winner;
+    gameRoom.gameEnd = new Date();
 
     this.serverGateway.server.in(gameRoom[winner].socket).emit('/game/end', {
       title: 'You win!',
       message,
+      gameEnd: gameRoom.gameEnd,
+      board: gameRoom.board,
+      ways: [],
+      moveQueue: null,
     });
 
     this.logger.debug(gameRoom.winner);
