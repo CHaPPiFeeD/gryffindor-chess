@@ -16,6 +16,10 @@ export const joinSocket = () => {
     console.log('error:', data)
     socket.disconnect()
   })
+
+  socket.on('exception', (e) => {
+    console.log(e.message);
+  })
 }
 
 export const regInQueue = (data: any, cb: Function) => {

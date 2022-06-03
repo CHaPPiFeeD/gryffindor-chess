@@ -1,19 +1,28 @@
 .wrapper {
   width: 50%;
   padding-left: 15px;
+  display: flex;
+  flex-wrap: wrap;
 
   .figures_container {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: flex-start;
-  
+    overflow: auto;
+    height: 176px;
+
+    &::-webkit-scrollbar {
+      width: 5px;
+      background: rgba(255, 255, 255, 0.5),
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #B58863;
+    }
+
     .figure_box {
       width: 48px;
     }
   }
 }
-
-
-
-

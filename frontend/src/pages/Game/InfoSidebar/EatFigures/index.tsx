@@ -1,5 +1,4 @@
 import { Box, Typography } from '@mui/material'
-import { Key } from 'react';
 import { Figure } from '../../../../components';
 import { useAppSelector } from '../../../../hooks/redux'
 import styles from './styles.module.scss'
@@ -26,42 +25,39 @@ export const EatFigures = () => {
 
   return (
     <Box className={styles.wrapper}>
+
       <Box >
+        <Typography>
+          You eating:
+        </Typography>
 
-        <Box >
-          <Typography>
-            You eating:
-          </Typography>
-
-          <Box className={styles.figures_container}>
-            {youEaten?.map((v: string, i) => {
-              return (
-                <Box className={styles.figure_box} key={i} >
-                  <Figure cell={v} />
-                </Box>
-              )
-            })}
-          </Box>
+        <Box className={styles.figures_container}>
+          {youEaten?.map((v: string, i) => {
+            return (
+              <Box className={styles.figure_box} key={i} >
+                <Figure cell={v} />
+              </Box>
+            )
+          })}
         </Box>
-
-        <Box>
-          <Typography>
-            Opponents eating:
-          </Typography>
-
-          <Box className={styles.figures_container}>
-            {opponentsEaten?.map((v: string, i) => {
-              return (
-                <Box className={styles.figure_box} key={i} >
-                  <Figure cell={v} />
-                </Box>
-              )
-            })}
-          </Box>
-        </Box>
-
       </Box>
-    </Box>
 
+      <Box>
+        <Typography>
+          Opponents eating:
+        </Typography>
+
+        <Box className={styles.figures_container}>
+          {opponentsEaten?.map((v: string, i) => {
+            return (
+              <Box className={styles.figure_box} key={i} >
+                <Figure cell={v} />
+              </Box>
+            )
+          })}
+        </Box>
+      </Box>
+
+    </Box>
   )
 }
