@@ -74,9 +74,6 @@ export class GameService {
       ways: whiteWays,
       moveQueue: COLORS.WHITE,
       gameStart: gameRoom.gameStart,
-      // gameEnd: null,
-      // eatFigures: [],
-      // log: [],
     });
 
     this.serverGateway.server.in(black.socket).emit('/game/start', {
@@ -89,9 +86,6 @@ export class GameService {
       ways: [],
       moveQueue: COLORS.WHITE,
       gameStart: gameRoom.gameStart,
-      // gameEnd: null,
-      // eatFigures: [],
-      // log: [],
     });
   };
 
