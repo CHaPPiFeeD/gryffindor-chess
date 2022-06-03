@@ -1,4 +1,5 @@
 import { Box } from '@mui/system'
+import { useSnackbar } from 'notistack'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { checkEndGame, checkSocketConnection, getOfferDraw, leaveGame } from '../../api/socket'
@@ -14,6 +15,7 @@ import styles from './styles.module.scss'
 export const Game = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
     checkSocketConnection();

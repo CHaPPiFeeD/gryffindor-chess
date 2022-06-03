@@ -16,6 +16,7 @@
     "@types/react-dom": "^18.0.5",
     "formik": "^2.2.9",
     "nest-app": "file:..",
+    "notistack": "^2.0.5",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-redux": "^8.0.2",
