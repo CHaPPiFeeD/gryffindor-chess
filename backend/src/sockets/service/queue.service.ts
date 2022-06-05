@@ -5,14 +5,14 @@ import {
   getFindsColors,
   getUserByColor,
 } from '../../helpers/queue';
-import { UserQueueDto, RegToQueueDto } from '../../dto/queue.dto';
 import { GameService } from './game.service';
 import { ServerGateway } from '../server.gateway';
 import { WsException } from '@nestjs/websockets';
+import { QueueUserType, RegToQueueDataType } from 'src/types';
 
 export class QueueService {
   private logger = new Logger(QueueService.name);
-  private queue: UserQueueDto[] = [];
+  private queue: QueueUserType[] = [];
 
   @Inject(GameService)
   gameService: GameService;
@@ -20,8 +20,8 @@ export class QueueService {
   @Inject(ServerGateway)
   serverGateway: ServerGateway;
 
-  regToQueue(client: Socket, data: RegToQueueDto) {
-    const playerOne: UserQueueDto = {
+  regToQueue(client: Socket, data: RegToQueueDataType) {
+    const playerOne: QueueUserType = {
       socket: client.id,
       ...data,
     };
@@ -30,7 +30,7 @@ export class QueueService {
       throw new WsException('You are already in line');
 
     const desiredColors: string[] = getFindsColors(playerOne.color);
-    const playerTwo: UserQueueDto = getUserByColor(this.queue, desiredColors);
+    const playerTwo: QueueUserType = getUserByColor(this.queue, desiredColors);
 
     if (!playerTwo) {
       this.queue.push(playerOne);

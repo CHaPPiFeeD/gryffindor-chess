@@ -1,6 +1,6 @@
-import { checkWaysPropsType } from 'src/dto/board.dto';
 import { COLORS, FIGURES } from 'src/enum/constants';
 import { KING_WAYS_CASTLING } from 'src/enum/figureWays';
+import { CheckWaysPropsType } from 'src/types';
 import { checkCoordinates } from './validation';
 
 export const createWay = (checkRowIndex, checkColIndex, wayRow, wayCol) => {
@@ -9,7 +9,7 @@ export const createWay = (checkRowIndex, checkColIndex, wayRow, wayCol) => {
 
 export const addWayAndVisibility = (props) => {
   const {
-    generalBoard,
+    game,
     playerBoard,
     wayRow,
     wayCol,
@@ -19,8 +19,8 @@ export const addWayAndVisibility = (props) => {
     checkCol,
   } = props;
 
-  playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
-  const endFigure = generalBoard[wayRow][wayCol];
+  playerBoard[wayRow][wayCol] = game.board[wayRow][wayCol];
+  const endFigure = game.board[wayRow][wayCol];
 
   const isOwnFigure = ownFigures.includes(endFigure);
 
@@ -32,13 +32,13 @@ export const addWayAndVisibility = (props) => {
   }
 };
 
-export const checkCastling = (props: checkWaysPropsType) => {
-  const { gameRoom, playerColor, playerWays, checkRow, checkCol } = props;
+export const checkCastling = (props: CheckWaysPropsType) => {
+  const { game, playerColor, playerWays, checkRow, checkCol } = props;
 
   const castling =
     playerColor === COLORS.WHITE
-      ? gameRoom.white.rules.castling
-      : gameRoom.black.rules.castling;
+      ? game.white.rules.castling
+      : game.black.rules.castling;
 
   if (castling) {
     const isLongCastling = checkCastlingSide(
@@ -72,11 +72,11 @@ export const checkCastling = (props: checkWaysPropsType) => {
 };
 
 const checkCastlingSide = (
-  props: checkWaysPropsType,
+  props: CheckWaysPropsType,
   side,
   isCastlingSide,
 ): boolean => {
-  const { checkRow, checkCol, generalBoard, playerBoard, playerColor } = props;
+  const { checkRow, checkCol, game, playerBoard, playerColor } = props;
 
   if (!isCastlingSide) return;
 
@@ -92,7 +92,7 @@ const checkCastlingSide = (
     const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
 
     if (isCorrectCoordinates) {
-      const isCellNotEmpty = generalBoard[wayRow][wayCol] !== FIGURES.EMPTY;
+      const isCellNotEmpty = game.board[wayRow][wayCol] !== FIGURES.EMPTY;
 
       if (isCellNotEmpty) isCastling = false;
     }
@@ -102,7 +102,7 @@ const checkCastlingSide = (
     side.forEach((way) => {
       const wayRow = checkRow + way[0];
       const wayCol = checkCol + way[1];
-      playerBoard[wayRow][wayCol] = generalBoard[wayRow][wayCol];
+      playerBoard[wayRow][wayCol] = game.board[wayRow][wayCol];
     });
   }
 
