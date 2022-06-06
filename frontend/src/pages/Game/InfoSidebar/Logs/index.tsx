@@ -18,24 +18,49 @@ export const Logs = () => {
 
   return (
     <Box className={styles.logs}>
+      <Box className={styles.logs_container} >
+        <Box>
+          {logStore?.map((v: any, i: number) => {
+            if (v?.color === 'black') return;
+            const letters = v?.log.split('');
+            const startPos = '' + letters[1] + letters[2];
+            const endPos = '' + letters[3] + letters[4];
 
-      {logStore.map((v: any, i: number) => {
-        const letters = v?.log.split('');
-        const startPos = '' + letters[1] + letters[2];
-        const endPos = '' + letters[3] + letters[4];
+            return (
+              <Box key={i} className={styles.log_item}>
+                <Box className={styles.figure_box}>
+                  <Figure cell={letters[0]} />
+                </Box>
 
-        return (
-          <Box key={i} className={styles.log_item}>
-            <Box className={styles.figure_box}>
-              <Figure cell={letters[0]} />
-            </Box>
+                <Typography >
+                  {[startPos, endPos].join(' - ')}
+                </Typography>
+              </Box>
+            )
+          })}
+        </Box>
 
-            <Typography >
-              {[startPos, endPos].join(' - ')}
-            </Typography>
-          </Box>
-        )
-      })}
+        <Box>
+          {logStore?.map((v: any, i: number) => {
+            if (v?.color === 'white') return;
+            const letters = v?.log.split('');
+            const startPos = '' + letters[1] + letters[2];
+            const endPos = '' + letters[3] + letters[4];
+
+            return (
+              <Box key={i} className={styles.log_item}>
+                <Box className={styles.figure_box}>
+                  <Figure cell={letters[0]} />
+                </Box>
+
+                <Typography >
+                  {[startPos, endPos].join(' - ')}
+                </Typography>
+              </Box>
+            )
+          })}
+        </Box>
+      </Box>
 
       <Box ref={logsEndRef} id='logsEnd' />
     </Box>

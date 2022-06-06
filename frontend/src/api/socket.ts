@@ -1,24 +1,32 @@
 import { io, Socket } from 'socket.io-client'
+import { showNotification } from '../store/notification/notificationSlise';
 import { gameDataType, gameStartDataType, moveDataType, usersQueueType } from './types';
-
 
 let socket: Socket;
 
 export const joinSocket = () => {
-  socket = io(`${process.env.REACT_APP_API_KEY}`)
+  if (socket?.connected) return;
+  socket = io(`${process.env.REACT_APP_API_KEY}`, { closeOnBeforeunload: false })
 
   socket.on('connect', () => {
     console.log('socket:', socket.id)
     localStorage.setItem('socket', socket.id)
   })
 
+  socket.on('disconnect', () => {
+    console.log(socket);
+  })
+
   socket.on('error', (data) => {
     console.log('error:', data)
     socket.disconnect()
   })
+}
 
-  socket.on('exception', (e) => {
-    console.log(e.message);
+export const exceptionHandler = (dispatch: any) => {
+  socket.on('exception', (exception) => {
+    console.log(exception);
+    dispatch(showNotification(exception?.message, exception?.status))
   })
 }
 
@@ -53,7 +61,9 @@ export const move = (data: moveDataType) => {
 }
 
 export const getBoard = (cb: Function) => {
-  socket.on('/game/move:get', (payload: gameDataType) => {    
+  socket.on('/game/move:get', (payload: gameDataType) => {
+    console.log(payload);
+    
     cb(payload)
   })
 }

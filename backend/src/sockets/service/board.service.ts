@@ -22,7 +22,11 @@ import {
   KING_WAYS,
 } from '../../enum/figureWays';
 import { Game } from 'src/models/game.model';
-import { CheckWaysPropsType, CreateBoardsForPlayersType } from 'src/types';
+import {
+  CheckWaysPropsType,
+  CreateBoardsForPlayersType,
+  MoveType,
+} from 'src/types';
 
 export class BoardService {
   private logger = new Logger(BoardService.name);
@@ -104,8 +108,36 @@ export class BoardService {
     initWhiteWays.forEach((way) => whiteWays.push(createWay(way)));
     initBlackWays.forEach((way) => blackWays.push(createWay(way)));
 
-    return { whiteBoard, blackBoard, whiteWays, blackWays };
+    return {
+      whiteBoard,
+      blackBoard,
+      whiteWays,
+      blackWays,
+    };
   }
+
+  getLastMove = (
+    whiteBoard: string[][],
+    blackBoard: string[][],
+    move: MoveType,
+  ) => {
+    const white = [];
+    const black = [];
+
+    if (whiteBoard[move.start[0]][move.start[1]] !== FIGURES.FOG)
+      white.push([move.start[0], move.start[1]]);
+
+    if (whiteBoard[move.end[0]][move.end[1]] !== FIGURES.FOG)
+      white.push([move.end[0], move.end[1]]);
+
+    if (blackBoard[move.start[0]][move.start[1]] !== FIGURES.FOG)
+      black.push([move.start[0], move.start[1]]);
+
+    if (blackBoard[move.end[0]][move.end[1]] !== FIGURES.FOG)
+      black.push([move.end[0], move.end[1]]);
+
+    return { white, black };
+  };
 
   private checkKingWays = (props: CheckWaysPropsType) => {
     const { checkRow, checkCol } = props;

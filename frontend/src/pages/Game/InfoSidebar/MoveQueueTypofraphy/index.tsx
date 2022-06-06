@@ -8,8 +8,8 @@ export const MoveQueueTypography = () => {
   const { moveQueue: moveQueueStore } = useAppSelector(store => store.game)
 
   return (
-    <Typography component='h5' variant='h5' className={styles.move_queue}>
-      {/* Move: {moveQueueStore} */}
+    <Typography component='h5' variant='h6' className={styles.move_queue}>
+      Move: 
       <Box className={styles.pawn}>
         {moveQueueStore === 'white'
           ? <Pawn fill='white' />

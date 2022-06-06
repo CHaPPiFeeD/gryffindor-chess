@@ -1,7 +1,8 @@
 import { Box } from '@mui/system'
+import { useSnackbar } from 'notistack'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { checkEndGame, checkSocketConnection, getOfferDraw, leaveGame } from '../../api/socket'
+import { checkEndGame, checkSocketConnection, exceptionHandler, getOfferDraw, leaveGame } from '../../api/socket'
 import { useAppDispatch } from '../../hooks/redux'
 import { path } from '../../router/constants'
 import { setEndTime, setGame, setMessage } from '../../store/game/gameSlise'
@@ -17,12 +18,19 @@ export const Game = () => {
 
   useEffect(() => {
     checkSocketConnection();
+    exceptionHandler(dispatch);
+
+    window.onbeforeunload = (e) => {
+      e.preventDefault()
+      return confirm();
+    };
 
     checkEndGame((data: any) => {
       dispatch(setMessage(data))
       dispatch(setEndTime(data))
       dispatch(setOpen('endGame'))
       dispatch(setGame(data))
+      window.onbeforeunload = null;
     })
 
     getOfferDraw(() => {
@@ -32,6 +40,7 @@ export const Game = () => {
     return () => {
       leaveGame();
       navigate(path.login());
+      window.onbeforeunload = null;
     }
   }, [])
 

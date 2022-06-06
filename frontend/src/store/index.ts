@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import gameSlise from './game/gameSlise';
 import modalSlise from './modal/modalSlise';
+import notificationSlise from './notification/notificationSlise';
 
 export const store = configureStore({
   reducer: {
     game: gameSlise,
     modals: modalSlise,
+    notification: notificationSlise,
   },
   devTools: true,
 })

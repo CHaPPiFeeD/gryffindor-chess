@@ -28,7 +28,7 @@ export const EatFigures = () => {
 
       <Box >
         <Typography>
-          You eating:
+          You eated:
         </Typography>
 
         <Box className={styles.figures_container}>
@@ -44,7 +44,7 @@ export const EatFigures = () => {
 
       <Box>
         <Typography>
-          Opponents eating:
+          Opponent eated:
         </Typography>
 
         <Box className={styles.figures_container}>

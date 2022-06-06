@@ -7,6 +7,8 @@ import styles from './styles.module.scss'
 export const QueueList = () => {
   const queue = useAppSelector(store => store.game.queue);
 
+  if (!queue) return null;
+
   return (
     <Box className={styles.list}>
 

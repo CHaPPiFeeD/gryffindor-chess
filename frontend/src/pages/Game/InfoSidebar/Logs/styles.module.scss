@@ -2,20 +2,34 @@
   height: 400px;
   width: 50%;
   overflow: auto;
+  margin-right: 5px;
+  background: #ffeccd;
+  border-radius: 5px;
+
 
   &::-webkit-scrollbar {
     width: 5px;
-    background: rgba(255, 255, 255, 0.5),
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: #B58863;
+    border-radius: 5px;
+  }
+
+  .logs_container {
+    display: flex;
+  }
+
+  .logs_box {
+    display: flex;
   }
 
   .log_item {
     display: flex;
     align-items: center;
-  
+
     .figure_box {
       width: 48px;
     }

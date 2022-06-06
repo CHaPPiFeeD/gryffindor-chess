@@ -71,12 +71,16 @@ export class GameService {
     this.validationService.validationMove(client, game, move);
 
     game.updateLog(client, move);
-    const [whiteLog, blackLog] = game.getLogsForPlayers();
-
     game.move(client, move);
+    const [whiteLog, blackLog] = game.getLogsForPlayers();
 
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
       this.boardService.createFogBoards(game);
+    const lastMoves = this.boardService.getLastMove(
+      whiteBoard,
+      blackBoard,
+      move,
+    );
 
     alertBoard(this.logger, game.board, roomId);
     alertBoard(this.logger, whiteBoard, 'white board');
@@ -88,6 +92,7 @@ export class GameService {
       ways: opponentsColor === COLORS.WHITE ? whiteWays : [],
       log: whiteLog,
       eatFigures: game.eatenFigures,
+      lastMove: lastMoves.white,
     });
 
     this.serverGateway.server.in(game.black.socket).emit('/game/move:get', {
@@ -96,6 +101,7 @@ export class GameService {
       ways: opponentsColor === COLORS.BLACK ? blackWays : [],
       log: blackLog,
       eatFigures: game.eatenFigures,
+      lastMove: lastMoves.black,
     });
 
     if (game.winner) {
@@ -157,21 +163,13 @@ export class GameService {
   };
 
   disconnect = (client: Socket, message: string) => {
+    this.logger.debug(client.id);
+
     const roomId = findRoom(client, this.gamesStates);
-
     if (!roomId) return;
-
     const gameRoom = this.gamesStates.get(roomId);
 
-    let leaving: string, winner: string;
-
-    if (gameRoom.white.socket === client.id) {
-      winner = COLORS.BLACK;
-      leaving = COLORS.WHITE;
-    } else {
-      winner = COLORS.WHITE;
-      leaving = COLORS.BLACK;
-    }
+    const [leaving, winner] = gameRoom.getColorsBySocket(client.id);
 
     gameRoom[leaving].socket = null;
 
@@ -182,6 +180,15 @@ export class GameService {
 
     gameRoom.winner = winner;
     gameRoom.gameEnd = new Date();
+
+    this.serverGateway.server.in(client.id).emit('/game/end', {
+      title: 'You lost!',
+      message: 'You surrendered!',
+      gameEnd: gameRoom.gameEnd,
+      board: gameRoom.board,
+      ways: [],
+      moveQueue: null,
+    });
 
     this.serverGateway.server.in(gameRoom[winner].socket).emit('/game/end', {
       title: 'You win!',
