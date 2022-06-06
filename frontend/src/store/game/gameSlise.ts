@@ -21,7 +21,10 @@ export type gameType = {
   }
   queue: usersQueueType[] | null;
   log: any;
-  eatFigures: string[];
+  eatFigures: {
+    white: string[],
+    black: string[],
+  };
 }
 
 const initialState: gameType = {
@@ -43,7 +46,10 @@ const initialState: gameType = {
   },
   queue: null,
   log: [],
-  eatFigures: [],
+  eatFigures: {
+    white: [],
+    black: [],
+  },
 }
 
 export const gameSlice = createSlice({
@@ -57,13 +63,16 @@ export const gameSlice = createSlice({
       state.ways = action.payload.ways;
       state.moveQueue = action.payload.moveQueue;
       state.gameStartTime = action.payload.gameStart;
+      state.gameEndTime = initialState.gameEndTime;
+      state.log = initialState.log;
+      state.eatFigures = initialState.eatFigures;
     },
     setGame: (state, action: PayloadAction<gameDataType>) => {
       state.board = action.payload.board;
       state.ways = action.payload.ways;
       state.moveQueue = action.payload.moveQueue;
       state.log = action.payload?.log || state.log;
-      state.eatFigures = action.payload.eatFigures;
+      state.eatFigures = action.payload.eatFigures || state.eatFigures;
     },
     setActivePosition: (state, action) => {
       state.activePosition = action.payload;
@@ -73,30 +82,13 @@ export const gameSlice = createSlice({
       state.endGameMessage.message = action.payload.message;
     },
     setEndTime: (state, action) => {
-      state.gameEndTime = action.payload?.gameEnd || state.gameEndTime;
+      state.gameEndTime = action.payload?.gameEnd || null;
     },
     setEndPosition: (state, action) => {
       state.endPosition = action.payload;
     },
     setQueue: (state, action) => {
       state.queue = action.payload;
-    },
-    clearGameSlise: (state) => {
-      state.players.white = '';
-      state.players.black = '';
-      state.color = '';
-      state.board = [];
-      state.ways = [];
-      state.moveQueue = null;
-      state.gameStartTime = null;
-      state.log = null;
-      state.eatFigures = [];
-      state.activePosition = null;
-      state.endGameMessage.title = '';
-      state.endGameMessage.message = '';
-      state.gameEndTime = null;
-      state.endPosition = null;
-      state.queue = null;
     },
   },
 })
@@ -106,11 +98,8 @@ export const setMove = (
   payload: [number, number],
   change: changeFigureDataType,
 ) => async (dispatch: any) => {
-  const isNull = activePosition === null;
-
-  if (isNull) dispatch(setActivePosition(payload));
-
-  if (!isNull) {
+  if (activePosition === null) dispatch(setActivePosition(payload));
+  if (activePosition !== null) {
 
     const isCancelMove =
       activePosition[0] === payload[0] &&
@@ -121,13 +110,13 @@ export const setMove = (
       return;
     }
 
-    const data = { startPos: activePosition, endPos: payload, change };
+    const moveData = { start: activePosition, end: payload, change };
 
-    console.log(`move ${JSON.stringify(data.startPos)} to ${JSON.stringify(data.endPos)}`);
+    console.log(`move ${JSON.stringify(moveData.start)} to ${JSON.stringify(moveData.end)}`);
 
     dispatch(setActivePosition(null))
 
-    move(data)
+    move(moveData)
   }
 }
 
@@ -139,7 +128,6 @@ export const {
   setEndPosition,
   setQueue,
   setEndTime,
-  clearGameSlise,
 } = gameSlice.actions;
 
 

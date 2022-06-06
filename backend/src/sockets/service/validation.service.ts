@@ -1,7 +1,8 @@
 import { Inject, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { movePropsType } from 'src/dto/validation.dto';
-import { getPlayersColors } from 'src/helpers/game';
+import { Socket } from 'socket.io';
+import { Game } from 'src/models/game.model';
+import { MoveType, MovePropsType } from 'src/types';
 import { BLACK_FIGURES, FIGURES, WHITE_FIGURES } from '../../enum/constants';
 import {
   checkDiagonalMove,
@@ -17,145 +18,136 @@ export class ValidationService {
   @Inject(ServerGateway)
   serverGateway: ServerGateway;
 
-  validationMove(props: movePropsType) {
-    const { gameRoom, figure, endPos, startPos, clientColor } = props;
-
-    const x: number = endPos[1] - startPos[1];
-    const y: number = endPos[0] - startPos[0];
+  validationMove(client: Socket, game: Game, move: MoveType) {
+    const startFigure = game.getFigureFromStart(move);
+    const x: number = move.end[1] - move.start[1];
+    const y: number = move.end[0] - move.start[0];
     const attackRow: number = this.initPos + y;
     const attackCol: number = this.initPos + x;
 
-    this.basicСheck(props);
+    this.basicСheck(client, game, move);
 
-    const endFigure: string = gameRoom.board[endPos[0]][endPos[1]];
-
-    props = {
-      ...props,
+    const props: MovePropsType = {
+      client,
+      game,
+      move,
       attackRow,
       attackCol,
       x,
       y,
-      endFigure,
     };
 
     switch (true) {
-      case figure.toLowerCase() === FIGURES.BLACK_KING:
+      case startFigure.toLowerCase() === FIGURES.BLACK_KING:
         this.checkKing(props);
         break;
 
-      case figure.toLowerCase() === FIGURES.BLACK_QUEEN:
+      case startFigure.toLowerCase() === FIGURES.BLACK_QUEEN:
         this.checkQueen(props);
         break;
 
-      case figure.toLowerCase() === FIGURES.BLACK_BISHOP:
+      case startFigure.toLowerCase() === FIGURES.BLACK_BISHOP:
         this.checkBishop(props);
         break;
 
-      case figure.toLowerCase() === FIGURES.BLACK_KNIGHT:
+      case startFigure.toLowerCase() === FIGURES.BLACK_KNIGHT:
         checkSchemeAttack(props);
         break;
 
-      case figure.toLowerCase() === FIGURES.BLACK_ROOK:
+      case startFigure.toLowerCase() === FIGURES.BLACK_ROOK:
         this.checkRook(props);
         break;
 
-      case figure.toLowerCase() === FIGURES.BLACK_PAWN:
+      case startFigure.toLowerCase() === FIGURES.BLACK_PAWN:
         this.checkPawn(props);
         break;
     }
 
-    this.checkEndGame({ ...props, clientColor, endFigure });
+    this.checkEndGame(client, game, move);
   }
 
-  checkMoveQueue = (props) => {
-    const { client, gameRoom } = props;
+  private basicСheck(client: Socket, game: Game, move: MoveType) {
+    if (game.winner)
+      throw new WsException("You can't move after the game is over");
 
-    const [clientColor] = getPlayersColors(client, gameRoom);
+    if (
+      move.end[0] < 0 ||
+      move.end[0] > 7 ||
+      move.end[1] < 0 ||
+      move.end[1] > 7
+    )
+      throw new WsException('Wrong coordinates');
 
-    if (clientColor !== gameRoom.moveQueue)
+    const startFigure = game.getFigureFromStart(move);
+    const endFigure = game.getFigureFromEnd(move);
+    const [clientColor] = game.getColorsBySocket(client.id);
+
+    if (clientColor !== game.moveQueue)
       throw new WsException("Opponent's move order");
-  };
 
-  private basicСheck(props: movePropsType) {
-    const { client, figure, gameRoom, endPos } = props;
+    if (startFigure === FIGURES.EMPTY)
+      throw new WsException('Figure not found');
 
-    const isWrongСoordinates =
-      endPos[0] < 0 || endPos[0] > 7 || endPos[1] < 0 || endPos[1] > 7;
+    if (
+      (client.id === game.white.socket && WHITE_FIGURES.includes(endFigure)) ||
+      (client.id === game.black.socket && BLACK_FIGURES.includes(endFigure))
+    )
+      throw new WsException('Move to own figure');
 
-    if (isWrongСoordinates) throw new WsException('Wrong coordinates');
-    const endFigure: string = gameRoom.board[endPos[0]][endPos[1]];
-
-    const isFigureNotFound = figure === FIGURES.EMPTY;
-
-    const isMoveToOwnFigure =
-      (client.id === gameRoom.white.socket &&
-        WHITE_FIGURES.includes(endFigure)) ||
-      (client.id === gameRoom.black.socket &&
-        BLACK_FIGURES.includes(endFigure));
-
-    const isOpponentFigure =
-      (client.id === gameRoom.white.socket && BLACK_FIGURES.includes(figure)) ||
-      (client.id === gameRoom.black.socket && WHITE_FIGURES.includes(figure));
-
-    if (isFigureNotFound) throw new WsException('Figure not found');
-    if (isMoveToOwnFigure) throw new WsException('Move to own figure');
-    if (isOpponentFigure) throw new WsException("Move opponent's figure");
+    if (
+      // eslint-disable-next-line prettier/prettier
+      (client.id === game.white.socket && BLACK_FIGURES.includes(startFigure)) ||
+      (client.id === game.black.socket && WHITE_FIGURES.includes(startFigure))
+    )
+      throw new WsException("Move opponent's figure");
   }
 
-  private checkKing = (props: movePropsType) => {
+  private checkKing = (props: MovePropsType) => {
     checkSchemeAttack(props);
 
     // checkKingCastle(props);
   };
 
-  private checkQueen(props: movePropsType) {
+  private checkQueen(props: MovePropsType) {
     checkSchemeAttack(props);
 
-    const isFigureOnWay =
-      checkDiagonalMove(props) || checkVerticalAndHorizontalMove(props);
-
-    if (isFigureOnWay)
+    if (checkDiagonalMove(props) || checkVerticalAndHorizontalMove(props))
       throw new WsException(
         'A figure on the path does not allow you to go to this cell',
       );
   }
 
-  private checkBishop(props: movePropsType) {
+  private checkBishop(props: MovePropsType) {
     checkSchemeAttack(props);
 
-    const isFigureOnWay = checkDiagonalMove(props);
-
-    if (isFigureOnWay)
+    if (checkDiagonalMove(props))
       throw new WsException(
         'A figure on the path does not allow you to go to this cell',
       );
   }
 
-  private checkRook(props: movePropsType) {
-    const { startPos, gameRoom, clientColor } = props;
+  private checkRook(props: MovePropsType) {
+    const { client, game, move } = props;
+    const [clientColor] = game.getColorsBySocket(client.id);
 
     checkSchemeAttack(props);
 
-    const isFigureOnWay = checkVerticalAndHorizontalMove(props);
-
-    if (startPos[1] === 0) gameRoom[clientColor].rules.castling.long = false;
-    if (startPos[1] === 7) gameRoom[clientColor].rules.castling.short = false;
-
-    this.logger.debug(gameRoom[clientColor].rules.castling.long);
-    this.logger.debug(gameRoom[clientColor].rules.castling.short);
-
-    if (isFigureOnWay)
+    if (checkVerticalAndHorizontalMove(props))
       throw new WsException(
         'A figure on the path does not allow you to go to this cell',
       );
+
+    if (move.start[1] === 0) game[clientColor].rules.castling.long = false;
+    if (move.start[1] === 7) game[clientColor].rules.castling.short = false;
   }
 
-  private checkPawn(props: movePropsType) {
-    const { gameRoom, figure, startPos, endPos, x, y } = props;
+  private checkPawn(props: MovePropsType) {
+    const { game, move, x, y } = props;
+    const startFigure = game.getFigureFromStart(move);
+    const endFigure = game.getFigureFromEnd(move);
 
-    const initPawnPos = figure === FIGURES.WHITE_PAWN ? 6 : 1;
-    const step = figure === FIGURES.WHITE_PAWN ? -1 : 1;
-    const endFigure = gameRoom.board[endPos[0]][endPos[1]];
+    const initPawnPos = startFigure === FIGURES.WHITE_PAWN ? 6 : 1;
+    const step = startFigure === FIGURES.WHITE_PAWN ? -1 : 1;
 
     const isStep = Math.abs(y) === 1 && x === 0 && endFigure === FIGURES.EMPTY;
 
@@ -163,23 +155,22 @@ export class ValidationService {
       Math.abs(x) === 1 && y === step && endFigure !== FIGURES.EMPTY;
 
     const isTwoSteps =
-      startPos[0] === initPawnPos &&
+      move.start[0] === initPawnPos &&
       Math.abs(y) === 2 &&
       endFigure === FIGURES.EMPTY &&
-      gameRoom.board[startPos[0] + step][endPos[1]] === FIGURES.EMPTY;
+      game.board[move.start[0] + step][move.end[1]] === FIGURES.EMPTY;
 
     if (!isStep && !isDiagonal && !isTwoSteps)
       throw new WsException('A figure cannot move to this cell');
   }
 
-  private checkEndGame = (props: movePropsType) => {
-    const { endFigure, clientColor, gameRoom } = props;
+  private checkEndGame = (client: Socket, game: Game, move: MoveType) => {
+    const endFigure = game.getFigureFromEnd(move);
+    const [clientColor] = game.getColorsBySocket(client.id);
 
-    const isWinner = endFigure.toLowerCase() === FIGURES.BLACK_KING;
-
-    if (isWinner) {
-      gameRoom.winner = clientColor;
-      gameRoom.gameEnd = new Date();
+    if (endFigure === FIGURES.BLACK_KING || endFigure === FIGURES.WHITE_KING) {
+      game.winner = clientColor;
+      game.gameEnd = new Date();
     }
   };
 }

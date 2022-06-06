@@ -1,4 +1,5 @@
 import { Box } from '@mui/material'
+import { WHITE_FIGURES, BLACK_FIGURES, FIGURES } from '../../constants'
 import { Bishop } from './figures/Bishop'
 import { King } from './figures/King'
 import { Knight } from './figures/Knight'
@@ -45,19 +46,6 @@ export const Figure = (props: figurePropsType) => {
       return null;
   }
 }
-
-const FIGURES = {
-  KING: 'k',
-  QUEEN: 'q',
-  BISHOP: 'b',
-  KNIGHT: 'n',
-  ROOK: 'r',
-  PAWN: 'p',
-  FOG: '~',
-}
-
-const WHITE_FIGURES = 'KQBNRP';
-const BLACK_FIGURES = 'rqbnrp';
 
 type figurePropsType = {
   cell: string;

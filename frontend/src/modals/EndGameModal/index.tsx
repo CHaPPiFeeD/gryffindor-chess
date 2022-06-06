@@ -27,19 +27,11 @@ export const EndGameModal = () => {
 
         <Box>
           <Button
-            onClick={() => window.location.href = '/'}
-            variant='contained'
-            className={styles.button}
-          >
-            Go back
-          </Button>
-          
-          <Button
             onClick={handleClose}
             variant='contained'
             className={styles.button}
           >
-            I want to stay
+            OK
           </Button>
         </Box>
 

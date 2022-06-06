@@ -1,42 +1,42 @@
 import { WsException } from '@nestjs/websockets';
-import { movePropsType } from 'src/dto/validation.dto';
 import { KING_WAYS_CASTLING } from 'src/enum/figureWays';
+import { MovePropsType } from 'src/types';
 import { ATTACKS_SCHEME, COLORS, FIGURES } from '../enum/constants';
 
 export const checkVerticalAndHorizontalMove = (
-  props: movePropsType,
+  props: MovePropsType,
 ): boolean => {
-  const { gameRoom, startPos, x, y } = props;
+  const { game, move, x, y } = props;
 
-  const row = startPos[0];
-  const column = startPos[1];
+  const row = move.start[0];
+  const column = move.start[1];
 
   switch (true) {
     case x < 0 && y == 0: // left
       for (let i = 1; -i > x; i++) {
-        const column = startPos[1] - i;
-        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
+        const column = move.start[1] - i;
+        if (game.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x > 0 && y == 0: // right
       for (let i = 1; i < x; i++) {
-        const column = startPos[1] + i;
-        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
+        const column = move.start[1] + i;
+        if (game.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x == 0 && y > 0: //top
       for (let i = 1; -i > y; i++) {
-        const row = startPos[0] - i;
-        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
+        const row = move.start[0] - i;
+        if (game.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x == 0 && y < 0: // buttom
       for (let i = 1; i < y; i++) {
-        const row = startPos[0] + i;
-        if (gameRoom.board[row][column] !== FIGURES.EMPTY) return true;
+        const row = move.start[0] + i;
+        if (game.board[row][column] !== FIGURES.EMPTY) return true;
       }
       break;
 
@@ -45,39 +45,39 @@ export const checkVerticalAndHorizontalMove = (
   }
 };
 
-export const checkDiagonalMove = (props: movePropsType): boolean => {
-  const { gameRoom, startPos, x, y } = props;
+export const checkDiagonalMove = (props: MovePropsType): boolean => {
+  const { game, move, x, y } = props;
 
   switch (true) {
     case x < 0 && y < 0: // top left
       for (let i = 1; -i > x && -i > y; i++) {
-        const col = startPos[1] - i;
-        const row = startPos[0] - i;
-        if (gameRoom.board[row][col] !== FIGURES.EMPTY) return true;
+        const col = move.start[1] - i;
+        const row = move.start[0] - i;
+        if (game.board[row][col] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x > 0 && y > 0: // top right
       for (let i = 1; i < x && -i > y; i++) {
-        const col = startPos[1] + i;
-        const row = startPos[0] - i;
-        if (gameRoom.board[row][col] !== FIGURES.EMPTY) return true;
+        const col = move.start[1] + i;
+        const row = move.start[0] - i;
+        if (game.board[row][col] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x < 0 && y < 0: // buttom left
       for (let i = 1; -i > x && i < y; i++) {
-        const col = startPos[1] - i;
-        const row = startPos[0] + i;
-        if (gameRoom.board[row][col] !== FIGURES.EMPTY) return true;
+        const col = move.start[1] - i;
+        const row = move.start[0] + i;
+        if (game.board[row][col] !== FIGURES.EMPTY) return true;
       }
       break;
 
     case x > 0 && y < 0: // buttom right
       for (let i = 1; i < x && i < y; i++) {
-        const col = startPos[1] + i;
-        const row = startPos[0] + i;
-        if (gameRoom.board[row][col] !== FIGURES.EMPTY) return true;
+        const col = move.start[1] + i;
+        const row = move.start[0] + i;
+        if (game.board[row][col] !== FIGURES.EMPTY) return true;
       }
       break;
   }
@@ -87,35 +87,37 @@ export const checkCoordinates = (wayRow: number, wayCol: number) => {
   return wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
 };
 
-export const checkSchemeAttack = (props: movePropsType) => {
-  const { attackRow, attackCol, figure } = props;
+export const checkSchemeAttack = (props: MovePropsType) => {
+  const { attackRow, attackCol, game, move } = props;
+  const startFigure = game.getFigureFromStart(move);
 
-  if (figure.toLowerCase() === FIGURES.BLACK_KING) {
-    const isCastling = checkKingCastle(props);
-
-    if (isCastling) return;
-  }
+  if (
+    startFigure.toLowerCase() === FIGURES.BLACK_KING &&
+    checkKingCastle(props)
+  )
+    return;
 
   const isSchemeAttack = ATTACKS_SCHEME[attackRow][attackCol].includes(
-    figure.toLowerCase(),
+    startFigure.toLowerCase(),
   );
 
   if (!isSchemeAttack)
     throw new WsException('A figure cannot move to this cell');
 };
 
-export const checkKingCastle = (props: movePropsType) => {
-  const { clientColor, gameRoom, endPos } = props;
+export const checkKingCastle = (props: MovePropsType) => {
+  const { client, game, move } = props;
+  const [clientColor] = game.getColorsBySocket(client.id);
 
   let castling, initRow;
 
   if (clientColor === COLORS.WHITE) {
-    castling = gameRoom.white.rules.castling;
+    castling = game.white.rules.castling;
     initRow = 7;
   }
 
   if (clientColor === COLORS.BLACK) {
-    castling = gameRoom.black.rules.castling;
+    castling = game.black.rules.castling;
     initRow = 0;
   }
 
@@ -129,46 +131,48 @@ export const checkKingCastle = (props: movePropsType) => {
     KING_WAYS_CASTLING.TO_SHORT_SIDE,
   );
 
-  const isShort = endPos[0] === initRow && endPos[1] === 6;
-  const isLong = endPos[0] === initRow && endPos[1] === 2;
+  const isShort = move.end[0] === initRow && move.end[1] === 6;
+  const isLong = move.end[0] === initRow && move.end[1] === 2;
 
   if (isLongCastlingAllow && castling.long && isLong) {
-    gameRoom[clientColor].rules.castling.long = false;
-    gameRoom[clientColor].rules.castling.short = false;
-    const rook = gameRoom.board[initRow][0];
-    gameRoom.board[initRow][3] = rook;
-    gameRoom.board[initRow][0] = FIGURES.EMPTY;
+    game[clientColor].rules.castling.long = false;
+    game[clientColor].rules.castling.short = false;
+    const rook = game.board[initRow][0];
+    game.board[initRow][3] = rook;
+    game.board[initRow][0] = FIGURES.EMPTY;
     return true;
   }
 
   if (isShortCastlingAllow && castling && isShort) {
-    gameRoom[clientColor].rules.castling.long = false;
-    gameRoom[clientColor].rules.castling.short = false;
-    const rook = gameRoom.board[initRow][0];
-    gameRoom.board[initRow][5] = rook;
-    gameRoom.board[initRow][7] = FIGURES.EMPTY;
+    game[clientColor].rules.castling.long = false;
+    game[clientColor].rules.castling.short = false;
+    const rook = game.board[initRow][0];
+    game.board[initRow][5] = rook;
+    game.board[initRow][7] = FIGURES.EMPTY;
     return true;
   }
 
   return false;
 };
 
-const checkCastlingSide = (props: movePropsType, side): boolean => {
-  const { startPos, gameRoom, clientColor } = props;
+const checkCastlingSide = (props: MovePropsType, side): boolean => {
+  const { client, move, game } = props;
+  const [clientColor] = game.getColorsBySocket(client.id);
 
   const initPos = clientColor === COLORS.WHITE ? [7, 4] : [0, 4];
-  if (startPos[0] !== initPos[0] || startPos[1] !== initPos[1]) return false;
+  if (move.start[0] !== initPos[0] || move.start[1] !== initPos[1])
+    return false;
 
   let isCastling = true;
 
   side.forEach((way) => {
-    const wayRow = startPos[0] + way[0];
-    const wayCol = startPos[1] + way[1];
+    const wayRow = move.start[0] + way[0];
+    const wayCol = move.start[1] + way[1];
 
     const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
 
     if (isCorrectCoordinates) {
-      const isCellNotEmpty = gameRoom.board[wayRow][wayCol] !== FIGURES.EMPTY;
+      const isCellNotEmpty = game.board[wayRow][wayCol] !== FIGURES.EMPTY;
 
       if (isCellNotEmpty) isCastling = false;
     }

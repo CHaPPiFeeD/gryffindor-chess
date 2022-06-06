@@ -9,6 +9,7 @@ import { setGame, setEndPosition, setMove } from '../../../../store/game/gameSli
 import { Figure } from '../../../../components';
 import styles from './styles.module.scss';
 import { setOpen } from '../../../../store/modal/modalSlise';
+import { BLACK_FIGURES, WHITE_FIGURES } from '../../../../constants';
 
 
 export const RenderBoard = () => {
@@ -29,9 +30,11 @@ export const RenderBoard = () => {
   const handleClick = (e: any) => {
     const row = +e.currentTarget.attributes.getNamedItem('data-row')?.value;
     const col = +e.currentTarget.attributes.getNamedItem('data-col')?.value;
-    let isTransformPawn;
+    const color: string = e.currentTarget.attributes.getNamedItem('data-color')?.value;
 
     if (moveQueueStore !== colorStore || !waysStore.length) return;
+
+    let isTransformPawn;
 
     if (activePositionStore) {
       removeAllClasses(boardRef);
@@ -42,6 +45,8 @@ export const RenderBoard = () => {
 
     if (!activePositionStore) {
       const [rowBoard, colBoard] = getCoordinate(row, col, colorStore);
+
+      if (color !== colorStore) return;
 
       addActiveClass(boardRef, rowBoard, colBoard);
 
@@ -71,6 +76,12 @@ export const RenderBoard = () => {
             const l = colorStore === 'black' ? 1 : 0;
             const number = i + j + l;
             const style = number % 2 === 0 ? styles.cell_white : styles.cell_black
+            const cell = boardStore[row][col];
+
+            let color;
+
+            if (WHITE_FIGURES.includes(cell)) color = 'white'
+            if (BLACK_FIGURES.includes(cell)) color = 'black'
 
             return (
               <Box
@@ -79,6 +90,7 @@ export const RenderBoard = () => {
                 id={`${row}${col}`}
                 data-row={row}
                 data-col={col}
+                data-color={color}
                 onClick={handleClick}
               >
                 <Figure cell={boardStore[row][col]} />

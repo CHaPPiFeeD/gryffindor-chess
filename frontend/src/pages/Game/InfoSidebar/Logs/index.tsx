@@ -16,8 +16,6 @@ export const Logs = () => {
     scrollToBottom()
   }, [logStore]);
 
-  console.log(logStore);
-  
   return (
     <Box className={styles.logs}>
 
