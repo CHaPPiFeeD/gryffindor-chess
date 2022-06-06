@@ -2,37 +2,34 @@
   height: 400px;
   width: 50%;
   overflow: auto;
-  // display: flex;
-  // flex-wrap: wrap;
-  // justify-content: space-between;
-  // align-items: flex-start;
-  padding-right: 5px;
+  margin-right: 5px;
+  background: #ffeccd;
+  border-radius: 5px;
+
 
   &::-webkit-scrollbar {
     width: 5px;
-    background: rgba(255, 255, 255, 0.5),
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: #B58863;
+    border-radius: 5px;
   }
 
   .logs_container {
     display: flex;
-    // justify-content: space-between;
   }
 
   .logs_box {
-  display: flex;
-  // flex-wrap: wrap;
-  // justify-content: space-between;
-  // align-items: flex-start;
+    display: flex;
   }
 
   .log_item {
     display: flex;
     align-items: center;
-  
+
     .figure_box {
       width: 48px;
     }

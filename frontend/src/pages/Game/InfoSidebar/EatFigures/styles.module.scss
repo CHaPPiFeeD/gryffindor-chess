@@ -1,10 +1,13 @@
 .wrapper {
   width: 50%;
-  padding-left: 15px;
+  padding: 10px;
   display: flex;
   flex-wrap: wrap;
+  background: #ffeccd;
+  border-radius: 5px;
 
   .figures_container {
+    width: 214px;
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;

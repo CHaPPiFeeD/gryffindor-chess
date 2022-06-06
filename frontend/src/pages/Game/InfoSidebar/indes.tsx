@@ -30,7 +30,7 @@ export const InfoSidebar = () => {
   const handleClick = () => {
     if (endGame) {
       navigate(path.login())
-    } else if (confirm('Do you really want to leave?')) {
+    } else if (confirm('Do you really want to surrender?')) {
       leaveGame()
     }
   }
