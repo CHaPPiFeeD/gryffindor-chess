@@ -1,12 +1,10 @@
 import { io, Socket } from 'socket.io-client'
-import { handleError, showNotification } from '../store/notification/notificationSlise';
+import { showNotification } from '../store/notification/notificationSlise';
 import { gameDataType, gameStartDataType, moveDataType, usersQueueType } from './types';
-import { AppDispatch } from '../store'
-
 
 let socket: Socket;
 
-export const joinSocket = (dispatch: AppDispatch) => {
+export const joinSocket = () => {
   socket = io(`${process.env.REACT_APP_API_KEY}`)
 
   socket.on('connect', () => {
@@ -18,18 +16,12 @@ export const joinSocket = (dispatch: AppDispatch) => {
     console.log('error:', data)
     socket.disconnect()
   })
-
-  socket.on('exception', (data) => {
-    console.log(data);
-    dispatch(showNotification(data?.message, data?.status))
-  })
 }
 
-export const exceptionHandler = (cb: Function) => {
-  if (!socket?.connected) return
-  socket.on('exception', (data) => {
-    console.log(data);
-    cb(data)
+export const exceptionHandler = (dispatch: any) => {
+  socket.on('exception', (exception) => {
+    console.log(exception);
+    dispatch(showNotification(exception?.message, exception?.status))
   })
 }
 

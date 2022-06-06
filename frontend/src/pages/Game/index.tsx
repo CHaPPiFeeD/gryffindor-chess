@@ -2,7 +2,7 @@ import { Box } from '@mui/system'
 import { useSnackbar } from 'notistack'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { checkEndGame, checkSocketConnection, getOfferDraw, leaveGame } from '../../api/socket'
+import { checkEndGame, checkSocketConnection, exceptionHandler, getOfferDraw, leaveGame } from '../../api/socket'
 import { useAppDispatch } from '../../hooks/redux'
 import { path } from '../../router/constants'
 import { setEndTime, setGame, setMessage } from '../../store/game/gameSlise'
@@ -15,10 +15,10 @@ import styles from './styles.module.scss'
 export const Game = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
     checkSocketConnection();
+    exceptionHandler(dispatch);
 
     checkEndGame((data: any) => {
       dispatch(setMessage(data))
