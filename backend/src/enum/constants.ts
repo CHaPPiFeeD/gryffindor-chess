@@ -17,6 +17,7 @@ export const FIGURES = {
   WHITE_ROOK: 'R',
   WHITE_PAWN: 'P',
   EMPTY: '.',
+  FOG: '~',
 };
 
 export const INIT_BOARD = (): string[][] => [

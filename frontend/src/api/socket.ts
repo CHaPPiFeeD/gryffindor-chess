@@ -62,6 +62,8 @@ export const move = (data: moveDataType) => {
 
 export const getBoard = (cb: Function) => {
   socket.on('/game/move:get', (payload: gameDataType) => {
+    console.log(payload);
+    
     cb(payload)
   })
 }

@@ -25,6 +25,7 @@ export type gameType = {
     white: string[],
     black: string[],
   };
+  lastMove: number[][],
 }
 
 const initialState: gameType = {
@@ -50,6 +51,7 @@ const initialState: gameType = {
     white: [],
     black: [],
   },
+  lastMove: [],
 }
 
 export const gameSlice = createSlice({
@@ -73,6 +75,7 @@ export const gameSlice = createSlice({
       state.moveQueue = action.payload.moveQueue;
       state.log = action.payload?.log || state.log;
       state.eatFigures = action.payload.eatFigures || state.eatFigures;
+      state.lastMove = action.payload.lastMove;
     },
     setActivePosition: (state, action) => {
       state.activePosition = action.payload;

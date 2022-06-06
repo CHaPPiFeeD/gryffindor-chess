@@ -8,6 +8,7 @@ export type gameDataType = {
     white: string[],
     black: string[],
   },
+  lastMove: number[][],
 };
 
 export type gameStartDataType = {

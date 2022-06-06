@@ -71,12 +71,16 @@ export class GameService {
     this.validationService.validationMove(client, game, move);
 
     game.updateLog(client, move);
-    const [whiteLog, blackLog] = game.getLogsForPlayers();
-
     game.move(client, move);
+    const [whiteLog, blackLog] = game.getLogsForPlayers();
 
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
       this.boardService.createFogBoards(game);
+    const lastMoves = this.boardService.getLastMove(
+      whiteBoard,
+      blackBoard,
+      move,
+    );
 
     alertBoard(this.logger, game.board, roomId);
     alertBoard(this.logger, whiteBoard, 'white board');
@@ -88,6 +92,7 @@ export class GameService {
       ways: opponentsColor === COLORS.WHITE ? whiteWays : [],
       log: whiteLog,
       eatFigures: game.eatenFigures,
+      lastMove: lastMoves.white,
     });
 
     this.serverGateway.server.in(game.black.socket).emit('/game/move:get', {
@@ -96,6 +101,7 @@ export class GameService {
       ways: opponentsColor === COLORS.BLACK ? blackWays : [],
       log: blackLog,
       eatFigures: game.eatenFigures,
+      lastMove: lastMoves.black,
     });
 
     if (game.winner) {

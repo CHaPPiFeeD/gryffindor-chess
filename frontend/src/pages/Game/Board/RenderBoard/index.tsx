@@ -21,6 +21,7 @@ export const RenderBoard = () => {
     activePosition: activePositionStore,
     ways: waysStore,
     moveQueue: moveQueueStore,
+    lastMove: lastMoveStore,
   } = useSelector((state: RootState) => state.game)
 
   useEffect(() => {
@@ -69,14 +70,18 @@ export const RenderBoard = () => {
 
   return (
     <Box className={styles.board} ref={boardRef} id='board'>
-      {boardStore.map((v, i) => {
+      {boardStore?.map((v, i) => {
         return <Box key={i} style={{ display: 'flex' }}>
           {v.map((v: any, j: number) => {
             const [row, col] = getCoordinate(i, j, colorStore);
             const l = colorStore === 'black' ? 1 : 0;
             const number = i + j + l;
-            const style = number % 2 === 0 ? styles.cell_white : styles.cell_black
+            const style = number % 2 === 0 ? styles.cell_white : styles.cell_black 
             const cell = boardStore[row][col];
+            let moveStyle;
+            lastMoveStore?.forEach((v) => {
+              if (v[0] === row && v[1] === col) moveStyle = styles.last_move;
+            })
 
             let color;
 
@@ -85,7 +90,7 @@ export const RenderBoard = () => {
 
             return (
               <Box
-                className={style}
+                className={[style, moveStyle].join(' ')}
                 key={col}
                 id={`${row}${col}`}
                 data-row={row}
@@ -110,7 +115,6 @@ const removeAllClasses = (boardRef: React.MutableRefObject<HTMLElement | null>) 
         styles.active,
         styles.ellips,
         styles.circle,
-        styles.active,
       )
     }
   }
