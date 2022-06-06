@@ -44,7 +44,7 @@ export const EatFigures = () => {
 
       <Box>
         <Typography>
-          Opponents eating:
+          Opponents eat:
         </Typography>
 
         <Box className={styles.figures_container}>
