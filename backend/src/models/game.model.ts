@@ -111,4 +111,9 @@ export class Game {
   getFigureFromEnd(move: MoveType): string {
     return this.board[move.end[0]][move.end[1]];
   }
+
+  clearInterceptionWays() {
+    this.white.rules.interception = [];
+    this.black.rules.interception = [];
+  }
 }

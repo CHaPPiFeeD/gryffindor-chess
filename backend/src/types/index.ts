@@ -10,7 +10,16 @@ export type GamePlayerType = {
       long: boolean;
       short: boolean;
     };
+    interception: InterceptionType[];
   };
+};
+
+export type InterceptionType = {
+  move: {
+    start: number[];
+    end: number[];
+  };
+  figurePosition: number[];
 };
 
 export type MoveType = {

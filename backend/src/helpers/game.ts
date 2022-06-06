@@ -41,6 +41,7 @@ const createPlayerColors = (
         long: true,
         short: true,
       },
+      interception: [],
     },
   };
 
@@ -53,6 +54,7 @@ const createPlayerColors = (
         long: true,
         short: true,
       },
+      interception: [],
     },
   };
 

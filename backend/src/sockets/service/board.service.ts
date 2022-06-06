@@ -102,6 +102,9 @@ export class BoardService {
       });
     });
 
+    this.checkInterceptionWays(game, whiteBoard, initWhiteWays);
+    this.checkInterceptionWays(game, blackBoard, initBlackWays);
+
     const whiteWays: string[] = [];
     const blackWays: string[] = [];
 
@@ -137,6 +140,25 @@ export class BoardService {
       black.push([move.end[0], move.end[1]]);
 
     return { white, black };
+  };
+
+  private checkInterceptionWays = (
+    game: Game,
+    board: string[][],
+    ways: number[][][],
+  ) => {
+    game.white.rules.interception?.forEach((v) => {
+      ways.push([
+        [v.move.start[0], v.move.start[1]],
+        [v.move.end[0], v.move.end[1]],
+      ]);
+
+      board[v.move.end[0]][v.move.end[1]] =
+        game.board[v.move.end[0]][v.move.end[1]];
+
+      board[v.figurePosition[0]][v.figurePosition[1]] =
+        game.board[v.figurePosition[0]][v.figurePosition[1]];
+    });
   };
 
   private checkKingWays = (props: CheckWaysPropsType) => {

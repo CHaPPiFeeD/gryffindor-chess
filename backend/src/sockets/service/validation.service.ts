@@ -142,9 +142,10 @@ export class ValidationService {
   }
 
   private checkPawn(props: MovePropsType) {
-    const { game, move, x, y } = props;
+    const { game, move, client, x, y } = props;
     const startFigure = game.getFigureFromStart(move);
     const endFigure = game.getFigureFromEnd(move);
+    const [clientColor, opponentColor] = game.getColorsBySocket(client.id);
 
     const initPawnPos = startFigure === FIGURES.WHITE_PAWN ? 6 : 1;
     const step = startFigure === FIGURES.WHITE_PAWN ? -1 : 1;
@@ -160,8 +161,54 @@ export class ValidationService {
       endFigure === FIGURES.EMPTY &&
       game.board[move.start[0] + step][move.end[1]] === FIGURES.EMPTY;
 
+    let isInterception = false;
+
+    if (Math.abs(x) === 1 && y === step) {
+      game[clientColor].rules.interception?.forEach((v) => {
+        if (
+          v.move.start[0] === move.start[0] &&
+          v.move.start[1] === move.start[1] &&
+          v.move.end[0] === move.end[0] &&
+          v.move.end[1] === move.end[1]
+        ) {
+          game.board[v.figurePosition[0]][v.figurePosition[1]] = FIGURES.EMPTY;
+          isInterception = true;
+        }
+      });
+    }
+
+    if (isInterception) {
+      game.clearInterceptionWays();
+      return;
+    }
+
     if (!isStep && !isDiagonal && !isTwoSteps)
       throw new WsException('A figure cannot move to this cell');
+
+    if (isTwoSteps) {
+      if (game.board[move.end[0]][move.end[1] + 1] !== FIGURES.EMPTY) {
+        game[opponentColor].rules.interception.push({
+          move: {
+            start: [move.end[0], move.end[1]],
+            end: [move.end[0] + step, move.end[1] + 1],
+          },
+          figurePosition: [move.end[0]][move.end[1] + 1],
+        });
+
+        if (game.board[move.end[0]][move.end[1] - 1] !== FIGURES.EMPTY) {
+          game[opponentColor].rules.interception.push({
+            move: {
+              start: [move.end[0], move.end[1]],
+              end: [move.end[0] + step, move.end[1] - 1],
+            },
+            figurePosition: [move.end[0]][move.end[1] - 1],
+          });
+        }
+      }
+    }
+
+    console.log(game.white.rules.interception);
+    console.log(game.black.rules.interception);
   }
 
   private checkEndGame = (client: Socket, game: Game, move: MoveType) => {
