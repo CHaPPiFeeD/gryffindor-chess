@@ -2,6 +2,11 @@
   height: 400px;
   width: 50%;
   overflow: auto;
+  // display: flex;
+  // flex-wrap: wrap;
+  // justify-content: space-between;
+  // align-items: flex-start;
+  padding-right: 5px;
 
   &::-webkit-scrollbar {
     width: 5px;
@@ -10,6 +15,18 @@
 
   &::-webkit-scrollbar-thumb {
     background-color: #B58863;
+  }
+
+  .logs_container {
+    display: flex;
+    // justify-content: space-between;
+  }
+
+  .logs_box {
+  display: flex;
+  // flex-wrap: wrap;
+  // justify-content: space-between;
+  // align-items: flex-start;
   }
 
   .log_item {
