@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client'
+import { showNotification } from '../store/notification/notificationSlise';
 import { gameDataType, gameStartDataType, moveDataType, usersQueueType } from './types';
-
 
 let socket: Socket;
 
@@ -16,9 +16,12 @@ export const joinSocket = () => {
     console.log('error:', data)
     socket.disconnect()
   })
+}
 
-  socket.on('exception', (e) => {
-    console.log(e.message);
+export const exceptionHandler = (dispatch: any) => {
+  socket.on('exception', (exception) => {
+    console.log(exception);
+    dispatch(showNotification(exception?.message, exception?.status))
   })
 }
 
@@ -53,7 +56,7 @@ export const move = (data: moveDataType) => {
 }
 
 export const getBoard = (cb: Function) => {
-  socket.on('/game/move:get', (payload: gameDataType) => {    
+  socket.on('/game/move:get', (payload: gameDataType) => {
     cb(payload)
   })
 }
@@ -65,6 +68,8 @@ export const checkEndGame = (cb: Function) => {
 }
 
 export const checkSocketConnection = () => {
+  console.log(socket);
+  
   if (!socket) window.location.href = '/'
 }
 
