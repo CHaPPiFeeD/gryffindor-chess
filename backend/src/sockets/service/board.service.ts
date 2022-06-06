@@ -1,15 +1,10 @@
 import { Logger } from '@nestjs/common';
-import { gameRoomType } from 'src/dto/game.dto';
 import { checkCoordinates } from '../../helpers/validation';
 import {
   addWayAndVisibility,
   checkCastling,
   createWay,
 } from '../../helpers/board';
-import {
-  checkWaysPropsType,
-  createBoardsForPlayersType,
-} from '../../dto/board.dto';
 import {
   WHITE_FIGURES,
   BLACK_FIGURES,
@@ -26,25 +21,24 @@ import {
   BLACK_PAWN_WAYS,
   KING_WAYS,
 } from '../../enum/figureWays';
+import { Game } from 'src/models/game.model';
+import { CheckWaysPropsType, CreateBoardsForPlayersType } from 'src/types';
 
 export class BoardService {
   private logger = new Logger(BoardService.name);
 
-  createFogBoards(gameRoom: gameRoomType): createBoardsForPlayersType {
-    const generalBoard = gameRoom.board;
-    const start = new Date();
+  createFogBoards(game: Game): CreateBoardsForPlayersType {
     const whiteBoard = FOG_BOARD();
     const blackBoard = FOG_BOARD();
     const initWhiteWays = [];
     const initBlackWays = [];
 
-    generalBoard.forEach((rowValue, checkRow) => {
-      rowValue.forEach((colValue, checkCol) => {
-        const cell = generalBoard[checkRow][checkCol];
+    game.board.forEach((v, checkRow) => {
+      v.forEach((v, checkCol) => {
+        const cell = game.board[checkRow][checkCol];
 
-        let props: checkWaysPropsType = {
-          gameRoom,
-          generalBoard,
+        let props: CheckWaysPropsType = {
+          game,
           checkRow,
           checkCol,
         };
@@ -104,24 +98,16 @@ export class BoardService {
       });
     });
 
-    const end = new Date();
-    this.logger.warn(+end - +start);
-
     const whiteWays: string[] = [];
     const blackWays: string[] = [];
 
-    initWhiteWays.forEach((way) => {
-      whiteWays.push(createWay(way[0][0], way[0][1], way[1][0], way[1][1]));
-    });
-
-    initBlackWays.forEach((way) => {
-      blackWays.push(createWay(way[0][0], way[0][1], way[1][0], way[1][1]));
-    });
+    initWhiteWays.forEach((way) => whiteWays.push(createWay(way)));
+    initBlackWays.forEach((way) => blackWays.push(createWay(way)));
 
     return { whiteBoard, blackBoard, whiteWays, blackWays };
   }
 
-  private checkKingWays = (props: checkWaysPropsType) => {
+  private checkKingWays = (props: CheckWaysPropsType) => {
     const { checkRow, checkCol } = props;
 
     KING_WAYS.forEach((way) => {
@@ -138,7 +124,7 @@ export class BoardService {
   };
 
   private checkKnightWays = (
-    props: checkWaysPropsType,
+    props: CheckWaysPropsType,
     figureWays: number[][],
   ) => {
     const { checkRow, checkCol } = props;
@@ -154,8 +140,8 @@ export class BoardService {
     });
   };
 
-  private checkWays(props: checkWaysPropsType, figureWays: number[][][]) {
-    const { generalBoard, checkRow, checkCol } = props;
+  private checkWays(props: CheckWaysPropsType, figureWays: number[][][]) {
+    const { game, checkRow, checkCol } = props;
 
     figureWays.forEach((side) => {
       let isSide = true;
@@ -165,23 +151,18 @@ export class BoardService {
           const wayRow = checkRow + way[0];
           const wayCol = checkCol + way[1];
 
-          const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
-
-          if (isCorrectCoordinates) {
+          if (checkCoordinates(wayRow, wayCol)) {
             addWayAndVisibility({ ...props, side, wayRow, wayCol, i });
 
-            const isCellNotEmpty =
-              generalBoard[wayRow][wayCol] !== FIGURES.EMPTY;
-
-            if (isCellNotEmpty) isSide = false;
+            if (game.board[wayRow][wayCol] !== FIGURES.EMPTY) isSide = false;
           } else isSide = false;
         }
       });
     });
   }
 
-  private checkPawnWays(props: checkWaysPropsType) {
-    const { generalBoard, checkRow, checkCol, pawnWays } = props;
+  private checkPawnWays(props: CheckWaysPropsType) {
+    const { game, checkRow, checkCol, pawnWays } = props;
     const initPosPawn = pawnWays === WHITE_PAWN_WAYS ? 6 : 1;
 
     pawnWays.forEach((way) => {
@@ -196,18 +177,18 @@ export class BoardService {
         const isStep =
           Math.abs(way[0]) === 1 &&
           Math.abs(way[1]) === 0 &&
-          generalBoard[wayRow][wayCol] === FIGURES.EMPTY;
+          game.board[wayRow][wayCol] === FIGURES.EMPTY;
 
         const isDiagonal =
           Math.abs(way[1]) === 1 &&
-          generalBoard[wayRow][wayCol] !== FIGURES.EMPTY;
+          game.board[wayRow][wayCol] !== FIGURES.EMPTY;
 
         const isTwoSteps =
           checkRow === initPosPawn &&
           Math.abs(way[0]) === 2 &&
           Math.abs(way[1]) === 0 &&
-          generalBoard[wayRow][wayCol] === FIGURES.EMPTY &&
-          generalBoard[step][wayCol] === FIGURES.EMPTY;
+          game.board[wayRow][wayCol] === FIGURES.EMPTY &&
+          game.board[step][wayCol] === FIGURES.EMPTY;
 
         if (isDiagonal || isStep || isTwoSteps)
           addWayAndVisibility({ ...props, wayRow, wayCol });

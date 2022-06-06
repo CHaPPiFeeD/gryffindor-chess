@@ -1,7 +1,7 @@
 import { Inject, Logger } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { RegToQueueDto } from '../dto/queue.dto';
+import { RegToQueueDataType } from 'src/types';
 import { QueueService } from './service/queue.service';
 
 @WebSocketGateway({ cors: true })
@@ -12,7 +12,7 @@ export class QueueGateway {
   private queueService: QueueService;
 
   @SubscribeMessage('/queue/search')
-  regToQueue(client: Socket, data: RegToQueueDto) {
+  regToQueue(client: Socket, data: RegToQueueDataType) {
     this.queueService.regToQueue(client, data);
   }
 

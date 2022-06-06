@@ -13,12 +13,12 @@ export const LoginForm = () => {
   const dispatch = useAppDispatch();
 
   const initialValues: initialValuesType = {
-    username: '',
+    name: '',
     color: null,
   };
 
   const validationSchema = Yup.object({
-    username: Yup.string()
+    name: Yup.string()
       .required('Username is a required field')
       .min(3, 'Must be more than 3 characters')
       .max(24, 'No more than 24 characters'),
@@ -49,11 +49,11 @@ export const LoginForm = () => {
 
       <TextField
         label='Name'
-        id='username'
-        value={formik.values.username}
+        id='name'
+        value={formik.values.name}
         onChange={formik.handleChange}
-        error={formik.touched.username && !!formik.errors.username}
-        helperText={(formik.touched.username && formik.errors.username) || ''}
+        error={formik.touched.name && !!formik.errors.name}
+        helperText={(formik.touched.name && formik.errors.name) || ''}
         style={{ background: '#f0f0f0', borderRadius: '5px' }}
       />
 
@@ -90,6 +90,6 @@ const colorOptions = [
 ]
 
 type initialValuesType = {
-  username: string,
+  name: string,
   color: string[] | null,
 }

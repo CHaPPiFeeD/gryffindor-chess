@@ -1,76 +1,40 @@
 import { Socket } from 'socket.io';
-import { gamePlayerType, gameStateType } from '../dto/game.dto';
-import { UserQueueDto } from '../dto/queue.dto';
-import { COLORS, INIT_BOARD } from '../enum/constants';
+import { GamePlayerType, QueueUserType } from '../types';
+import { COLORS } from '../enum/constants';
 
-export function Game(roomId, whitePlayer, blackPlayer) {
-  this.roomId = roomId;
-  this.white = whitePlayer;
-  this.black = blackPlayer;
-  this.eatenFigures = {
-    white: [],
-    black: [],
-  };
-  this.board = INIT_BOARD();
-  this.moveQueue = COLORS.WHITE;
-  this.winner = null;
-  this.gameStart = new Date();
-  this.log = [];
-}
-
-export const getPlayersColors = (client, gameRoom): string[] => {
-  let clientColor, enemyColor;
-
-  if (client.id === gameRoom.white.socket) {
-    clientColor = COLORS.WHITE;
-    enemyColor = COLORS.BLACK;
-  }
-
-  if (client.id === gameRoom.black.socket) {
-    clientColor = COLORS.BLACK;
-    enemyColor = COLORS.WHITE;
-  }
-
-  return [clientColor, enemyColor];
-};
-
-export const findColors = (
-  playerOne: UserQueueDto,
-  playerTwo: UserQueueDto,
+export const setPlayerColors = (
+  playerOne: QueueUserType,
+  playerTwo: QueueUserType,
 ): {
-  white: gamePlayerType;
-  black: gamePlayerType;
+  whitePlayer: GamePlayerType;
+  blackPlayer: GamePlayerType;
 } => {
-  if (playerOne.color.length === 2 && playerTwo.color.length === 2) {
-    return setColorsRandom(playerOne, playerTwo);
-  }
+  if (playerOne.color.length === 2 && playerTwo.color.length === 2)
+    return setPlayerColorsRandom(playerOne, playerTwo);
 
   if (
     playerOne.color.includes(COLORS.WHITE) &&
     playerTwo.color.includes(COLORS.BLACK)
-  ) {
-    return setColors(playerOne, playerTwo);
-  }
+  )
+    return createPlayerColors(playerOne, playerTwo);
 
   if (
     playerOne.color.includes(COLORS.BLACK) &&
     playerTwo.color.includes(COLORS.WHITE)
-  ) {
-    return setColors(playerTwo, playerOne);
-  }
+  )
+    return createPlayerColors(playerTwo, playerOne);
 };
 
-const setColors = (
-  whitePlayer: UserQueueDto,
-  blackPlayer: UserQueueDto,
+const createPlayerColors = (
+  white: QueueUserType,
+  black: QueueUserType,
 ): {
-  white: gamePlayerType;
-  black: gamePlayerType;
+  whitePlayer: GamePlayerType;
+  blackPlayer: GamePlayerType;
 } => {
-  const white: gamePlayerType = {
-    socket: whitePlayer.socket,
-    name: whitePlayer.username,
-    ways: [],
+  const whitePlayer: GamePlayerType = {
+    socket: white.socket,
+    name: white.name,
     offersDraw: false,
     rules: {
       castling: {
@@ -80,10 +44,9 @@ const setColors = (
     },
   };
 
-  const black: gamePlayerType = {
-    socket: blackPlayer.socket,
-    name: blackPlayer.username,
-    ways: [],
+  const blackPlayer: GamePlayerType = {
+    socket: black.socket,
+    name: black.name,
     offersDraw: false,
     rules: {
       castling: {
@@ -93,23 +56,23 @@ const setColors = (
     },
   };
 
-  return { white, black };
+  return { whitePlayer, blackPlayer };
 };
 
-const setColorsRandom = (
-  playerOne: UserQueueDto,
-  playerTwo: UserQueueDto,
+const setPlayerColorsRandom = (
+  playerOne: QueueUserType,
+  playerTwo: QueueUserType,
 ): {
-  white: gamePlayerType;
-  black: gamePlayerType;
+  whitePlayer: GamePlayerType;
+  blackPlayer: GamePlayerType;
 } => {
   const i: number = Math.round(Math.random());
   const firstColor: string = playerOne.color[i];
 
   if (firstColor === COLORS.WHITE) {
-    return setColors(playerOne, playerTwo);
+    return createPlayerColors(playerOne, playerTwo);
   } else {
-    return setColors(playerTwo, playerOne);
+    return createPlayerColors(playerTwo, playerOne);
   }
 };
 
@@ -129,12 +92,9 @@ export const alertBoard = (logger, board, room) => {
   logger.log(`    a b c d e f g h`);
 };
 
-export const findRoom = (
-  client: Socket,
-  gamesStates: gameStateType,
-): string => {
+export const findRoom = (client: Socket, gamesStates): string => {
   for (const game of gamesStates.values()) {
     if (game.white.socket === client.id || game.black.socket === client.id)
-      return game.roomId;
+      return game.id;
   }
 };

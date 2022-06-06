@@ -98,11 +98,8 @@ export const setMove = (
   payload: [number, number],
   change: changeFigureDataType,
 ) => async (dispatch: any) => {
-  const isNull = activePosition === null;
-
-  if (isNull) dispatch(setActivePosition(payload));
-
-  if (!isNull) {
+  if (activePosition === null) dispatch(setActivePosition(payload));
+  if (activePosition !== null) {
 
     const isCancelMove =
       activePosition[0] === payload[0] &&
@@ -113,13 +110,13 @@ export const setMove = (
       return;
     }
 
-    const data = { startPos: activePosition, endPos: payload, change };
+    const moveData = { start: activePosition, end: payload, change };
 
-    console.log(`move ${JSON.stringify(data.startPos)} to ${JSON.stringify(data.endPos)}`);
+    console.log(`move ${JSON.stringify(moveData.start)} to ${JSON.stringify(moveData.end)}`);
 
     dispatch(setActivePosition(null))
 
-    move(data)
+    move(moveData)
   }
 }
 
