@@ -10,11 +10,13 @@ import { EatFigures } from './EatFigures';
 import { MoveQueueTypography } from './MoveQueueTypofraphy';
 import { PlayersName } from './PlayersNames';
 import { useState } from 'react';
+import { useAppSelector } from '../../../hooks/redux';
 
 
 export const InfoSidebar = () => {
   const navigate = useNavigate()
   const [stateDisabled, setStateDisabled] = useState(false);
+  const endGame = useAppSelector(state => state.game.gameEndTime)
 
   const handleClickDraw = () => {
     setStateDisabled(true);
@@ -26,8 +28,11 @@ export const InfoSidebar = () => {
   }
 
   const handleClick = () => {
-    leaveGame()
-    navigate(path.login())
+    if (endGame) {
+      navigate(path.login())
+    } else if (confirm('Do you really want to leave?')) {
+      leaveGame()
+    }
   }
 
   return (

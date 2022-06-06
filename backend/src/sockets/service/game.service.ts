@@ -157,21 +157,13 @@ export class GameService {
   };
 
   disconnect = (client: Socket, message: string) => {
+    this.logger.debug(client.id);
+
     const roomId = findRoom(client, this.gamesStates);
-
     if (!roomId) return;
-
     const gameRoom = this.gamesStates.get(roomId);
 
-    let leaving: string, winner: string;
-
-    if (gameRoom.white.socket === client.id) {
-      winner = COLORS.BLACK;
-      leaving = COLORS.WHITE;
-    } else {
-      winner = COLORS.WHITE;
-      leaving = COLORS.BLACK;
-    }
+    const [leaving, winner] = gameRoom.getColorsBySocket(client.id);
 
     gameRoom[leaving].socket = null;
 
@@ -182,6 +174,15 @@ export class GameService {
 
     gameRoom.winner = winner;
     gameRoom.gameEnd = new Date();
+
+    this.serverGateway.server.in(client.id).emit('/game/end', {
+      title: 'You lost!',
+      message: 'You surrendered!',
+      gameEnd: gameRoom.gameEnd,
+      board: gameRoom.board,
+      ways: [],
+      moveQueue: null,
+    });
 
     this.serverGateway.server.in(gameRoom[winner].socket).emit('/game/end', {
       title: 'You win!',

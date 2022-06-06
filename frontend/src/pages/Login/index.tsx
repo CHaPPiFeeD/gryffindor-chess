@@ -12,7 +12,7 @@ export const Login = () => {
   useEffect(() => {
     joinSocket()
     exceptionHandler(dispatch);
-  })
+  }, [])
 
   return (
     <Box className={styles.wrapper}>

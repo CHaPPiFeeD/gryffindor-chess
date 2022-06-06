@@ -20,11 +20,17 @@ export const Game = () => {
     checkSocketConnection();
     exceptionHandler(dispatch);
 
+    window.onbeforeunload = (e) => {
+      e.preventDefault()
+      return confirm();
+    };
+
     checkEndGame((data: any) => {
       dispatch(setMessage(data))
       dispatch(setEndTime(data))
       dispatch(setOpen('endGame'))
       dispatch(setGame(data))
+      window.onbeforeunload = null;
     })
 
     getOfferDraw(() => {
@@ -34,6 +40,7 @@ export const Game = () => {
     return () => {
       leaveGame();
       navigate(path.login());
+      window.onbeforeunload = null;
     }
   }, [])
 
