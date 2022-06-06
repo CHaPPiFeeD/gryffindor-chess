@@ -20,8 +20,8 @@ export class ValidationService {
 
   validationMove(client: Socket, game: Game, move: MoveType) {
     const startFigure = game.getFigureFromStart(move);
-    const x: number = move.start[1] - move.start[1];
-    const y: number = move.end[0] - move.end[0];
+    const x: number = move.end[1] - move.start[1];
+    const y: number = move.end[0] - move.start[0];
     const attackRow: number = this.initPos + y;
     const attackCol: number = this.initPos + x;
 

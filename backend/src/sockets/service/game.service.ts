@@ -1,5 +1,5 @@
 import { Inject, Logger } from '@nestjs/common';
-import { alertBoard, findRoom, getColorsBySocket } from '../../helpers/game';
+import { alertBoard, findRoom } from '../../helpers/game';
 import { MoveType, QueueUserType } from '../../types';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
@@ -66,15 +66,11 @@ export class GameService {
     const roomId = findRoom(client, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
+    const [clientColor, opponentsColor] = game.getColorsBySocket(client.id);
 
-    // if (game.winner)
-    // throw new WsException("You can't move after the game is over");
-
-    const [clientColor, opponentsColor] = getColorsBySocket(client, game);
-
-    // this.validationService.checkMoveQueue(props);
     this.validationService.validationMove(client, game, move);
 
+    game.updateLog(client, move);
     const [whiteLog, blackLog] = game.getLogsForPlayers();
 
     game.move(client, move);
@@ -131,32 +127,31 @@ export class GameService {
   draw = (client: Socket, isDrawing: boolean) => {
     const roomId = findRoom(client, this.gamesStates);
     if (!roomId) return;
-    const gameRoom = this.gamesStates.get(roomId);
+    const game = this.gamesStates.get(roomId);
+    const [clientColor, opponentsColor] = game.getColorsBySocket(client.id);
 
-    const [clientColor, enemyColor] = getColorsBySocket(client, gameRoom);
+    if (game[clientColor].offersDraw && game[opponentsColor].offersDraw) return;
 
-    if (gameRoom[clientColor].offersDraw && gameRoom[enemyColor].offersDraw)
-      return;
+    if (!isDrawing) game[opponentsColor].offersDraw = false;
 
-    if (!isDrawing) gameRoom[enemyColor].offersDraw = false;
+    game[clientColor].offersDraw = isDrawing;
 
-    gameRoom[clientColor].offersDraw = isDrawing;
-
-    if (gameRoom[clientColor].offersDraw && gameRoom[enemyColor].offersDraw) {
-      gameRoom.gameEnd = new Date();
-      gameRoom.winner = 'draw';
+    if (game[clientColor].offersDraw && game[opponentsColor].offersDraw) {
+      game.gameEnd = new Date();
+      game.winner = 'draw';
 
       this.serverGateway.server.in(roomId).emit('/game/end', {
         title: 'Draw!',
         message: 'You agreed to a draw',
-        gameEnd: gameRoom.gameEnd,
-        board: gameRoom.board,
+        gameEnd: game.gameEnd,
+        board: game.board,
         ways: [],
         moveQueue: null,
+        log: game.log,
       });
     } else if (isDrawing) {
       this.serverGateway.server
-        .in(gameRoom[enemyColor].socket)
+        .in(game[opponentsColor].socket)
         .emit('/game/draw');
     }
   };

@@ -15,7 +15,7 @@ export const QueueList = () => {
         return (
           <Box key={index} className={styles.item}>
             <Typography className={styles.name}>
-              {value.username}
+              {value.name}
             </Typography>
             <Box className={styles.figure_box}>
 

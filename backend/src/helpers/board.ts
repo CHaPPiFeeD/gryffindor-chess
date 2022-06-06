@@ -3,8 +3,8 @@ import { KING_WAYS_CASTLING } from 'src/enum/figureWays';
 import { CheckWaysPropsType } from 'src/types';
 import { checkCoordinates } from './validation';
 
-export const createWay = (checkRowIndex, checkColIndex, wayRow, wayCol) => {
-  return [checkRowIndex, checkColIndex, wayRow, wayCol].join('');
+export const createWay = (way: number[][]) => {
+  return [way[0][0], way[0][1], way[1][0], way[1][1]].join('');
 };
 
 export const addWayAndVisibility = (props) => {

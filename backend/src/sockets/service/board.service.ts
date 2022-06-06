@@ -28,14 +28,13 @@ export class BoardService {
   private logger = new Logger(BoardService.name);
 
   createFogBoards(game: Game): CreateBoardsForPlayersType {
-    const start = new Date();
     const whiteBoard = FOG_BOARD();
     const blackBoard = FOG_BOARD();
     const initWhiteWays = [];
     const initBlackWays = [];
 
-    game.board.forEach((rowValue, checkRow) => {
-      rowValue.forEach((colValue, checkCol) => {
+    game.board.forEach((v, checkRow) => {
+      v.forEach((v, checkCol) => {
         const cell = game.board[checkRow][checkCol];
 
         let props: CheckWaysPropsType = {
@@ -99,19 +98,11 @@ export class BoardService {
       });
     });
 
-    const end = new Date();
-    this.logger.warn(+end - +start);
-
     const whiteWays: string[] = [];
     const blackWays: string[] = [];
 
-    initWhiteWays.forEach((way) => {
-      whiteWays.push(createWay(way[0][0], way[0][1], way[1][0], way[1][1]));
-    });
-
-    initBlackWays.forEach((way) => {
-      blackWays.push(createWay(way[0][0], way[0][1], way[1][0], way[1][1]));
-    });
+    initWhiteWays.forEach((way) => whiteWays.push(createWay(way)));
+    initBlackWays.forEach((way) => blackWays.push(createWay(way)));
 
     return { whiteBoard, blackBoard, whiteWays, blackWays };
   }

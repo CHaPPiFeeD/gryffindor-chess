@@ -1,23 +1,6 @@
 import { Socket } from 'socket.io';
 import { GamePlayerType, QueueUserType } from '../types';
 import { COLORS } from '../enum/constants';
-import { Game } from 'src/models/game.model';
-
-export const getColorsBySocket = (client: Socket, game: Game): string[] => {
-  let clientColor, enemyColor;
-
-  if (client.id === game.white.socket) {
-    clientColor = COLORS.WHITE;
-    enemyColor = COLORS.BLACK;
-  }
-
-  if (client.id === game.black.socket) {
-    clientColor = COLORS.BLACK;
-    enemyColor = COLORS.WHITE;
-  }
-
-  return [clientColor, enemyColor];
-};
 
 export const setPlayerColors = (
   playerOne: QueueUserType,

@@ -33,13 +33,13 @@ export type changeFigureDataType = {
 }
 
 export type moveDataType = {
-  startPos: [number, number],
-  endPos: [number, number],
+  start: [number, number],
+  end: [number, number],
   change: changeFigureDataType,
 }
 
 export type usersQueueType = {
   socket: string;
-  username: string;
+  name: string;
   color: string[];
 }

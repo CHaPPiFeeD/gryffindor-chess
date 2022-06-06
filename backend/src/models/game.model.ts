@@ -86,11 +86,15 @@ export class Game {
   getLogsForPlayers(): string[][] {
     const whiteLog = [];
     const blackLog = [];
+    console.log(this.log);
 
     this.log.forEach((v) => {
+      console.log(v);
       if (v.color === COLORS.WHITE || this.winner) whiteLog.push(v);
       if (v.color === COLORS.BLACK || this.winner) blackLog.push(v);
     });
+
+    console.log(whiteLog, blackLog);
 
     return [whiteLog, blackLog];
   }

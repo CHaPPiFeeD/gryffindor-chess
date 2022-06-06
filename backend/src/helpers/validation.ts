@@ -160,7 +160,8 @@ const checkCastlingSide = (props: MovePropsType, side): boolean => {
   const [clientColor] = game.getColorsBySocket(client.id);
 
   const initPos = clientColor === COLORS.WHITE ? [7, 4] : [0, 4];
-  if (move[0] !== initPos[0] || move.start[1] !== initPos[1]) return false;
+  if (move.start[0] !== initPos[0] || move.start[1] !== initPos[1])
+    return false;
 
   let isCastling = true;
 
