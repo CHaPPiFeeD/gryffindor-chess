@@ -55,7 +55,7 @@ const LogsColumn = (props: { color: string }) => {
   return (
     <Box className={styles.logs_column}>
       {logStore?.map((v: any, i: number) => {
-        if (v?.color === props.color) return;
+        if (v?.color !== props.color) return;
         const letters = v?.log.split('');
         const startPos = '' + letters[1] + letters[2];
         const endPos = '' + letters[3] + letters[4];

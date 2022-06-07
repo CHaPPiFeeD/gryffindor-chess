@@ -1,5 +1,3 @@
-import { Game } from './Game'
-import { Login } from './Login'
-import { Waiting } from './Waiting'
-
-export { Login, Game, Waiting }
+export { Game } from './Game';
+export { Login } from './Login';
+export { Waiting } from './Waiting';
