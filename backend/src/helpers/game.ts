@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { GamePlayerType, QueueUserType } from '../types';
-import { COLORS } from '../enum/constants';
+import { COLORS } from '../enums/constants';
 
 export const setPlayerColors = (
   playerOne: QueueUserType,

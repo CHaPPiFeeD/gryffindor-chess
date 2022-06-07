@@ -3,7 +3,7 @@ import { alertBoard, findRoom } from '../../helpers/game';
 import { MoveType, QueueUserType } from '../../types';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
-import { COLORS } from 'src/enum/constants';
+import { COLORS } from 'src/enums/constants';
 import { BoardService } from './board.service';
 import { ServerGateway } from '../server.gateway';
 import { Game } from 'src/models/game.model';

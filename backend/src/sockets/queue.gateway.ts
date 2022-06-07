@@ -2,7 +2,7 @@ import { Inject, Logger } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { RegToQueueDataType } from 'src/types';
-import { QueueService } from './service/queue.service';
+import { QueueService } from './services/queue.service';
 
 @WebSocketGateway({ cors: true })
 export class QueueGateway {

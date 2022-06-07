@@ -2,7 +2,7 @@ import { Inject, Logger } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { MoveType } from '../types';
-import { GameService } from './service/game.service';
+import { GameService } from './services/game.service';
 
 @WebSocketGateway({ cors: true })
 export class GameGateway {

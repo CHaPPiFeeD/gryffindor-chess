@@ -8,7 +8,7 @@ import {
   FIGURES,
   BLACK_FIGURES,
   WHITE_FIGURES,
-} from 'src/enum/constants';
+} from 'src/enums/constants';
 import { randomString } from 'src/helpers';
 import { setPlayerColors } from 'src/helpers/game';
 

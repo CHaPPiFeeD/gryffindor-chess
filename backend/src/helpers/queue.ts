@@ -1,5 +1,5 @@
 import { QueueUserType } from 'src/types';
-import { COLORS } from '../enum/constants';
+import { COLORS } from '../enums/constants';
 
 export const getFindsColors = (colors: string[]): string[] => {
   return colors.map((color) => {

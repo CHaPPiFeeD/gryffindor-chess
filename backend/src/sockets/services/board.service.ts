@@ -11,7 +11,7 @@ import {
   FIGURES,
   FOG_BOARD,
   COLORS,
-} from '../../enum/constants';
+} from '../../enums/constants';
 import {
   QUEEN_WAYS,
   BISHOP_WAYS,
@@ -20,7 +20,7 @@ import {
   WHITE_PAWN_WAYS,
   BLACK_PAWN_WAYS,
   KING_WAYS,
-} from '../../enum/figureWays';
+} from '../../enums/figureWays';
 import { Game } from 'src/models/game.model';
 import {
   CheckWaysPropsType,

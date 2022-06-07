@@ -3,7 +3,7 @@ import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { Game } from 'src/models/game.model';
 import { MoveType, MovePropsType } from 'src/types';
-import { BLACK_FIGURES, FIGURES, WHITE_FIGURES } from '../../enum/constants';
+import { BLACK_FIGURES, FIGURES, WHITE_FIGURES } from '../../enums/constants';
 import {
   checkDiagonalMove,
   checkSchemeAttack,
