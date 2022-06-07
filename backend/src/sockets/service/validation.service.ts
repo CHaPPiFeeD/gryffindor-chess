@@ -142,10 +142,9 @@ export class ValidationService {
   }
 
   private checkPawn(props: MovePropsType) {
-    const { game, move, client, x, y } = props;
+    const { game, move, x, y } = props;
     const startFigure = game.getFigureFromStart(move);
     const endFigure = game.getFigureFromEnd(move);
-    const [clientColor, opponentColor] = game.getColorsBySocket(client.id);
 
     const initPawnPos = startFigure === FIGURES.WHITE_PAWN ? 6 : 1;
     const step = startFigure === FIGURES.WHITE_PAWN ? -1 : 1;
@@ -161,7 +160,24 @@ export class ValidationService {
       endFigure === FIGURES.EMPTY &&
       game.board[move.start[0] + step][move.end[1]] === FIGURES.EMPTY;
 
-    let isInterception = false;
+    if (this.checkInterceptionMove({ ...props, x, y, step })) {
+      game.clearInterceptionWays();
+      return;
+    }
+
+    if (!isStep && !isDiagonal && !isTwoSteps)
+      throw new WsException('A figure cannot move to this cell');
+
+    game.clearInterceptionWays();
+
+    if (isTwoSteps) this.addInterceptionMove({ ...props, step });
+  }
+
+  private checkInterceptionMove = (props) => {
+    const { game, move, client, x, y, step } = props;
+    const [clientColor] = game.getColorsBySocket(client.id);
+
+    let isInterception;
 
     if (Math.abs(x) === 1 && y === step) {
       game[clientColor].rules.interception?.forEach((v) => {
@@ -177,39 +193,41 @@ export class ValidationService {
       });
     }
 
-    if (isInterception) {
-      game.clearInterceptionWays();
-      return;
+    return isInterception;
+  };
+
+  private addInterceptionMove = (props) => {
+    const { game, move, step, client } = props;
+    const [clientColor, opponentColor] = game.getColorsBySocket(client.id);
+
+    if (
+      move.end[1] - 1 > 0 &&
+      game.board[move.end[0]][move.end[1] - 1].toLowerCase() ===
+        FIGURES.BLACK_PAWN
+    ) {
+      game[opponentColor].rules.interception.push({
+        move: {
+          start: [move.end[0], move.end[1] - 1],
+          end: [move.end[0] - step, move.end[1]],
+        },
+        figurePosition: [move.end[0], move.end[1]],
+      });
     }
 
-    if (!isStep && !isDiagonal && !isTwoSteps)
-      throw new WsException('A figure cannot move to this cell');
-
-    if (isTwoSteps) {
-      if (game.board[move.end[0]][move.end[1] + 1] !== FIGURES.EMPTY) {
-        game[opponentColor].rules.interception.push({
-          move: {
-            start: [move.end[0], move.end[1]],
-            end: [move.end[0] + step, move.end[1] + 1],
-          },
-          figurePosition: [move.end[0]][move.end[1] + 1],
-        });
-
-        if (game.board[move.end[0]][move.end[1] - 1] !== FIGURES.EMPTY) {
-          game[opponentColor].rules.interception.push({
-            move: {
-              start: [move.end[0], move.end[1]],
-              end: [move.end[0] + step, move.end[1] - 1],
-            },
-            figurePosition: [move.end[0]][move.end[1] - 1],
-          });
-        }
-      }
+    if (
+      move.end[1] + 1 < 7 &&
+      game.board[move.end[0]][move.end[1] + 1].toLowerCase() ===
+        FIGURES.BLACK_PAWN
+    ) {
+      game[opponentColor].rules.interception.push({
+        move: {
+          start: [move.end[0], move.end[1] + 1],
+          end: [move.end[0] - step, move.end[1]],
+        },
+        figurePosition: [move.end[0], move.end[1]],
+      });
     }
-
-    console.log(game.white.rules.interception);
-    console.log(game.black.rules.interception);
-  }
+  };
 
   private checkEndGame = (client: Socket, game: Game, move: MoveType) => {
     const endFigure = game.getFigureFromEnd(move);

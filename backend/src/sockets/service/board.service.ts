@@ -102,8 +102,8 @@ export class BoardService {
       });
     });
 
-    this.checkInterceptionWays(game, whiteBoard, initWhiteWays);
-    this.checkInterceptionWays(game, blackBoard, initBlackWays);
+    this.checkInterceptionWays(game, 'white', whiteBoard, initWhiteWays);
+    this.checkInterceptionWays(game, 'black', blackBoard, initBlackWays);
 
     const whiteWays: string[] = [];
     const blackWays: string[] = [];
@@ -144,10 +144,11 @@ export class BoardService {
 
   private checkInterceptionWays = (
     game: Game,
+    color: string,
     board: string[][],
     ways: number[][][],
   ) => {
-    game.white.rules.interception?.forEach((v) => {
+    game[color].rules.interception?.forEach((v) => {
       ways.push([
         [v.move.start[0], v.move.start[1]],
         [v.move.end[0], v.move.end[1]],

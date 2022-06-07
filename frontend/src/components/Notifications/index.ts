@@ -16,7 +16,6 @@ export const Notifications = () => {
 
   useEffect(() => {
     if (notifications?.length) {
-      console.log(11111, notifications)
       notifications.map((notification) => notification?.message ? enqueueSnackbar(notification?.message, { variant: notification?.type || 'info' }) : null)
       dispatch(resetNotifications())
     }
