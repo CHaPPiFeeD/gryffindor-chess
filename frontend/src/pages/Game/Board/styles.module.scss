@@ -1,15 +1,11 @@
-.wrapper {
-  border: 10px solid #634833;
+.board {
+  border: 8px solid #634833;
   background-color: #3A1A0C;
-  border-radius: 5px;
-}
+  border-radius: 4px;
+  margin: 0 8px;
 
-.gorizontalAxis {
-  display: flex;
-  justify-content: center;
-}
-
-.vericalAxisBox {
-  display: flex;
-  flex-direction: row;
+  .vericalAxisBox {
+    display: flex;
+    flex-direction: row;
+  }
 }

@@ -38,34 +38,37 @@ export const InfoSidebar = () => {
   return (
     <Box className={styles.content}>
 
-      <Box className={styles.info}>
-        <PlayersName />
+      {/* <Box className={styles.info}> */}
+      <PlayersName />
 
-        <Box className={styles.info_box_one}>
-          <MoveQueueTypography />
-          <TimeTypography />
-        </Box>
-
-        <Box className={styles.info_box_two}>
-          <Logs />
-          <EatFigures />
-        </Box>
+      <Box className={styles.info_box_one}>
+        <MoveQueueTypography />
+        <TimeTypography />
       </Box>
 
-      <Button
-        onClick={handleClickDraw}
-        variant='contained'
-        disabled={stateDisabled}
-      >
-        Offer a draw
-      </Button>
+      <Box className={styles.info_box_two}>
+        <Logs />
+        <EatFigures />
+      </Box>
+      {/* </Box> */}
 
-      <Button
-        onClick={handleClick}
-        variant='contained'
-      >
-        Surrender or go back
-      </Button>
+      <Box className={styles.button_box}>
+        <Button
+          onClick={handleClickDraw}
+          variant='contained'
+          disabled={stateDisabled}
+        >
+          Offer a draw
+        </Button>
+
+        <Button
+          onClick={handleClick}
+          variant='contained'
+        >
+          Surrender or go back
+        </Button>
+      </Box>
+
     </Box>
   )
 };

@@ -3,17 +3,15 @@ import { useAppSelector } from '../../../../hooks/redux';
 import styles from './styles.module.scss'
 
 
-export const VerticalAxis = (props: any) => {
+export const VerticalAxis = (props: { reverse?: boolean }) => {
   const { color: colorStore } = useAppSelector(store => store.game)
-
-  const isReverse = colorStore === 'black';
-
-  const axis = isReverse ? verticalAxisReverse : verticalAxis;
+  const axis = colorStore === 'black' ? verticalAxisReverse : verticalAxis;
+  const style = props?.reverse === true ? [styles.cell, styles.rotate].join(' ') : styles.cell;
 
   return (
     <Box className={styles.axis}>
       {axis.map((v, i) => (
-        <Box {...props} className={styles.cell} key={i}>{v}</Box>
+        <Box className={style} key={i}>{v}</Box>
       ))}
     </Box>
   )

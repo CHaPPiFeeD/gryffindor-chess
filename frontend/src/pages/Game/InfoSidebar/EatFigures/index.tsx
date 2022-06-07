@@ -27,7 +27,7 @@ export const EatFigures = () => {
     <Box className={styles.wrapper}>
 
       <Box >
-        <Typography>
+        <Typography className={styles.title}>
           You eated:
         </Typography>
 
@@ -43,7 +43,7 @@ export const EatFigures = () => {
       </Box>
 
       <Box>
-        <Typography>
+        <Typography className={styles.title}>
           Opponent eated:
         </Typography>
 

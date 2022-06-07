@@ -5,12 +5,16 @@
 
   .cell {
     color: white;
+    font-family: sans-serif;
+    width: 75px;
+    height: 75px;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: sans-serif;
-    font-weight: 94;
-    width: 75px;
-    height: 75px;
+  }
+
+  .rotate {
+    transform: rotate(-180deg);
   }
 }

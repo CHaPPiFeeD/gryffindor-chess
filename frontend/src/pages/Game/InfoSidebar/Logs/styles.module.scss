@@ -1,11 +1,11 @@
 .logs {
-  height: 400px;
+  min-width: 190px;
   width: 50%;
+  height: 440px;
   overflow: auto;
   margin-right: 5px;
   background: #ffeccd;
   border-radius: 5px;
-
 
   &::-webkit-scrollbar {
     width: 5px;
@@ -18,8 +18,13 @@
     border-radius: 5px;
   }
 
-  .logs_container {
-    display: flex;
+}
+
+.logs_container {
+  display: flex;
+
+  .logs_column {
+    width: 50%;
   }
 
   .logs_box {
@@ -31,7 +36,7 @@
     align-items: center;
 
     .figure_box {
-      width: 48px;
+      width: 50%;
     }
   }
 }

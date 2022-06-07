@@ -8,15 +8,15 @@ import styles from './styles.module.scss';
 export const Board = () => {
 
   return (
-    <Box className={styles.wrapper}>
-      <GorizontallAxis style={{ transform: 'rotate(-180deg)' }} />
+    <Box className={styles.board}>
+      <GorizontallAxis reverse />
 
       <Box className={styles.vericalAxisBox}>
         <VerticalAxis />
 
         <RenderBoard />
 
-        <VerticalAxis style={{ transform: 'rotate(-180deg)' }} />
+        <VerticalAxis reverse />
       </Box>
 
       <GorizontallAxis />
