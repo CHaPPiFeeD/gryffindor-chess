@@ -1,8 +1,13 @@
 import { Box } from '@mui/system';
-import { useSnackbar } from 'notistack';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { checkEndGame, checkSocketConnection, exceptionHandler, getOfferDraw, leaveGame } from '../../api/socket';
+import {
+  checkEndGame,
+  checkSocketConnection,
+  exceptionHandler,
+  getOfferDraw,
+  leaveGame,
+} from '../../api/socket';
 import { useAppDispatch } from '../../hooks/redux';
 import { path } from '../../router/constants';
 import { setEndTime, setGame, setMessage } from '../../store/game/gameSlise';

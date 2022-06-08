@@ -1,7 +1,7 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material';
 import { Figure } from '../../../../components';
-import { useAppSelector } from '../../../../hooks/redux'
-import styles from './styles.module.scss'
+import { useAppSelector } from '../../../../hooks/redux';
+import styles from './styles.module.scss';
 
 export const EatFigures = () => {
   const {
@@ -37,7 +37,7 @@ export const EatFigures = () => {
               <Box className={styles.figure_box} key={i} >
                 <Figure cell={v} />
               </Box>
-            )
+            );
           })}
         </Box>
       </Box>
@@ -53,11 +53,11 @@ export const EatFigures = () => {
               <Box className={styles.figure_box} key={i} >
                 <Figure cell={v} />
               </Box>
-            )
+            );
           })}
         </Box>
       </Box>
 
     </Box>
-  )
-}
+  );
+};

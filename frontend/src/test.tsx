@@ -15,5 +15,5 @@ export const ListTest = () => {
     <>
       11
     </>
-  )
-}
+  );
+};

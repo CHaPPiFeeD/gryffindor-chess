@@ -10,5 +10,5 @@ export const Modals = () => {
       <ChangeFigureModal />
       <DrawModal />
     </Box>
-  )
+  );
 };

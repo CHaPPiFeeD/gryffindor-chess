@@ -37,6 +37,6 @@ module.exports = {
     'object-curly-spacing': ['error', 'always', { 'objectsInObjects': false }],
     'react/prop-types': 'off',
     'semi': [2, 'always'],
-    'max-len': ['error', { 'code': 80 }],
+    'max-len': ['error', { 'code': 80, 'ignoreComments': true }],
   },
 };

@@ -1,5 +1,6 @@
+/* eslint-disable max-len */
 export const Rook = (props: any) => {
-  const fill = props.fill || '#333333'
+  const fill = props.fill || '#333333';
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 281 281" fill="none">
@@ -12,5 +13,5 @@ export const Rook = (props: any) => {
       <path d="M189.4 79.2449L190.611 59.2874H194.296L192.979 79.2449H193.006L192.63 84.5459L192.454 87.2176H192.44L191.947 94.1795H88.7555L84.3935 59.3722H103.664L105.23 79.2449H116.551L114.865 59.3722H141.362V79.2449H157.621V59.3722H181.348V79.2449H189.4Z" fill={fill} stroke="black" strokeWidth="2" />
     </svg>
 
-  )
-}
+  );
+};

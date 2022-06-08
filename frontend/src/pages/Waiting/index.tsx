@@ -2,7 +2,12 @@ import { Button, LinearProgress, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUsers, checkSocketConnection, startGame, leaveQueue } from '../../api/socket';
+import {
+  getUsers,
+  checkSocketConnection,
+  startGame,
+  leaveQueue,
+} from '../../api/socket';
 import { gameStartDataType } from '../../api/types';
 import { useAppDispatch } from '../../hooks/redux';
 import { path } from '../../router/constants';

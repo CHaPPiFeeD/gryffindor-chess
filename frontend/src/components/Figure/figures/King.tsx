@@ -1,5 +1,6 @@
+/* eslint-disable max-len */
 export const King = (props: any) => {
-  const fill = props.fill || '#333333'
+  const fill = props.fill || '#333333';
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 281 280" fill="none">
@@ -13,5 +14,5 @@ export const King = (props: any) => {
       <rect x="69.9178" y="235.886" width="140.022" height="13.707" fill={fill} stroke="black" strokeWidth="2" />
       <circle cx="140.218" cy="45.7923" r="6.73348" fill={fill} stroke="black" strokeWidth="2" />
     </svg>
-  )
-}
+  );
+};

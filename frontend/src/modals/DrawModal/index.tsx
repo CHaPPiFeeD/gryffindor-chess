@@ -1,22 +1,22 @@
-import { Box, Button, Modal, Typography } from '@mui/material'
+import { Box, Button, Modal, Typography } from '@mui/material';
 import { offerDraw } from '../../api/socket';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux'
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { setClose } from '../../store/modal/modalSlise';
-import styles from './styles.module.scss'
+import styles from './styles.module.scss';
 
 export const DrawModal = () => {
   const dispatch = useAppDispatch();
   const open = useAppSelector(state => state.modals.draw);
 
   const handleYes = () => {
-    dispatch(setClose('draw'))
-    offerDraw(true)
-  }
+    dispatch(setClose('draw'));
+    offerDraw(true);
+  };
 
   const handleNo = () => {
-    dispatch(setClose('draw'))
-    offerDraw(false)
-  }
+    dispatch(setClose('draw'));
+    offerDraw(false);
+  };
 
   return (
     <Modal open={open} >
@@ -46,5 +46,5 @@ export const DrawModal = () => {
 
       </Box>
     </Modal>
-  )
-}
+  );
+};

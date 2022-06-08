@@ -1,6 +1,11 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { move } from '../../api/socket';
-import { changeFigureDataType, gameDataType, gameStartDataType, usersQueueType } from '../../api/types'
+import { 
+  changeFigureDataType, 
+  gameDataType, 
+  gameStartDataType, 
+  usersQueueType, 
+} from '../../api/types';
 
 export type gameType = {
   players: {
@@ -52,7 +57,7 @@ const initialState: gameType = {
     black: [],
   },
   lastMove: [],
-}
+};
 
 export const gameSlice = createSlice({
   name: 'gameSlice',
@@ -94,7 +99,7 @@ export const gameSlice = createSlice({
       state.queue = action.payload;
     },
   },
-})
+});
 
 export const setMove = (
   activePosition: [number, number] | null,
@@ -115,13 +120,19 @@ export const setMove = (
 
     const moveData = { start: activePosition, end: payload, change };
 
-    console.log(`move ${JSON.stringify(moveData.start)} to ${JSON.stringify(moveData.end)}`);
+    console.log(
+      `move ${
+        JSON.stringify(moveData.start)
+      } to ${
+        JSON.stringify(moveData.end)
+      }`,
+    );
 
-    dispatch(setActivePosition(null))
+    dispatch(setActivePosition(null));
 
-    move(moveData)
+    move(moveData);
   }
-}
+};
 
 export const {
   setGameStart,
