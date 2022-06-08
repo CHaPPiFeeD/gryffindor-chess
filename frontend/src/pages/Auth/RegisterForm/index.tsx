@@ -1,6 +1,7 @@
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import API from '../../../api';
 import styles from './styles.module.scss';
 
 export const RegisterForm = (props: { setForm: Function }) => {
@@ -22,8 +23,9 @@ export const RegisterForm = (props: { setForm: Function }) => {
       .min(8, 'Password is too short'),
   });
 
-  const onSubmit = (values: InitialValuesType) => {
-    console.log(values);
+  const onSubmit = async (values: InitialValuesType) => {
+    const data = await API.registration(values);
+    console.log(data);
   };
 
   const formik = useFormik({
@@ -31,7 +33,6 @@ export const RegisterForm = (props: { setForm: Function }) => {
     validationSchema,
     onSubmit,
   });
-
 
   return (
     <Box className={styles.wrapper}>

@@ -7,7 +7,7 @@ export class AuthController {
   @Inject(AuthService)
   private authService: AuthService;
 
-  @Post('/api/auth/register')
+  @Post('/api/auth/registration')
   register(@Body() body: RegisterDto) {
     this.authService.register(body.username, body.email, body.password);
   }

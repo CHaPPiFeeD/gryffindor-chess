@@ -1,6 +1,7 @@
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import API from '../../../api';
 import styles from './styles.module.scss';
 
 export const LoginForm = (props: { setForm: Function }) => {
@@ -19,8 +20,11 @@ export const LoginForm = (props: { setForm: Function }) => {
       .min(8, 'Password is too short'),
   });
 
-  const onSubmit = (values: InitialValuesType) => {
-    console.log(values);
+  const onSubmit = async (values: InitialValuesType) => {
+    await API.login(values)
+      .then((payload) => {
+        console.log(payload);
+      });
   };
 
   const formik = useFormik({
