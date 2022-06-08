@@ -8,7 +8,7 @@ export class User {
   username: string;
 
   @Prop()
-  login: string;
+  email: string;
 
   @Prop()
   password: string;
