@@ -1,14 +1,14 @@
-import { Autocomplete, Box, Button, TextField } from '@mui/material'
-import { useFormik } from 'formik'
-import { useNavigate } from 'react-router-dom'
-import * as Yup from 'yup'
-import { regInQueue } from '../../../api/socket'
-import { useAppDispatch } from '../../../hooks/redux'
-import { path } from '../../../router/constants'
-import { setQueue } from '../../../store/game/gameSlise'
-import styles from './styles.module.scss'
+import { Autocomplete, Box, Button, TextField } from '@mui/material';
+import { useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
+import { regInQueue } from '../../../api/socket';
+import { useAppDispatch } from '../../../hooks/redux';
+import { path } from '../../../router/constants';
+import { setQueue } from '../../../store/game/gameSlise';
+import styles from './styles.module.scss';
 
-export const LoginForm = () => {
+export const FindGameForm = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -30,7 +30,7 @@ export const LoginForm = () => {
   const onSubmit = (values: initialValuesType) => {
     regInQueue(values, (queue: any) => {
       dispatch(setQueue(queue));
-    })
+    });
     navigate(path.waiting());
   };
 
@@ -80,14 +80,14 @@ export const LoginForm = () => {
       </Button>
 
     </Box>
-  )
-}
+  );
+};
 
 const colorOptions = [
   { label: 'white', color: ['white'] },
   { label: 'black', color: ['black'] },
   { label: 'any', color: ['white', 'black'] },
-]
+];
 
 type initialValuesType = {
   name: string,

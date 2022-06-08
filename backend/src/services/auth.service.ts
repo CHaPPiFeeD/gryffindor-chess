@@ -15,7 +15,6 @@ export class AuthService {
 
   async register(username: string, email: string, password: string) {
     const candidate = await this.userSchema.findOne({ email });
-    this.logger.debug(candidate);
     if (candidate) throw new CreateException('User already registered');
 
     const hashPassword: string = await bcrypt.hash(password, 8);
@@ -30,7 +29,6 @@ export class AuthService {
 
   async login(email: string, password: string) {
     const user = await this.userSchema.findOne({ email });
-    this.logger.debug(user);
     if (!user) throw new CreateException('User not found');
 
     const isValidPassword = bcrypt.compare(password, user.password);

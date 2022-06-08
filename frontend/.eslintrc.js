@@ -36,5 +36,7 @@ module.exports = {
     'eol-last': [2],
     'object-curly-spacing': ['error', 'always', { 'objectsInObjects': false }],
     'react/prop-types': 'off',
+    'semi': [2, 'always'],
+    'max-len': ['error', { 'code': 80 }],
   },
-}
+};

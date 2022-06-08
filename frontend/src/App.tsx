@@ -1,10 +1,10 @@
-import './App.css'
-import { RenderRoutes } from './router'
-import { Provider } from 'react-redux'
-import { store } from './store'
-import { Modals } from './modals'
-import { SnackbarProvider } from 'notistack'
-import { Notifications } from './components/Notifications'
+import './App.css';
+import { RenderRoutes } from './router';
+import { Provider } from 'react-redux';
+import { store } from './store';
+import { Modals } from './modals';
+import { SnackbarProvider } from 'notistack';
+import { Notifications } from './components/Notifications';
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
         <RenderRoutes />
       </SnackbarProvider>
     </Provider>
-  )
+  );
 }
 
-export default App
+export default App;
