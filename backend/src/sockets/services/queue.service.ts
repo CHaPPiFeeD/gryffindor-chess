@@ -8,9 +8,8 @@ import {
 import { GameService } from './game.service';
 import { ServerGateway } from '../server.gateway';
 import { WsException } from '@nestjs/websockets';
-import { QueueUserType } from 'src/types';
+import { ISocket, QueueUserType } from 'src/types';
 import { UserService } from 'src/services/user.service';
-import * as jwt from 'jsonwebtoken';
 
 export class QueueService {
   private logger = new Logger(QueueService.name);
@@ -25,8 +24,8 @@ export class QueueService {
   @Inject(UserService)
   private userService: UserService;
 
-  async regToQueue(client: Socket, data: { color: string[] }) {
-    const user = await this.userService.getUser(client);
+  async regToQueue(client: ISocket, data: { color: string[] }) {
+    const user = await this.userService.findOne({ _id: client.user['id'] });
 
     const playerOne: QueueUserType = {
       socket: client.id,

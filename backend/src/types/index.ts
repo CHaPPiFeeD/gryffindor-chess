@@ -71,3 +71,11 @@ export type CreateBoardsForPlayersType = {
   whiteWays: string[];
   blackWays: string[];
 };
+
+export type UserInfo = {
+  [index: string]: string;
+};
+
+export type ISocket = Socket & {
+  user: UserInfo;
+};
