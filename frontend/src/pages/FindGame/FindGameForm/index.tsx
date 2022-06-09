@@ -25,8 +25,8 @@ export const FindGameForm = () => {
   const onSubmit = (values: initialValuesType) => {
     regInQueue(values, (queue: any) => {
       dispatch(setQueue(queue));
+      navigate(path.waiting());
     });
-    navigate(path.waiting());
   };
 
   const formik = useFormik({

@@ -15,7 +15,13 @@ export class InitGateway implements OnGatewayConnection, OnGatewayDisconnect {
   initService: InitService;
 
   handleConnection(client: Socket) {
+    if (!client.handshake.auth.token) {
+      client.emit('error', 'Unauthorized');
+      client.disconnect();
+    }
+
     this.logger.log(`User connection: ${client.id}`);
+    return client.id;
   }
 
   handleDisconnect(client: Socket) {

@@ -23,3 +23,10 @@ export const getUserBySocket = (
 ): QueueUserType => {
   return queue.find((obj) => obj.socket === socket);
 };
+
+export const checkUserInQueue = (
+  queue: QueueUserType[],
+  userId: string,
+): QueueUserType => {
+  return queue.find((user) => user.userId === userId);
+};

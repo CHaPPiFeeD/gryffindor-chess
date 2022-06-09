@@ -4,6 +4,7 @@ import {
   getUserBySocket,
   getFindsColors,
   getUserByColor,
+  checkUserInQueue,
 } from '../../helpers/queue';
 import { GameService } from './game.service';
 import { ServerGateway } from '../server.gateway';
@@ -27,14 +28,15 @@ export class QueueService {
   async regToQueue(client: ISocket, data: { color: string[] }) {
     const user = await this.userService.findOne({ _id: client.user['id'] });
 
+    if (checkUserInQueue(this.queue, user.id))
+      throw new WsException('You are already in line');
+
     const playerOne: QueueUserType = {
+      userId: user.id,
       socket: client.id,
       name: user.username,
       color: data.color,
     };
-
-    if (getUserBySocket(this.queue, client.id))
-      throw new WsException('You are already in line');
 
     const desiredColors: string[] = getFindsColors(playerOne.color);
     const playerTwo: QueueUserType = getUserByColor(this.queue, desiredColors);

@@ -15,7 +15,7 @@ export class QueueGateway {
   @UseGuards(WsAuthGuard)
   @SubscribeMessage('/queue/search')
   regToQueue(client: ISocket, data: { color: string[] }) {
-    this.queueService.regToQueue(client, data);
+    return this.queueService.regToQueue(client, data);
   }
 
   @SubscribeMessage('/queue/leave')

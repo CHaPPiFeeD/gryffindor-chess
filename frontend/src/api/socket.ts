@@ -37,6 +37,9 @@ export const joinSocket = () => {
 
   socket.on('error', (data) => {
     console.log('error:', data);
+    if (data === 'Unauthorized') {
+      window.location.href = '/';
+    }
     socket.disconnect();
   });
 };

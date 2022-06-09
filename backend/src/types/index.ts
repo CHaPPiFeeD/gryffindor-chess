@@ -47,6 +47,7 @@ export type MovePropsType = {
 };
 
 export type QueueUserType = {
+  userId: string;
   socket: string;
   name: string;
   color: string[];

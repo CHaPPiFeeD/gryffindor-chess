@@ -1,10 +1,14 @@
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import API from '../../../api';
+import { path } from '../../../router/constants';
 import styles from './styles.module.scss';
 
 export const RegisterForm = (props: { setForm: Function }) => {
+  const navigate = useNavigate();
+  
   const initialValues: InitialValuesType = {
     username: '',
     email: '',
@@ -24,8 +28,12 @@ export const RegisterForm = (props: { setForm: Function }) => {
   });
 
   const onSubmit = async (values: InitialValuesType) => {
-    const data = await API.registration(values);
-    console.log(data);
+    const data = await API.registration(values)
+      .then((payload) => {
+        console.log(payload);
+        localStorage.setItem('access_token', payload.data.token);
+        navigate(path.findGame());
+      });
   };
 
   const formik = useFormik({
