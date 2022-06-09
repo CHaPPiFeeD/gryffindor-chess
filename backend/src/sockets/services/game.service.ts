@@ -1,6 +1,6 @@
 import { Inject, Logger } from '@nestjs/common';
-import { alertBoard, findRoom } from '../../helpers/game';
-import { MoveType, QueueUserType } from '../../types';
+import { alertBoard, findRoomBySocketId } from '../../helpers/game';
+import { ISocket, MoveType, QueueUserType } from '../../types';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
 import { COLORS } from 'src/enums/constants';
@@ -37,33 +37,56 @@ export class GameService {
       .in([game.white.socket, game.black.socket])
       .socketsJoin(game.id);
 
-    this.serverGateway.server.in(game.white.socket).emit('/game/start', {
-      players: {
-        white: game.white.name,
-        black: game.black.name,
-      },
-      color: COLORS.WHITE,
-      board: whiteBoard,
-      ways: whiteWays,
-      moveQueue: COLORS.WHITE,
-      gameStart: game.gameStart,
-    });
+    // this.serverGateway.server.in(game.id).emit('/game/start');
 
-    this.serverGateway.server.in(game.black.socket).emit('/game/start', {
+    this.getGame(game.white.socket);
+    this.getGame(game.black.socket);
+  }
+
+  getGame(socketId: string) {
+    const roomId = findRoomBySocketId(socketId, this.gamesStates);
+    if (!roomId) return;
+    const game = this.gamesStates.get(roomId);
+    const [clientColor, opponentsColor] = game.getColorsBySocket(socketId);
+    const [whiteLog, blackLog] = game.getLogsForPlayers();
+    const { whiteBoard, blackBoard, whiteWays, blackWays } =
+      this.boardService.createFogBoards(game);
+
+    let data: any = {
       players: {
         white: game.white.name,
         black: game.black.name,
       },
-      color: COLORS.BLACK,
-      board: blackBoard,
-      ways: [],
-      moveQueue: COLORS.WHITE,
       gameStart: game.gameStart,
+      moveQueue: game.moveQueue,
+      eatFigures: game.eatenFigures,
+    };
+
+    if (clientColor === COLORS.WHITE) {
+      data = {
+        ...data,
+        color: COLORS.WHITE,
+        board: whiteBoard,
+        ways: opponentsColor === COLORS.WHITE ? whiteWays : [],
+        log: whiteLog,
+      };
+    } else {
+      data = {
+        ...data,
+        color: COLORS.BLACK,
+        board: blackBoard,
+        ways: opponentsColor === COLORS.BLACK ? blackWays : [],
+        log: blackLog,
+      };
+    }
+
+    this.serverGateway.server.in(socketId).emit('/game:get', {
+      ...data,
     });
   }
 
   moveChess = (client: Socket, move: MoveType) => {
-    const roomId = findRoom(client, this.gamesStates);
+    const roomId = findRoomBySocketId(client.id, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
     const [clientColor, opponentsColor] = game.getColorsBySocket(client.id);
@@ -131,7 +154,7 @@ export class GameService {
   };
 
   draw = (client: Socket, isDrawing: boolean) => {
-    const roomId = findRoom(client, this.gamesStates);
+    const roomId = findRoomBySocketId(client.id, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
     const [clientColor, opponentsColor] = game.getColorsBySocket(client.id);
@@ -163,9 +186,7 @@ export class GameService {
   };
 
   disconnect = (client: Socket, message: string) => {
-    this.logger.debug(client.id);
-
-    const roomId = findRoom(client, this.gamesStates);
+    const roomId = findRoomBySocketId(client.id, this.gamesStates);
     if (!roomId) return;
     const gameRoom = this.gamesStates.get(roomId);
 

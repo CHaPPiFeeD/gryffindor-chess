@@ -5,16 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import {
   getUsers,
   checkSocketConnection,
-  startGame,
+  getGame,
   leaveQueue,
 } from '../../api/socket';
-import { gameStartDataType } from '../../api/types';
+import { gameDataType, usersQueueType } from '../../api/types';
 import { useAppDispatch } from '../../hooks/redux';
 import { path } from '../../router/constants';
-import { setGameStart, setQueue } from '../../store/game/gameSlise';
+import { setGame, setQueue } from '../../store/game/gameSlise';
 import { QueueList } from './QueueList';
 import styles from './styles.module.scss';
-
 
 export const Waiting = () => {
   const dispatch = useAppDispatch();
@@ -23,14 +22,13 @@ export const Waiting = () => {
   useEffect(() => {
     checkSocketConnection();
 
-    startGame((payload: gameStartDataType) => {
-      dispatch(setGameStart(payload));
-      dispatch(setQueue(null));
+    getGame((payload: gameDataType) => {
+      dispatch(setGame(payload));
       navigate(path.game());
     });
-
-    getUsers((payload: any) => {
-      dispatch(setQueue(payload));
+    
+    getUsers((queue: usersQueueType[]) => {
+      dispatch(setQueue(queue));
     });
 
     return () => leaveQueue();

@@ -2,7 +2,6 @@ import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client';
 import { showNotification } from '../store/notification/notificationSlise';
 import {
   gameDataType,
-  gameStartDataType,
   moveDataType,
   usersQueueType,
 } from './types';
@@ -51,30 +50,24 @@ export const exceptionHandler = (dispatch: any) => {
   });
 };
 
-export const regInQueue = (data: any, cb: Function) => {
+export const regInQueue = (data: any) => {
   socket.emit('/queue/search', data);
+};
 
-  socket.on('/queue:get', (data: usersQueueType[]) => {
-    cb(data);
+export const getGame = (cb: Function) => {
+  socket.on('/game:get', (payload: gameDataType) => {
+    cb(payload);
+  });
+};
+
+export const getUsers = (cb: Function) => {
+  socket.on('/queue:get', (payload: usersQueueType[]) => {
+    cb(payload);
   });
 };
 
 export const leaveQueue = () => {
   socket.emit('/queue/leave');
-};
-
-export const getUsers = (cb: Function) => {
-  socket.emit('/queue:post');
-
-  socket.on('/queue:get', (data: usersQueueType[]) => {
-    cb(data);
-  });
-};
-
-export const startGame = (cb: Function) => {
-  socket.on('/game/start', (payload: gameStartDataType) => {
-    cb(payload);
-  });
 };
 
 export const move = (data: moveDataType) => {

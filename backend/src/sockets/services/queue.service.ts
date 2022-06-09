@@ -31,6 +31,8 @@ export class QueueService {
     if (checkUserInQueue(this.queue, user.id))
       throw new WsException('You are already in line');
 
+    // this.serverGateway.server.emit('/queue/search');
+
     const playerOne: QueueUserType = {
       userId: user.id,
       socket: client.id,
@@ -43,6 +45,7 @@ export class QueueService {
 
     if (!playerTwo) {
       this.queue.push(playerOne);
+      this.serverGateway.server.emit('/queue:get', this.queue);
     } else {
       const index: number = this.queue.findIndex(
         (player) => player.socket === playerTwo.socket,
@@ -51,8 +54,6 @@ export class QueueService {
       if (index >= 0) this.queue.splice(index, 1);
       this.gameService.startGame(playerOne, playerTwo);
     }
-
-    this.serverGateway.server.emit('/queue:get', this.queue);
   }
 
   disconnect = (socket: Socket) => {

@@ -2,15 +2,35 @@ import { Box, Typography } from '@mui/material';
 import styles from './styles.module.scss';
 import { FindGameForm } from './FindGameForm';
 import { useEffect } from 'react';
-import { exceptionHandler, joinSocket } from '../../api/socket';
+import { 
+  exceptionHandler, 
+  getUsers, 
+  joinSocket, 
+  getGame, 
+} from '../../api/socket';
 import { useAppDispatch } from '../../hooks/redux';
+import { path } from '../../router/constants';
+import { useNavigate } from 'react-router-dom';
+import { setGame, setQueue } from '../../store/game/gameSlise';
+import { gameDataType, usersQueueType } from '../../api/types';
 
 export const FindGame = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     joinSocket();
     exceptionHandler(dispatch);
+
+    getGame((payload: gameDataType) => {
+      dispatch(setGame(payload));
+      navigate(path.game());
+    });
+    
+    getUsers((queue: usersQueueType[]) => {
+      dispatch(setQueue(queue));
+      navigate(path.waiting());
+    });
   }, []);
 
   return (

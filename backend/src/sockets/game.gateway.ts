@@ -16,6 +16,11 @@ export class GameGateway {
     this.gameService.moveChess(client, data);
   }
 
+  @SubscribeMessage('/game:get')
+  getGame(client: Socket) {
+    this.gameService.getGame(client.id);
+  }
+
   @SubscribeMessage('/game/draw')
   offerDraw(client: Socket, isDrawing: boolean) {
     this.gameService.draw(client, isDrawing);

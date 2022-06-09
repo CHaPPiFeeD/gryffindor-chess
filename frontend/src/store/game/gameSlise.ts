@@ -3,7 +3,6 @@ import { move } from '../../api/socket';
 import { 
   changeFigureDataType, 
   gameDataType, 
-  gameStartDataType, 
   usersQueueType, 
 } from '../../api/types';
 
@@ -63,24 +62,17 @@ export const gameSlice = createSlice({
   name: 'gameSlice',
   initialState,
   reducers: {
-    setGameStart: (state, action: PayloadAction<gameStartDataType>) => {
+    setGame: (state, action: PayloadAction<gameDataType>) => {
       state.players = action.payload.players;
       state.color = action.payload.color;
       state.board = action.payload.board;
       state.ways = action.payload.ways;
       state.moveQueue = action.payload.moveQueue;
       state.gameStartTime = action.payload.gameStart;
-      state.gameEndTime = initialState.gameEndTime;
+      state.gameEndTime = action.payload.gameEnd || initialState.gameEndTime;
       state.log = initialState.log;
       state.eatFigures = initialState.eatFigures;
-    },
-    setGame: (state, action: PayloadAction<gameDataType>) => {
-      state.board = action.payload.board;
-      state.ways = action.payload.ways;
-      state.moveQueue = action.payload.moveQueue;
-      state.log = action.payload?.log || state.log;
-      state.eatFigures = action.payload.eatFigures || state.eatFigures;
-      state.lastMove = action.payload.lastMove;
+      state.lastMove = action.payload.lastMove || state.lastMove;
     },
     setActivePosition: (state, action) => {
       state.activePosition = action.payload;
@@ -135,7 +127,6 @@ export const setMove = (
 };
 
 export const {
-  setGameStart,
   setGame,
   setActivePosition,
   setMessage,
