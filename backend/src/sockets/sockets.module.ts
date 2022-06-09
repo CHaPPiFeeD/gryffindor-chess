@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { UserModule } from 'src/modules/user.module';
 import { GameGateway } from './game.gateway';
 import { InitGateway } from './init.gateway';
 import { QueueGateway } from './queue.gateway';
@@ -10,6 +11,7 @@ import { QueueService } from './services/queue.service';
 import { ValidationService } from './services/validation.service';
 
 @Module({
+  imports: [UserModule],
   providers: [
     InitGateway,
     InitService,

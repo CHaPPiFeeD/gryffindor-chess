@@ -1,10 +1,13 @@
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import API from '../../../api';
+import { path } from '../../../router/constants';
 import styles from './styles.module.scss';
 
 export const LoginForm = (props: { setForm: Function }) => {
+  const navigate = useNavigate();
 
   const initialValues: InitialValuesType = {
     email: '',
@@ -24,6 +27,8 @@ export const LoginForm = (props: { setForm: Function }) => {
     await API.login(values)
       .then((payload) => {
         console.log(payload);
+        localStorage.setItem('access_token', payload.data.token);
+        navigate(path.findGame());
       });
   };
 

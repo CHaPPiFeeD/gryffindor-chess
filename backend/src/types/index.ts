@@ -46,11 +46,6 @@ export type MovePropsType = {
   y?: number;
 };
 
-export type RegToQueueDataType = {
-  name: string;
-  color: string[];
-};
-
 export type QueueUserType = {
   socket: string;
   name: string;

@@ -56,7 +56,7 @@ export const Waiting = () => {
           variant='contained'
           type='submit'
           className={styles.button}
-          onClick={() => navigate(path.auth())}
+          onClick={() => navigate(path.findGame())}
         >
           Cancel
         </Button>

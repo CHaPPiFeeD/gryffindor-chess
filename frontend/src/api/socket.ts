@@ -1,4 +1,4 @@
-import { io, Socket } from 'socket.io-client';
+import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client';
 import { showNotification } from '../store/notification/notificationSlise';
 import {
   gameDataType,
@@ -11,9 +11,19 @@ let socket: Socket;
 
 export const joinSocket = () => {
   if (socket?.connected) return;
+
+  const params: Partial<ManagerOptions & SocketOptions> = {
+    extraHeaders: {
+      closeOnBeforeunload: 'false',
+    },
+    auth: {
+      token: localStorage.getItem('access_token'),
+    },
+  };
+
   socket = io(
     `${process.env.REACT_APP_API_KEY}`,
-    { closeOnBeforeunload: false },
+    { ...params },
   );
 
   socket.on('connect', () => {
@@ -81,7 +91,7 @@ export const checkEndGame = (cb: Function) => {
 };
 
 export const checkSocketConnection = () => {
-  if (!socket) window.location.href = '/';
+  if (!socket) window.location.href = '/game/search';
 };
 
 export const leaveGame = () => {

@@ -13,15 +13,10 @@ export const FindGameForm = () => {
   const dispatch = useAppDispatch();
 
   const initialValues: initialValuesType = {
-    name: '',
     color: null,
   };
 
   const validationSchema = Yup.object({
-    name: Yup.string()
-      .required('Username is a required field')
-      .min(3, 'Must be more than 3 characters')
-      .max(24, 'No more than 24 characters'),
     color: Yup.array()
       .required('Color is a required field')
       .nullable(),
@@ -46,16 +41,6 @@ export const FindGameForm = () => {
       component='form'
       onSubmit={formik.handleSubmit}
     >
-
-      <TextField
-        label='Name'
-        id='name'
-        value={formik.values.name}
-        onChange={formik.handleChange}
-        error={formik.touched.name && !!formik.errors.name}
-        helperText={(formik.touched.name && formik.errors.name) || ''}
-        style={{ background: '#f0f0f0', borderRadius: '5px' }}
-      />
 
       <Autocomplete
         sx={{ margin: '10px 0 15px' }}
@@ -90,6 +75,5 @@ const colorOptions = [
 ];
 
 type initialValuesType = {
-  name: string,
   color: string[] | null,
 }

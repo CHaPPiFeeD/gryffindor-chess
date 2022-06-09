@@ -22,10 +22,22 @@ async function doHttpCall(
   params: AxiosRequestConfig<any> | undefined,
 ) {
   try {
+    const access_token = localStorage.getItem('access_token');
+
+    const headers: any = {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json;charset=UTF-8',
+      Accept: 'application/json',
+    };
+
+    if (access_token) {
+      headers['Authorization'] = `Bearer ${access_token}`;
+    }
+
     let result;
 
     if (method === 'POST') {
-      result = await axios.post(url, payload, params);
+      result = await axios.post(url, payload, { headers, params });
     }
 
     if (result?.data?.status) {
