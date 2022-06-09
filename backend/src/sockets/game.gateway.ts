@@ -18,7 +18,7 @@ export class GameGateway {
 
   @SubscribeMessage('/game:get')
   getGame(client: Socket) {
-    this.gameService.getGame(client.id);
+    this.gameService.sendGame(client.id);
   }
 
   @SubscribeMessage('/game/draw')

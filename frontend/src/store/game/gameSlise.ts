@@ -63,12 +63,12 @@ export const gameSlice = createSlice({
   initialState,
   reducers: {
     setGame: (state, action: PayloadAction<gameDataType>) => {
-      state.players = action.payload.players;
-      state.color = action.payload.color;
+      state.players = action.payload.players || state.players;
+      state.color = action.payload.color || state.color;
       state.board = action.payload.board;
       state.ways = action.payload.ways;
       state.moveQueue = action.payload.moveQueue;
-      state.gameStartTime = action.payload.gameStart;
+      state.gameStartTime = action.payload.gameStart || state.gameStartTime;
       state.gameEndTime = action.payload.gameEnd || initialState.gameEndTime;
       state.log = initialState.log;
       state.eatFigures = initialState.eatFigures;

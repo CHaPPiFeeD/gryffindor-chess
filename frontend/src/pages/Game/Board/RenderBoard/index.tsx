@@ -38,6 +38,10 @@ export const RenderBoard = () => {
     const color: string =
       e.currentTarget.attributes.getNamedItem('data-color')?.value;
 
+    console.log('work');
+    console.log(moveQueueStore !== colorStore);
+    console.log(waysStore);
+    
     if (moveQueueStore !== colorStore || !waysStore.length) return;
 
     let isTransformPawn;

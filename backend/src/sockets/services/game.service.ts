@@ -24,35 +24,24 @@ export class GameService {
   startGame(playerOne: QueueUserType, playerTwo: QueueUserType) {
     const game = new Game(playerOne, playerTwo);
 
-    const { whiteBoard, blackBoard, whiteWays } =
-      this.boardService.createFogBoards(game);
-
     this.gamesStates.set(game.id, game);
-
-    alertBoard(this.logger, game.board, game.id);
-    alertBoard(this.logger, whiteBoard, 'white board');
-    alertBoard(this.logger, blackBoard, 'black board');
 
     this.serverGateway.server
       .in([game.white.socket, game.black.socket])
       .socketsJoin(game.id);
 
-    // this.serverGateway.server.in(game.id).emit('/game/start');
-
-    this.getGame(game.white.socket);
-    this.getGame(game.black.socket);
+    this.sendGame(game.white.socket);
   }
 
-  getGame(socketId: string) {
+  sendGame(socketId: string) {
     const roomId = findRoomBySocketId(socketId, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
-    const [clientColor, opponentsColor] = game.getColorsBySocket(socketId);
     const [whiteLog, blackLog] = game.getLogsForPlayers();
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
       this.boardService.createFogBoards(game);
 
-    let data: any = {
+    const data: any = {
       players: {
         white: game.white.name,
         black: game.black.name,
@@ -62,27 +51,65 @@ export class GameService {
       eatFigures: game.eatenFigures,
     };
 
-    if (clientColor === COLORS.WHITE) {
-      data = {
-        ...data,
-        color: COLORS.WHITE,
-        board: whiteBoard,
-        ways: opponentsColor === COLORS.WHITE ? whiteWays : [],
-        log: whiteLog,
-      };
-    } else {
-      data = {
-        ...data,
-        color: COLORS.BLACK,
-        board: blackBoard,
-        ways: opponentsColor === COLORS.BLACK ? blackWays : [],
-        log: blackLog,
-      };
-    }
-
-    this.serverGateway.server.in(socketId).emit('/game:get', {
+    const whiteData = {
       ...data,
-    });
+      color: COLORS.WHITE,
+      board: whiteBoard,
+      ways: game.moveQueue === COLORS.WHITE ? whiteWays : [],
+      log: whiteLog,
+    };
+
+    const blackData = {
+      ...data,
+      color: COLORS.BLACK,
+      board: blackBoard,
+      ways: game.moveQueue === COLORS.BLACK ? blackWays : [],
+      log: blackLog,
+    };
+
+    this.serverGateway.server
+      .in(game.white.socket)
+      .emit('/game:get', whiteData);
+
+    this.serverGateway.server
+      .in(game.black.socket)
+      .emit('/game:get', blackData);
+
+    alertBoard(this.logger, game.board, game.id);
+    alertBoard(this.logger, whiteBoard, 'white board');
+    alertBoard(this.logger, blackBoard, 'black board');
+
+    if (game.winner) {
+      const [clientColor, opponentsColor] = game.getColorsBySocket(socketId);
+
+      const endData = {
+        ...data,
+        gameEnd: game.gameEnd,
+        board: game.board,
+        ways: [],
+        log: game.log,
+        moveQueue: game.moveQueue,
+        eatFigures: game.eatenFigures,
+      };
+
+      console.log(endData);
+
+      this.serverGateway.server.in(game[clientColor].socket).emit('/game/end', {
+        title: 'You win!',
+        message: "You have eaten the opponent's king piece.",
+        color: clientColor,
+        ...endData,
+      });
+
+      this.serverGateway.server
+        .in(game[opponentsColor].socket)
+        .emit('/game/end', {
+          title: 'You lost!',
+          message: 'The opponent has eaten your king piece.',
+          color: opponentsColor,
+          ...endData,
+        });
+    }
   }
 
   moveChess = (client: Socket, move: MoveType) => {
@@ -95,37 +122,8 @@ export class GameService {
 
     game.updateLog(client, move);
     game.move(client, move);
-    const [whiteLog, blackLog] = game.getLogsForPlayers();
 
-    const { whiteBoard, blackBoard, whiteWays, blackWays } =
-      this.boardService.createFogBoards(game);
-    const lastMoves = this.boardService.getLastMove(
-      whiteBoard,
-      blackBoard,
-      move,
-    );
-
-    alertBoard(this.logger, game.board, roomId);
-    alertBoard(this.logger, whiteBoard, 'white board');
-    alertBoard(this.logger, blackBoard, 'black board');
-
-    this.serverGateway.server.in(game.white.socket).emit('/game/move:get', {
-      board: whiteBoard,
-      moveQueue: game.moveQueue,
-      ways: opponentsColor === COLORS.WHITE ? whiteWays : [],
-      log: whiteLog,
-      eatFigures: game.eatenFigures,
-      lastMove: lastMoves.white,
-    });
-
-    this.serverGateway.server.in(game.black.socket).emit('/game/move:get', {
-      board: blackBoard,
-      moveQueue: game.moveQueue,
-      ways: opponentsColor === COLORS.BLACK ? blackWays : [],
-      log: blackLog,
-      eatFigures: game.eatenFigures,
-      lastMove: lastMoves.black,
-    });
+    this.sendGame(client.id);
 
     if (game.winner) {
       this.logger.debug(game.winner);

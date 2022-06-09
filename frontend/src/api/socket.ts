@@ -82,6 +82,8 @@ export const getBoard = (cb: Function) => {
 
 export const checkEndGame = (cb: Function) => {
   socket.on('/game/end', (payload) => {
+    console.log(payload);
+    
     cb(payload);
   });
 };
