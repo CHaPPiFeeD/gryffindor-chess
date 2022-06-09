@@ -26,12 +26,11 @@ export const joinSocket = () => {
   );
 
   socket.on('connect', () => {
-    console.log('socket:', socket.id);
-    localStorage.setItem('socket', socket.id);
+    console.log('connect:', socket.id);
   });
 
   socket.on('disconnect', () => {
-    console.log(socket);
+    console.log('disconnect:', socket.id);
   });
 
   socket.on('error', (data) => {
@@ -50,8 +49,9 @@ export const exceptionHandler = (dispatch: any) => {
   });
 };
 
-export const regInQueue = (data: any) => {
+export const regInQueue = (data: any, cb: Function) => {
   socket.emit('/queue/search', data);
+  cb();
 };
 
 export const getGame = (cb: Function) => {

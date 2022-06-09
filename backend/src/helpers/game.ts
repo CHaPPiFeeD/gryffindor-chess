@@ -1,4 +1,3 @@
-import { Socket } from 'socket.io';
 import { GamePlayerType, QueueUserType } from '../types';
 import { COLORS } from '../enums/constants';
 

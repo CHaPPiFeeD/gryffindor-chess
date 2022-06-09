@@ -2,9 +2,11 @@ import { Autocomplete, Box, Button, TextField } from '@mui/material';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import { regInQueue, getGame } from '../../../api/socket';
+import { regInQueue, getGame, getUsers } from '../../../api/socket';
+import { gameDataType, usersQueueType } from '../../../api/types';
 import { useAppDispatch } from '../../../hooks/redux';
 import { path } from '../../../router/constants';
+import { setGame, setQueue } from '../../../store/game/gameSlise';
 import styles from './styles.module.scss';
 
 export const FindGameForm = () => {
@@ -22,7 +24,17 @@ export const FindGameForm = () => {
   });
 
   const onSubmit = (values: initialValuesType) => {
-    regInQueue(values);
+    regInQueue(values, () => {
+      getGame((payload: gameDataType) => {
+        dispatch(setGame(payload));
+        navigate(path.game());
+      });
+      
+      getUsers((queue: usersQueueType[]) => {
+        dispatch(setQueue(queue));
+        navigate(path.waiting());
+      });
+    });
   };
 
   const formik = useFormik({

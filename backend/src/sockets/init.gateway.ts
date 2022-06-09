@@ -18,6 +18,7 @@ export class InitGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!client.handshake.auth.token) {
       client.emit('error', 'Unauthorized');
       client.disconnect();
+      return;
     }
 
     this.logger.log(`User connection: ${client.id}`);

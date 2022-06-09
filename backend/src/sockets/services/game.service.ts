@@ -1,6 +1,6 @@
 import { Inject, Logger } from '@nestjs/common';
 import { alertBoard, findRoomBySocketId } from '../../helpers/game';
-import { ISocket, MoveType, QueueUserType } from '../../types';
+import { MoveType, QueueUserType } from '../../types';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
 import { COLORS } from 'src/enums/constants';

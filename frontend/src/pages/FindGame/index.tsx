@@ -22,15 +22,6 @@ export const FindGame = () => {
     joinSocket();
     exceptionHandler(dispatch);
 
-    getGame((payload: gameDataType) => {
-      dispatch(setGame(payload));
-      navigate(path.game());
-    });
-    
-    getUsers((queue: usersQueueType[]) => {
-      dispatch(setQueue(queue));
-      navigate(path.waiting());
-    });
   }, []);
 
   return (

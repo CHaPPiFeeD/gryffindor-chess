@@ -157,6 +157,7 @@ export class ValidationService {
     const isTwoSteps =
       move.start[0] === initPawnPos &&
       Math.abs(y) === 2 &&
+      Math.abs(x) === 0 &&
       endFigure === FIGURES.EMPTY &&
       game.board[move.start[0] + step][move.end[1]] === FIGURES.EMPTY;
 
