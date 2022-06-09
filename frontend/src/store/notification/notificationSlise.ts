@@ -1,7 +1,7 @@
 
-import { createSlice } from '@reduxjs/toolkit'
-import { VariantType } from 'notistack'
-import { AppDispatch } from '..'
+import { createSlice } from '@reduxjs/toolkit';
+import { VariantType } from 'notistack';
+import { AppDispatch } from '..';
 
 export type notificationType = {
   message?: string
@@ -14,36 +14,51 @@ type initialStateTypes = {
 
 const initialState: initialStateTypes = {
   notifications: [],
-}
+};
 
 const notificationsReducer = createSlice({
   name: 'notifications',
   initialState,
   reducers: {
-    setNotifications: (state: initialStateTypes, actions: { payload: notificationType[] }) => {
-      state.notifications = actions.payload
+    setNotifications: (
+      state: initialStateTypes,
+      actions: { payload: notificationType[] },
+    ) => {
+      state.notifications = actions.payload;
     },
     resetNotifications: (state: initialStateTypes) => {
-      state.notifications = null
+      state.notifications = null;
     },
   },
-})
+});
 
-export const { setNotifications, resetNotifications } = notificationsReducer.actions
-export default notificationsReducer.reducer
+export default notificationsReducer.reducer;
+export const {
+  setNotifications,
+  resetNotifications,
+} = notificationsReducer.actions;
 
-export const showNotification = (message: string, type: VariantType = 'info') => async (dispatch: AppDispatch) => {
-  dispatch(setNotifications([{ message, type }]))
-}
+export const showNotification = (
+  message: string,
+  type: VariantType = 'info',
+) => async (dispatch: AppDispatch) => {
+  dispatch(setNotifications([{ message, type }]));
+};
 
-export const handleError = (payload: notificationType[]) => (dispatch: AppDispatch) => {
+export const handleError = (
+  payload: notificationType[],
+) => (
+  dispatch: AppDispatch,
+) => {
   if (Array.isArray(payload)) {
-    const processedErrors: notificationType[] = payload.filter((error: notificationType) => !!error?.message).map((error) => ({
+    const processedErrors: notificationType[] = payload.filter(
+      (error: notificationType) => !!error?.message,
+    ).map((error) => ({
       message: error?.message,
       type: 'error',
     }),
-    )
-    dispatch(setNotifications(processedErrors))
+    );
+    dispatch(setNotifications(processedErrors));
   }
-}
+};
 

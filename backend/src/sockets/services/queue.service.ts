@@ -4,36 +4,48 @@ import {
   getUserBySocket,
   getFindsColors,
   getUserByColor,
+  checkUserInQueue,
 } from '../../helpers/queue';
 import { GameService } from './game.service';
 import { ServerGateway } from '../server.gateway';
 import { WsException } from '@nestjs/websockets';
-import { QueueUserType, RegToQueueDataType } from 'src/types';
+import { ISocket, QueueUserType } from 'src/types';
+import { UserService } from 'src/services/user.service';
 
 export class QueueService {
   private logger = new Logger(QueueService.name);
   private queue: QueueUserType[] = [];
 
   @Inject(GameService)
-  gameService: GameService;
+  private gameService: GameService;
 
   @Inject(ServerGateway)
-  serverGateway: ServerGateway;
+  private serverGateway: ServerGateway;
 
-  regToQueue(client: Socket, data: RegToQueueDataType) {
-    const playerOne: QueueUserType = {
-      socket: client.id,
-      ...data,
-    };
+  @Inject(UserService)
+  private userService: UserService;
 
-    if (getUserBySocket(this.queue, client.id))
+  async regToQueue(client: ISocket, data: { color: string[] }) {
+    const user = await this.userService.findOne({ _id: client.user['id'] });
+
+    if (checkUserInQueue(this.queue, user.id))
       throw new WsException('You are already in line');
+
+    // this.serverGateway.server.emit('/queue/search');
+
+    const playerOne: QueueUserType = {
+      userId: user.id,
+      socket: client.id,
+      name: user.username,
+      color: data.color,
+    };
 
     const desiredColors: string[] = getFindsColors(playerOne.color);
     const playerTwo: QueueUserType = getUserByColor(this.queue, desiredColors);
 
     if (!playerTwo) {
       this.queue.push(playerOne);
+      this.serverGateway.server.emit('/queue:get', this.queue);
     } else {
       const index: number = this.queue.findIndex(
         (player) => player.socket === playerTwo.socket,
@@ -42,8 +54,6 @@ export class QueueService {
       if (index >= 0) this.queue.splice(index, 1);
       this.gameService.startGame(playerOne, playerTwo);
     }
-
-    this.serverGateway.server.emit('/queue:get', this.queue);
   }
 
   disconnect = (socket: Socket) => {

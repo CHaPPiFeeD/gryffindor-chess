@@ -46,12 +46,8 @@ export type MovePropsType = {
   y?: number;
 };
 
-export type RegToQueueDataType = {
-  name: string;
-  color: string[];
-};
-
 export type QueueUserType = {
+  userId: string;
   socket: string;
   name: string;
   color: string[];
@@ -75,4 +71,12 @@ export type CreateBoardsForPlayersType = {
   blackBoard: string[][];
   whiteWays: string[];
   blackWays: string[];
+};
+
+export type UserInfo = {
+  [index: string]: string;
+};
+
+export type ISocket = Socket & {
+  user: UserInfo;
 };

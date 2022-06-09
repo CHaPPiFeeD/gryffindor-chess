@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
-import { Box } from '@mui/system'
+import { Box } from '@mui/system';
 import { Pawn } from '../../../../components/Figure/figures/Pawn';
-import { useAppSelector } from '../../../../hooks/redux'
+import { useAppSelector } from '../../../../hooks/redux';
 import styles from './styles.module.scss';
 
 export const PlayersName = () => {
@@ -33,5 +33,5 @@ export const PlayersName = () => {
       </Box>
 
     </Box>
-  )
-}
+  );
+};

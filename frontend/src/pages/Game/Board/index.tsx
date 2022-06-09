@@ -1,4 +1,4 @@
-import { Box } from '@mui/system'
+import { Box } from '@mui/system';
 import { GorizontallAxis } from './GorizontalAxis';
 import { RenderBoard } from './RenderBoard';
 import { VerticalAxis } from './VerticalAxis';
@@ -21,5 +21,5 @@ export const Board = () => {
 
       <GorizontallAxis />
     </Box>
-  )
-}
+  );
+};

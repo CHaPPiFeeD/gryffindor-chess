@@ -1,18 +1,28 @@
 import { Box, Typography } from '@mui/material';
 import styles from './styles.module.scss';
-import { LoginForm } from './LoginForm';
+import { FindGameForm } from './FindGameForm';
 import { useEffect } from 'react';
-import { exceptionHandler, joinSocket } from '../../api/socket';
-import { showNotification } from '../../store/notification/notificationSlise';
+import { 
+  exceptionHandler, 
+  getUsers, 
+  joinSocket, 
+  getGame, 
+} from '../../api/socket';
 import { useAppDispatch } from '../../hooks/redux';
+import { path } from '../../router/constants';
+import { useNavigate } from 'react-router-dom';
+import { setGame, setQueue } from '../../store/game/gameSlise';
+import { gameDataType, usersQueueType } from '../../api/types';
 
-export const Login = () => {
+export const FindGame = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    joinSocket()
+    joinSocket();
     exceptionHandler(dispatch);
-  }, [])
+
+  }, []);
 
   return (
     <Box className={styles.wrapper}>
@@ -26,11 +36,9 @@ export const Login = () => {
           Chess
         </Typography>
 
-        <LoginForm />
+        <FindGameForm />
 
       </Box>
     </Box>
-  )
-}
-
-export default Login
+  );
+};

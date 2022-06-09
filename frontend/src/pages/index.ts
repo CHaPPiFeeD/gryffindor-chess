@@ -1,3 +1,4 @@
 export { Game } from './Game';
-export { Login } from './Login';
+export { FindGame } from './FindGame';
 export { Waiting } from './Waiting';
+export { Auth } from './Auth';

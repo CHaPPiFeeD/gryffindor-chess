@@ -1,21 +1,21 @@
-import { Box, Typography } from '@mui/material'
-import { useEffect, useRef, useState } from 'react'
-import { Figure } from '../../../../components'
-import { useAppSelector } from '../../../../hooks/redux'
-import styles from './styles.module.scss'
+import { Box, Typography } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import { Figure } from '../../../../components';
+import { useAppSelector } from '../../../../hooks/redux';
+import styles from './styles.module.scss';
 
 export const Logs = () => {
-  const { log: logStore } = useAppSelector(store => store.game)
-  const logsEndRef = useRef(document.getElementById('logsEnd'))
-  const [stateWhiteLog, setStateWhiteLog] = useState<LogType[]>([])
-  const [stateBlackLog, setStateBlackLog] = useState<LogType[]>([])
+  const { log: logStore } = useAppSelector(store => store.game);
+  const logsEndRef = useRef(document.getElementById('logsEnd'));
+  const [stateWhiteLog, setStateWhiteLog] = useState<LogType[]>([]);
+  const [stateBlackLog, setStateBlackLog] = useState<LogType[]>([]);
 
   const scrollToBottom = () => {
-    logsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+    logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   useEffect(() => {
-    scrollToBottom()
+    scrollToBottom();
 
     setStateWhiteLog([]);
     setStateBlackLog([]);
@@ -25,7 +25,7 @@ export const Logs = () => {
       if (v?.color === 'black') setStateBlackLog([...stateBlackLog, v]);
       console.log('working');
       
-    })
+    });
 
     console.log(logStore);
     console.log(stateWhiteLog);
@@ -44,11 +44,11 @@ export const Logs = () => {
 
       <Box ref={logsEndRef} id='logsEnd' />
     </Box>
-  )
-}
+  );
+};
 
 const LogsColumn = (props: { color: string }) => {
-  const { log: logStore } = useAppSelector(store => store.game)
+  const { log: logStore } = useAppSelector(store => store.game);
   console.log('work');
   
 
@@ -70,11 +70,11 @@ const LogsColumn = (props: { color: string }) => {
               {[startPos, endPos].join('-')}
             </Typography>
           </Box>
-        )
+        );
       })}
     </Box>
-  )
-}
+  );
+};
 
 type LogType = {
   color: string,

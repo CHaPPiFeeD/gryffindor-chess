@@ -5,7 +5,7 @@ import {
   OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { InitService } from './service/init.service';
+import { InitService } from './services/init.service';
 
 @WebSocketGateway({ cors: true })
 export class InitGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -15,7 +15,14 @@ export class InitGateway implements OnGatewayConnection, OnGatewayDisconnect {
   initService: InitService;
 
   handleConnection(client: Socket) {
+    if (!client.handshake.auth.token) {
+      client.emit('error', 'Unauthorized');
+      client.disconnect();
+      return;
+    }
+
     this.logger.log(`User connection: ${client.id}`);
+    return client.id;
   }
 
   handleDisconnect(client: Socket) {

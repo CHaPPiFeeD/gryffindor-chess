@@ -1,8 +1,9 @@
-import { Inject, Logger } from '@nestjs/common';
+import { Inject, Logger, UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { RegToQueueDataType } from 'src/types';
-import { QueueService } from './service/queue.service';
+import { WsAuthGuard } from 'src/guards/ws.auth.guard';
+import { ISocket } from 'src/types';
+import { QueueService } from './services/queue.service';
 
 @WebSocketGateway({ cors: true })
 export class QueueGateway {
@@ -11,9 +12,10 @@ export class QueueGateway {
   @Inject(QueueService)
   private queueService: QueueService;
 
+  @UseGuards(WsAuthGuard)
   @SubscribeMessage('/queue/search')
-  regToQueue(client: Socket, data: RegToQueueDataType) {
-    this.queueService.regToQueue(client, data);
+  regToQueue(client: ISocket, data: { color: string[] }) {
+    return this.queueService.regToQueue(client, data);
   }
 
   @SubscribeMessage('/queue/leave')

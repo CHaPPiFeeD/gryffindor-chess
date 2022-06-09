@@ -3,7 +3,7 @@ import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { Game } from 'src/models/game.model';
 import { MoveType, MovePropsType } from 'src/types';
-import { BLACK_FIGURES, FIGURES, WHITE_FIGURES } from '../../enum/constants';
+import { BLACK_FIGURES, FIGURES, WHITE_FIGURES } from '../../enums/constants';
 import {
   checkDiagonalMove,
   checkSchemeAttack,
@@ -157,6 +157,7 @@ export class ValidationService {
     const isTwoSteps =
       move.start[0] === initPawnPos &&
       Math.abs(y) === 2 &&
+      Math.abs(x) === 0 &&
       endFigure === FIGURES.EMPTY &&
       game.board[move.start[0] + step][move.end[1]] === FIGURES.EMPTY;
 

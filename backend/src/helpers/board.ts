@@ -1,5 +1,5 @@
-import { COLORS, FIGURES } from 'src/enum/constants';
-import { KING_WAYS_CASTLING } from 'src/enum/figureWays';
+import { COLORS, FIGURES } from 'src/enums/constants';
+import { KING_WAYS_CASTLING } from 'src/enums/figureWays';
 import { CheckWaysPropsType } from 'src/types';
 import { checkCoordinates } from './validation';
 

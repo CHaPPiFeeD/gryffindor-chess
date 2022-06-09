@@ -2,6 +2,10 @@
   background-color: #634833 !important;
 }
 
+.MuiButton-text {
+  color: #634833 !important;
+}
+
 .MuiTextField-root {
   border: none !important;
 }

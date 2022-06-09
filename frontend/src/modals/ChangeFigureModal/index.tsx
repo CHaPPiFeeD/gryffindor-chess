@@ -1,13 +1,13 @@
-import { Box, Button, Modal, Typography } from '@mui/material'
+import { Box, Button, Modal, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Bishop } from '../../components/Figure/figures/Bishop';
 import { Knight } from '../../components/Figure/figures/Knight';
 import { Queen } from '../../components/Figure/figures/Queen';
 import { Rook } from '../../components/Figure/figures/Rook';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux'
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { setEndPosition, setMove } from '../../store/game/gameSlise';
 import { setClose } from '../../store/modal/modalSlise';
-import styles from './styles.module.scss'
+import styles from './styles.module.scss';
 
 export const ChangeFigureModal = () => {
   const dispatch = useAppDispatch();
@@ -26,16 +26,16 @@ export const ChangeFigureModal = () => {
       colorStore === 'white'
         ? figure.toUpperCase()
         : figure,
-    )
+    );
 
-    const box = document.getElementById('figures_box')
+    const box = document.getElementById('figures_box');
 
     for (let i = 0; i < 4; i++) {
-      box?.children[i].classList.remove(styles.figure_button_active)
+      box?.children[i].classList.remove(styles.figure_button_active);
     }
 
-    box?.children[child].classList.add(styles.figure_button_active)
-  }
+    box?.children[child].classList.add(styles.figure_button_active);
+  };
 
   const handleClose = () => {
     if (!stateValue || endPositionStore === null) return;
@@ -44,10 +44,10 @@ export const ChangeFigureModal = () => {
       activePositionStore,
       endPositionStore,
       { isChange: true, chooseFigure: stateValue },
-    ))
-    dispatch(setEndPosition(null))
-    dispatch(setClose('changeFigure'))
-  }
+    ));
+    dispatch(setEndPosition(null));
+    dispatch(setClose('changeFigure'));
+  };
 
   return (
     <Modal
@@ -102,12 +102,12 @@ export const ChangeFigureModal = () => {
 
       </Box>
     </Modal>
-  )
-}
+  );
+};
 
 const FIGURES = {
   QUEEN: 'q',
   BISHOP: 'b',
   KNIGHT: 'n',
   ROOK: 'r',
-}
+};
