@@ -1,5 +1,6 @@
+/* eslint-disable max-len */
 export const Bishop = (props: any) => {
-  const fill = props.fill || '#333333'
+  const fill = props.fill || '#333333';
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 281 281" fill="none">
@@ -13,5 +14,5 @@ export const Bishop = (props: any) => {
       <rect x="78.9652" y="219.838" width="123.408" height="13.6511" fill={fill} stroke="black" strokeWidth="2" />
       <rect x="70.6581" y="235.489" width="140.022" height="13.6511" fill={fill} stroke="black" strokeWidth="2" />
     </svg>
-  )
-}
+  );
+};

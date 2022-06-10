@@ -1,5 +1,7 @@
 export const path = {
-  login: () => '/',
+  auth: () => '/',
+  findGame: () => '/game/search',
   waiting: () => '/waiting',
   game: () => '/game',
-}
+  notFound: () => '*',
+};

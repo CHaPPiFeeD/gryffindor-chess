@@ -1,5 +1,5 @@
-import { Game } from './Game'
-import { Login } from './Login'
-import { Waiting } from './Waiting'
-
-export { Login, Game, Waiting }
+export { Game } from './Game';
+export { FindGame } from './FindGame';
+export { Waiting } from './Waiting';
+export { Auth } from './Auth';
+export { NotFound } from './NotFound';

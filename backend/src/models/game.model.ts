@@ -8,7 +8,7 @@ import {
   FIGURES,
   BLACK_FIGURES,
   WHITE_FIGURES,
-} from 'src/enum/constants';
+} from 'src/enums/constants';
 import { randomString } from 'src/helpers';
 import { setPlayerColors } from 'src/helpers/game';
 
@@ -86,15 +86,11 @@ export class Game {
   getLogsForPlayers(): string[][] {
     const whiteLog = [];
     const blackLog = [];
-    console.log(this.log);
 
     this.log.forEach((v) => {
-      console.log(v);
       if (v.color === COLORS.WHITE || this.winner) whiteLog.push(v);
       if (v.color === COLORS.BLACK || this.winner) blackLog.push(v);
     });
-
-    console.log(whiteLog, blackLog);
 
     return [whiteLog, blackLog];
   }
@@ -104,11 +100,21 @@ export class Game {
     if (clientId === this.black.socket) return [COLORS.BLACK, COLORS.WHITE];
   }
 
+  getColorsByUserId(userId: string): string[] {
+    if (userId === this.white.userId) return [COLORS.WHITE, COLORS.BLACK];
+    if (userId === this.black.userId) return [COLORS.BLACK, COLORS.WHITE];
+  }
+
   getFigureFromStart(move: MoveType): string {
     return this.board[move.start[0]][move.start[1]];
   }
 
   getFigureFromEnd(move: MoveType): string {
     return this.board[move.end[0]][move.end[1]];
+  }
+
+  clearInterceptionWays() {
+    this.white.rules.interception = [];
+    this.black.rules.interception = [];
   }
 }

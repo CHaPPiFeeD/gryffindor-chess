@@ -14,7 +14,9 @@
     "@types/node": "^16.11.36",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.5",
+    "axios": "^0.27.2",
     "formik": "^2.2.9",
+    "mongodb": "^4.7.0",
     "nest-app": "file:..",
     "notistack": "^2.0.5",
     "react": "^18.1.0",
@@ -32,7 +34,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "postbuild": "move ./build ../backend/client",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "eslint:fix": "npx eslint \"src/**/*.ts*\" --fix"
   },
   "eslintConfig": {
     "extends": [

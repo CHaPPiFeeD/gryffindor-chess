@@ -2,6 +2,7 @@ import { Socket } from 'socket.io';
 import { Game } from 'src/models/game.model';
 
 export type GamePlayerType = {
+  userId: string;
   socket: string;
   name: string;
   offersDraw: boolean;
@@ -10,7 +11,17 @@ export type GamePlayerType = {
       long: boolean;
       short: boolean;
     };
+    interception: InterceptionType[];
   };
+  disconnect: string | null;
+};
+
+export type InterceptionType = {
+  move: {
+    start: number[];
+    end: number[];
+  };
+  figurePosition: number[];
 };
 
 export type MoveType = {
@@ -37,12 +48,8 @@ export type MovePropsType = {
   y?: number;
 };
 
-export type RegToQueueDataType = {
-  name: string;
-  color: string[];
-};
-
 export type QueueUserType = {
+  userId: string;
   socket: string;
   name: string;
   color: string[];
@@ -66,4 +73,8 @@ export type CreateBoardsForPlayersType = {
   blackBoard: string[][];
   whiteWays: string[];
   blackWays: string[];
+};
+
+export type ISocket = Socket & {
+  user: any;
 };

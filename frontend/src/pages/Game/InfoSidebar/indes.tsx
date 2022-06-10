@@ -3,7 +3,7 @@ import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import { leaveGame, offerDraw } from '../../../api/socket';
 import { path } from '../../../router/constants';
-import styles from './styles.module.scss'
+import styles from './styles.module.scss';
 import { TimeTypography } from './TimeTypography';
 import { Logs } from './Logs';
 import { EatFigures } from './EatFigures';
@@ -14,9 +14,9 @@ import { useAppSelector } from '../../../hooks/redux';
 
 
 export const InfoSidebar = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [stateDisabled, setStateDisabled] = useState(false);
-  const endGame = useAppSelector(state => state.game.gameEndTime)
+  const endGame = useAppSelector(state => state.game.gameEndTime);
 
   const handleClickDraw = () => {
     setStateDisabled(true);
@@ -24,48 +24,51 @@ export const InfoSidebar = () => {
 
     setTimeout(() => {
       setStateDisabled(false);
-    }, 60000)
-  }
+    }, 60000);
+  };
 
   const handleClick = () => {
     if (endGame) {
-      navigate(path.login())
+      navigate(path.auth());
     } else if (confirm('Do you really want to surrender?')) {
-      leaveGame()
+      leaveGame();
     }
-  }
+  };
 
   return (
     <Box className={styles.content}>
 
-      <Box className={styles.info}>
-        <PlayersName />
+      {/* <Box className={styles.info}> */}
+      <PlayersName />
 
-        <Box className={styles.info_box_one}>
-          <MoveQueueTypography />
-          <TimeTypography />
-        </Box>
-
-        <Box className={styles.info_box_two}>
-          <Logs />
-          <EatFigures />
-        </Box>
+      <Box className={styles.info_box_one}>
+        <MoveQueueTypography />
+        <TimeTypography />
       </Box>
 
-      <Button
-        onClick={handleClickDraw}
-        variant='contained'
-        disabled={stateDisabled}
-      >
-        Offer a draw
-      </Button>
+      <Box className={styles.info_box_two}>
+        <Logs />
+        <EatFigures />
+      </Box>
+      {/* </Box> */}
 
-      <Button
-        onClick={handleClick}
-        variant='contained'
-      >
-        Surrender or go back
-      </Button>
+      <Box className={styles.button_box}>
+        <Button
+          onClick={handleClickDraw}
+          variant='contained'
+          disabled={stateDisabled}
+        >
+          Offer a draw
+        </Button>
+
+        <Button
+          onClick={handleClick}
+          variant='contained'
+        >
+          Surrender or go back
+        </Button>
+      </Box>
+
     </Box>
-  )
+  );
 };

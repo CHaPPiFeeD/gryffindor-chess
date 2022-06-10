@@ -1,4 +1,23 @@
+// export type gameDataType = {
+//   board: string[][],
+//   ways: string[],
+//   moveQueue: 'white' | 'black' | null,
+//   gameEnd?: Date | null,
+//   log?: logType,
+//   eatFigures: {
+//     white: string[],
+//     black: string[],
+//   },
+//   lastMove: number[][],
+// };
+
 export type gameDataType = {
+  players: {
+    white: string,
+    black: string,
+  },
+  color: string,
+  gameStart: Date,
   board: string[][],
   ways: string[],
   moveQueue: 'white' | 'black' | null,
@@ -8,19 +27,7 @@ export type gameDataType = {
     white: string[],
     black: string[],
   },
-  lastMove: number[][],
-};
-
-export type gameStartDataType = {
-  players: {
-    white: string,
-    black: string,
-  },
-  color: string,
-  board: string[][],
-  ways: string[],
-  moveQueue: string,
-  gameStart: Date,
+  lastMove?: number[][],
 }
 
 type logType = {

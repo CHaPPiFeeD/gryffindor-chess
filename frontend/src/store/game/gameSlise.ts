@@ -1,6 +1,10 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { move } from '../../api/socket';
-import { changeFigureDataType, gameDataType, gameStartDataType, usersQueueType } from '../../api/types'
+import { 
+  changeFigureDataType, 
+  gameDataType, 
+  usersQueueType, 
+} from '../../api/types';
 
 export type gameType = {
   players: {
@@ -52,30 +56,23 @@ const initialState: gameType = {
     black: [],
   },
   lastMove: [],
-}
+};
 
 export const gameSlice = createSlice({
   name: 'gameSlice',
   initialState,
   reducers: {
-    setGameStart: (state, action: PayloadAction<gameStartDataType>) => {
-      state.players = action.payload.players;
-      state.color = action.payload.color;
+    setGame: (state, action: PayloadAction<gameDataType>) => {
+      state.players = action.payload.players || state.players;
+      state.color = action.payload.color || state.color;
       state.board = action.payload.board;
       state.ways = action.payload.ways;
       state.moveQueue = action.payload.moveQueue;
-      state.gameStartTime = action.payload.gameStart;
-      state.gameEndTime = initialState.gameEndTime;
+      state.gameStartTime = action.payload.gameStart || state.gameStartTime;
+      state.gameEndTime = action.payload.gameEnd || initialState.gameEndTime;
       state.log = initialState.log;
       state.eatFigures = initialState.eatFigures;
-    },
-    setGame: (state, action: PayloadAction<gameDataType>) => {
-      state.board = action.payload.board;
-      state.ways = action.payload.ways;
-      state.moveQueue = action.payload.moveQueue;
-      state.log = action.payload?.log || state.log;
-      state.eatFigures = action.payload.eatFigures || state.eatFigures;
-      state.lastMove = action.payload.lastMove;
+      state.lastMove = action.payload.lastMove || state.lastMove;
     },
     setActivePosition: (state, action) => {
       state.activePosition = action.payload;
@@ -94,7 +91,7 @@ export const gameSlice = createSlice({
       state.queue = action.payload;
     },
   },
-})
+});
 
 export const setMove = (
   activePosition: [number, number] | null,
@@ -115,16 +112,21 @@ export const setMove = (
 
     const moveData = { start: activePosition, end: payload, change };
 
-    console.log(`move ${JSON.stringify(moveData.start)} to ${JSON.stringify(moveData.end)}`);
+    console.log(
+      `move ${
+        JSON.stringify(moveData.start)
+      } to ${
+        JSON.stringify(moveData.end)
+      }`,
+    );
 
-    dispatch(setActivePosition(null))
+    dispatch(setActivePosition(null));
 
-    move(moveData)
+    move(moveData);
   }
-}
+};
 
 export const {
-  setGameStart,
   setGame,
   setActivePosition,
   setMessage,

@@ -6,22 +6,23 @@ type modalStateType = {
 
 const initialState: modalStateType = {
   endGame: false,
-  changeFigure: false,
+  changePawn: false,
   draw: false,
-}
+  waitingForOpponent: false,
+};
 
 export const modalSlice = createSlice({
   name: 'modalSlice',
   initialState,
   reducers: {
     setOpen: (state, { payload }: PayloadAction<string>) => {
-      state[payload] = true
+      state[payload] = true;
     },
     setClose: (state, { payload }: PayloadAction<string>) => {
-      state[payload] = false
+      state[payload] = false;
     },
   },
-})
+});
 
 export const { setOpen, setClose } = modalSlice.actions;
 

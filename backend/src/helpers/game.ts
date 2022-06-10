@@ -1,6 +1,6 @@
-import { Socket } from 'socket.io';
 import { GamePlayerType, QueueUserType } from '../types';
-import { COLORS } from '../enum/constants';
+import { COLORS } from '../enums/constants';
+import { Game } from 'src/models/game.model';
 
 export const setPlayerColors = (
   playerOne: QueueUserType,
@@ -33,6 +33,7 @@ const createPlayerColors = (
   blackPlayer: GamePlayerType;
 } => {
   const whitePlayer: GamePlayerType = {
+    userId: white.userId,
     socket: white.socket,
     name: white.name,
     offersDraw: false,
@@ -41,10 +42,13 @@ const createPlayerColors = (
         long: true,
         short: true,
       },
+      interception: [],
     },
+    disconnect: null,
   };
 
   const blackPlayer: GamePlayerType = {
+    userId: black.userId,
     socket: black.socket,
     name: black.name,
     offersDraw: false,
@@ -53,7 +57,9 @@ const createPlayerColors = (
         long: true,
         short: true,
       },
+      interception: [],
     },
+    disconnect: null,
   };
 
   return { whitePlayer, blackPlayer };
@@ -92,9 +98,21 @@ export const alertBoard = (logger, board, room) => {
   logger.log(`    a b c d e f g h`);
 };
 
-export const findRoom = (client: Socket, gamesStates): string => {
+export const findRoomBySocketId = (socketId: string, gamesStates): string => {
   for (const game of gamesStates.values()) {
-    if (game.white.socket === client.id || game.black.socket === client.id)
+    if (game.white.socket === socketId || game.black.socket === socketId)
+      return game.id;
+  }
+};
+
+export const findRoomByUserId = (
+  userId: string,
+  gamesStates: Map<string, Game>,
+): string => {
+  for (const game of gamesStates.values()) {
+    console.log(game);
+    console.log(userId);
+    if (game.white.userId === userId || game.black.userId === userId)
       return game.id;
   }
 };

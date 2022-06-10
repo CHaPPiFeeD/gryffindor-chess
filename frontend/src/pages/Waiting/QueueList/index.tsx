@@ -1,7 +1,7 @@
-import { Box, Typography } from '@mui/material'
-import { Pawn } from '../../../components/Figure/figures/Pawn'
+import { Box, Typography } from '@mui/material';
+import { Pawn } from '../../../components/Figure/figures/Pawn';
 import { useAppSelector } from '../../../hooks/redux';
-import styles from './styles.module.scss'
+import styles from './styles.module.scss';
 
 
 export const QueueList = () => {
@@ -23,15 +23,29 @@ export const QueueList = () => {
 
               {value.color.map((v) => {
 
-                if (v === 'white') return <Box className={styles.figure} key='0'><Pawn fill='white' /></Box>
-                if (v === 'black') return <Box className={styles.figure} key='1'><Pawn fill='#333333' /></Box>
+                if (v === 'white') return (
+                  <Box
+                    className={styles.figure}
+                    key='0'
+                  >
+                    <Pawn fill='white' />
+                  </Box>
+                );
+                if (v === 'black') return (
+                  <Box
+                    className={styles.figure}
+                    key='1'
+                  >
+                    <Pawn fill='#333333' />
+                  </Box>
+                );
               })}
 
             </Box>
           </Box>
-        )
+        );
       })}
 
     </Box>
-  )
-}
+  );
+};

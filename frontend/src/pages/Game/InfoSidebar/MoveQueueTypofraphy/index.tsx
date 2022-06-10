@@ -1,11 +1,11 @@
-import { Typography, Box } from '@mui/material'
-import { Pawn } from '../../../../components/Figure/figures/Pawn'
-import { useAppSelector } from '../../../../hooks/redux'
-import styles from './styles.module.scss'
+import { Typography, Box } from '@mui/material';
+import { Pawn } from '../../../../components/Figure/figures/Pawn';
+import { useAppSelector } from '../../../../hooks/redux';
+import styles from './styles.module.scss';
 
 
 export const MoveQueueTypography = () => {
-  const { moveQueue: moveQueueStore } = useAppSelector(store => store.game)
+  const { moveQueue: moveQueueStore } = useAppSelector(store => store.game);
 
   return (
     <Typography component='h5' variant='h6' className={styles.move_queue}>
@@ -16,5 +16,5 @@ export const MoveQueueTypography = () => {
           : <Pawn fill='#333333' />}
       </Box>
     </Typography>
-  )
-}
+  );
+};

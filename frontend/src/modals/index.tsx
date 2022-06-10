@@ -1,14 +1,16 @@
 import { Box } from '@mui/material';
-import { ChangeFigureModal } from './ChangeFigureModal';
+import { ChangePawnModal } from './ChangePawnModal';
 import { DrawModal } from './DrawModal';
 import { EndGameModal } from './EndGameModal';
+import { WaitingForOpponentModal } from './WaitingForOpponentModal';
 
 export const Modals = () => {
   return (
     <Box>
       <EndGameModal />
-      <ChangeFigureModal />
+      <ChangePawnModal />
       <DrawModal />
+      <WaitingForOpponentModal />
     </Box>
-  )
+  );
 };
