@@ -1,0 +1,25 @@
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  outline: none !important;
+  border-radius: 5px;
+  padding: 50px;
+  background: #F0D9B5;
+  border: 10px solid #634833;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .title {
+    margin-bottom: 15px;
+  }
+
+  p {
+    margin-bottom: 25px;
+    text-align: center;
+  }
+} 

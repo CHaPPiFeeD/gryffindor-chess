@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateException } from 'src/exceptions/nocontent.exception';
 import { generateAccessToken } from 'src/utils';
 import { API_ERROR_CODES } from 'src/enums/errorsCode';
-import { UserService } from './user.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +23,7 @@ export class AuthService {
       username: username,
       email: email,
       password: hashPassword,
+      online: false,
     });
 
     return this.login(email, password);
@@ -35,6 +36,8 @@ export class AuthService {
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword)
       throw new CreateException(API_ERROR_CODES.USER_WRONG_PASSWORD);
+
+    this.userService.setOnline({ email }, true);
 
     const token = generateAccessToken(user._id);
     return { token };

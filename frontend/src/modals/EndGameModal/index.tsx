@@ -1,4 +1,5 @@
 import { Box, Button, Modal, Typography } from '@mui/material';
+import { MODAL } from '../../constants/modal';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { setClose } from '../../store/modal/modalSlise';
 import styles from './styles.module.scss';
@@ -9,7 +10,7 @@ export const EndGameModal = () => {
   const endGameMessage = useAppSelector(state => state.game.endGameMessage);
 
   const handleClose = () => {
-    dispatch(setClose('endGame'));
+    dispatch(setClose(MODAL.END_GAME));
   };
 
   return (

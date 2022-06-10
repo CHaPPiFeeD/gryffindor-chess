@@ -2,6 +2,7 @@ import { Socket } from 'socket.io';
 import { Game } from 'src/models/game.model';
 
 export type GamePlayerType = {
+  userId: string;
   socket: string;
   name: string;
   offersDraw: boolean;
@@ -12,6 +13,7 @@ export type GamePlayerType = {
     };
     interception: InterceptionType[];
   };
+  disconnect: string | null;
 };
 
 export type InterceptionType = {
@@ -73,10 +75,6 @@ export type CreateBoardsForPlayersType = {
   blackWays: string[];
 };
 
-export type UserInfo = {
-  [index: string]: string;
-};
-
 export type ISocket = Socket & {
-  user: UserInfo;
+  user: any;
 };

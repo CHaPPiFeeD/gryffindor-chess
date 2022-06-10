@@ -9,7 +9,7 @@ import {
   checkSchemeAttack,
   checkVerticalAndHorizontalMove,
 } from '../../helpers/validation';
-import { ServerGateway } from '../server.gateway';
+import { ServerGateway } from '../server/server.gateway';
 
 export class ValidationService {
   private logger = new Logger();
@@ -199,7 +199,7 @@ export class ValidationService {
 
   private addInterceptionMove = (props) => {
     const { game, move, step, client } = props;
-    const [clientColor, opponentColor] = game.getColorsBySocket(client.id);
+    const [, opponentColor] = game.getColorsBySocket(client.id);
 
     if (
       move.end[1] - 1 > 0 &&

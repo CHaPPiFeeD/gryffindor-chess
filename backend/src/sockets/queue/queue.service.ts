@@ -6,11 +6,12 @@ import {
   getUserByColor,
   checkUserInQueue,
 } from '../../helpers/queue';
-import { GameService } from './game.service';
-import { ServerGateway } from '../server.gateway';
+import { GameService } from '../game/game.service';
+import { ServerGateway } from '../server/server.gateway';
 import { WsException } from '@nestjs/websockets';
 import { ISocket, QueueUserType } from 'src/types';
-import { UserService } from 'src/services/user.service';
+import { UserService } from 'src/modules/user/user.service';
+import { WS_EVENTS } from '../constants';
 
 export class QueueService {
   private logger = new Logger(QueueService.name);
@@ -45,7 +46,7 @@ export class QueueService {
 
     if (!playerTwo) {
       this.queue.push(playerOne);
-      this.serverGateway.server.emit('/queue:get', this.queue);
+      this.serverGateway.server.emit(WS_EVENTS.QUEUE.GET_QUEUE, this.queue);
     } else {
       const index: number = this.queue.findIndex(
         (player) => player.socket === playerTwo.socket,
@@ -65,6 +66,6 @@ export class QueueService {
       if (value.socket === socket.id) this.queue.splice(index, 1);
     });
 
-    this.serverGateway.server.emit('/queue:get', this.queue);
+    this.serverGateway.server.emit(WS_EVENTS.QUEUE.GET_QUEUE, this.queue);
   };
 }

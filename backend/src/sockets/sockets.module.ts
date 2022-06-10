@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from 'src/modules/user.module';
-import { GameGateway } from './game.gateway';
-import { InitGateway } from './init.gateway';
-import { QueueGateway } from './queue.gateway';
-import { ServerGateway } from './server.gateway';
-import { BoardService } from './services/board.service';
-import { GameService } from './services/game.service';
-import { InitService } from './services/init.service';
-import { QueueService } from './services/queue.service';
-import { ValidationService } from './services/validation.service';
+import { UserModule } from 'src/modules/user/user.module';
+import { GameGateway } from './game/game.gateway';
+import { InitGateway } from './init/init.gateway';
+import { QueueGateway } from './queue/queue.gateway';
+import { ServerGateway } from './server/server.gateway';
+import { BoardService } from './game/board.service';
+import { GameService } from './game/game.service';
+import { InitService } from './init/init.service';
+import { QueueService } from './queue/queue.service';
+import { ValidationService } from './game/validation.service';
 
 @Module({
   imports: [UserModule],
