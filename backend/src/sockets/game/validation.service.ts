@@ -199,7 +199,7 @@ export class ValidationService {
 
   private addInterceptionMove = (props) => {
     const { game, move, step, client } = props;
-    const [clientColor, opponentColor] = game.getColorsBySocket(client.id);
+    const [, opponentColor] = game.getColorsBySocket(client.id);
 
     if (
       move.end[1] - 1 > 0 &&

@@ -1,4 +1,3 @@
-import { JwtPayload } from 'jsonwebtoken';
 import { Socket } from 'socket.io';
 import { Game } from 'src/models/game.model';
 

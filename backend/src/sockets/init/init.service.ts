@@ -1,5 +1,4 @@
 import { Inject, Logger } from '@nestjs/common';
-import { Socket } from 'socket.io';
 import { GameService } from '../game/game.service';
 import { QueueService } from '../queue/queue.service';
 import * as jwt from 'jsonwebtoken';

@@ -1,10 +1,9 @@
-import { Inject, Logger, UseGuards } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import {
   WebSocketGateway,
   OnGatewayDisconnect,
   OnGatewayConnection,
 } from '@nestjs/websockets';
-import { WsAuthGuard } from 'src/guards/ws.auth.guard';
 import { ISocket } from 'src/types';
 import { InitService } from './init.service';
 

@@ -4,14 +4,15 @@ import { Bishop } from '../../components/Figure/figures/Bishop';
 import { Knight } from '../../components/Figure/figures/Knight';
 import { Queen } from '../../components/Figure/figures/Queen';
 import { Rook } from '../../components/Figure/figures/Rook';
+import { MODAL } from '../../constants/modal';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { setEndPosition, setMove } from '../../store/game/gameSlise';
 import { setClose } from '../../store/modal/modalSlise';
 import styles from './styles.module.scss';
 
-export const ChangeFigureModal = () => {
+export const ChangePawnModal = () => {
   const dispatch = useAppDispatch();
-  const open = useAppSelector(state => state.modals.changeFigure);
+  const open = useAppSelector(state => state.modals.changePawn);
   const [stateValue, setStateValue] = useState('');
   const {
     color: colorStore,
@@ -46,7 +47,7 @@ export const ChangeFigureModal = () => {
       { isChange: true, chooseFigure: stateValue },
     ));
     dispatch(setEndPosition(null));
-    dispatch(setClose('changeFigure'));
+    dispatch(setClose(MODAL.CHANGE_PAWN));
   };
 
   return (

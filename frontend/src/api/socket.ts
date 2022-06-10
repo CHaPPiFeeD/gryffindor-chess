@@ -108,3 +108,8 @@ export const getOfferDraw = (cb: Function) => {
   });
 };
 
+export const checkOpponentDisconnect = (cb: Function) => {
+  socket.on('/game/opponent/disconnect', (isDisconnect) => {
+    cb(isDisconnect);
+  });
+};

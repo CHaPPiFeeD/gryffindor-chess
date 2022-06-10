@@ -9,3 +9,7 @@
 .MuiTextField-root {
   border: none !important;
 }
+
+.MuiCircularProgress-root {
+  color:  #634833 !important;
+}

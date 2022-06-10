@@ -18,6 +18,7 @@ export class QueueGateway {
     return this.queueService.regToQueue(client, data);
   }
 
+  @UseGuards(WsAuthGuard)
   @SubscribeMessage('/queue/leave')
   leave(client: Socket) {
     this.queueService.disconnect(client);
