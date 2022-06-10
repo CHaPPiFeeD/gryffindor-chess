@@ -1,5 +1,6 @@
 import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client';
 import { showNotification } from '../store/notification/notificationSlise';
+import { WS_EVENTS } from './constants';
 import {
   gameDataType,
   moveDataType,
@@ -52,40 +53,32 @@ export const exceptionHandler = (dispatch: any) => {
 };
 
 export const regInQueue = (data: any, cb: Function) => {
-  socket.emit('/queue/search', data);
+  socket.emit(WS_EVENTS.QUEUE.SEARCH , data);
   cb();
 };
 
 export const getGame = (cb: Function) => {
-  socket.on('/game:get', (payload: gameDataType) => {
+  socket.on(WS_EVENTS.GAME.GET_GAME, (payload: gameDataType) => {
     cb(payload);
   });
 };
 
 export const getUsers = (cb: Function) => {
-  socket.on('/queue:get', (payload: usersQueueType[]) => {
+  socket.on(WS_EVENTS.QUEUE.GET_QUEUE, (payload: usersQueueType[]) => {
     cb(payload);
   });
 };
 
 export const leaveQueue = () => {
-  socket.emit('/queue/leave');
+  socket.emit(WS_EVENTS.QUEUE.LEAVE);
 };
 
 export const move = (data: moveDataType) => {
-  socket.emit('/game/move:post', data);
-};
-
-export const getBoard = (cb: Function) => {
-  socket.on('/game/move:get', (payload: gameDataType) => {
-    cb(payload);
-  });
+  socket.emit(WS_EVENTS.GAME.MOVE, data);
 };
 
 export const checkEndGame = (cb: Function) => {
-  socket.on('/game/end', (payload) => {
-    console.log(payload);
-    
+  socket.on(WS_EVENTS.GAME.END, (payload) => {
     cb(payload);
   });
 };
@@ -95,21 +88,21 @@ export const checkSocketConnection = () => {
 };
 
 export const leaveGame = () => {
-  socket.emit('/game/leave');
+  socket.emit(WS_EVENTS.GAME.LEAVE);
 };
 
 export const offerDraw = (isDrawing: boolean) => {
-  socket.emit('/game/draw', isDrawing);
+  socket.emit(WS_EVENTS.GAME.DRAW, isDrawing);
 };
 
 export const getOfferDraw = (cb: Function) => {
-  socket.on('/game/draw', () => {
+  socket.on(WS_EVENTS.GAME.DRAW, () => {
     cb();
   });
 };
 
 export const checkOpponentDisconnect = (cb: Function) => {
-  socket.on('/game/opponent/disconnect', (isDisconnect) => {
+  socket.on(WS_EVENTS.GAME.DISCONNECT_OPPONENT, (isDisconnect) => {
     cb(isDisconnect);
   });
 };

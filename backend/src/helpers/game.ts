@@ -98,13 +98,6 @@ export const alertBoard = (logger, board, room) => {
   logger.log(`    a b c d e f g h`);
 };
 
-// export const findRoomBySocket = (client: Socket, gamesStates): string => {
-//   for (const game of gamesStates.values()) {
-//     if (game.white.socket === client.id || game.black.socket === client.id)
-//       return game.id;
-//   }
-// };
-
 export const findRoomBySocketId = (socketId: string, gamesStates): string => {
   for (const game of gamesStates.values()) {
     if (game.white.socket === socketId || game.black.socket === socketId)

@@ -8,6 +8,7 @@ import { BoardService } from './board.service';
 import { ServerGateway } from '../server/server.gateway';
 import { Game } from 'src/models/game.model';
 import { SchedulerRegistry } from '@nestjs/schedule';
+import { WS_EVENTS } from '../constants';
 
 export class GameService {
   private logger = new Logger(GameService.name);
@@ -71,11 +72,11 @@ export class GameService {
 
     this.serverGateway.server
       .in(game.white.socket)
-      .emit('/game:get', whiteData);
+      .emit(WS_EVENTS.GAME.GET_GAME, whiteData);
 
     this.serverGateway.server
       .in(game.black.socket)
-      .emit('/game:get', blackData);
+      .emit(WS_EVENTS.GAME.GET_GAME, blackData);
 
     alertBoard(this.logger, game.board, game.id);
     alertBoard(this.logger, whiteBoard, 'white board');
@@ -96,16 +97,18 @@ export class GameService {
 
       console.log(endData);
 
-      this.serverGateway.server.in(game[clientColor].socket).emit('/game/end', {
-        title: 'You win!',
-        message: "You have eaten the opponent's king piece.",
-        color: clientColor,
-        ...endData,
-      });
+      this.serverGateway.server
+        .in(game[clientColor].socket)
+        .emit(WS_EVENTS.GAME.END, {
+          title: 'You win!',
+          message: "You have eaten the opponent's king piece.",
+          color: clientColor,
+          ...endData,
+        });
 
       this.serverGateway.server
         .in(game[opponentsColor].socket)
-        .emit('/game/end', {
+        .emit(WS_EVENTS.GAME.END, {
           title: 'You lost!',
           message: 'The opponent has eaten your king piece.',
           color: opponentsColor,
@@ -118,7 +121,6 @@ export class GameService {
     const roomId = findRoomBySocketId(client.id, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
-    const [clientColor, opponentsColor] = game.getColorsBySocket(client.id);
 
     this.validationService.validationMove(client, game, move);
 
@@ -126,31 +128,6 @@ export class GameService {
     game.move(client, move);
 
     this.sendGame(client.id);
-
-    if (game.winner) {
-      this.logger.debug(game.winner);
-
-      const data = {
-        gameEnd: game.gameEnd,
-        board: game.board,
-        ways: [],
-        log: game.log,
-      };
-
-      this.serverGateway.server.in(game[clientColor].socket).emit('/game/end', {
-        title: 'You win!',
-        message: "You have eaten the opponent's king piece.",
-        ...data,
-      });
-
-      this.serverGateway.server
-        .in(game[opponentsColor].socket)
-        .emit('/game/end', {
-          title: 'You lost!',
-          message: 'The opponent has eaten your king piece.',
-          ...data,
-        });
-    }
   };
 
   draw = (client: Socket, isDrawing: boolean) => {
@@ -169,7 +146,7 @@ export class GameService {
       game.gameEnd = new Date();
       game.winner = 'draw';
 
-      this.serverGateway.server.in(roomId).emit('/game/end', {
+      this.serverGateway.server.in(roomId).emit(WS_EVENTS.GAME.END, {
         title: 'Draw!',
         message: 'You agreed to a draw',
         gameEnd: game.gameEnd,
@@ -181,7 +158,7 @@ export class GameService {
     } else if (isDrawing) {
       this.serverGateway.server
         .in(game[opponentsColor].socket)
-        .emit('/game/draw');
+        .emit(WS_EVENTS.GAME.DRAW);
     }
   };
 
@@ -197,7 +174,7 @@ export class GameService {
     game[clientColor].socket = client.id;
     this.serverGateway.server
       .in(game[opponentColor].socket)
-      .emit('/game/opponent/disconnect', false);
+      .emit(WS_EVENTS.GAME.DISCONNECT_OPPONENT, false);
   }
 
   reconnect(client: ISocket) {
@@ -221,23 +198,25 @@ export class GameService {
 
       this.serverGateway.server
         .in(game[winnerColor].socket)
-        .emit('/game/opponent/disconnect', false);
+        .emit(WS_EVENTS.GAME.DISCONNECT_OPPONENT, false);
 
-      this.serverGateway.server.in(game[winnerColor].socket).emit('/game/end', {
-        title: 'You win!',
-        message,
-        gameEnd: game.gameEnd,
-        board: game.board,
-        ways: [],
-        moveQueue: null,
-      });
+      this.serverGateway.server
+        .in(game[winnerColor].socket)
+        .emit(WS_EVENTS.GAME.END, {
+          title: 'You win!',
+          message,
+          gameEnd: game.gameEnd,
+          board: game.board,
+          ways: [],
+          moveQueue: null,
+        });
     };
 
     const timeout = setTimeout(callback, 15000);
     this.schedulerRegistry.addTimeout(client.user.id, timeout);
     this.serverGateway.server
       .in(game[winnerColor].socket)
-      .emit('/game/opponent/disconnect', true);
+      .emit(WS_EVENTS.GAME.DISCONNECT_OPPONENT, true);
   };
 
   private getGame(userId: string): Game {
