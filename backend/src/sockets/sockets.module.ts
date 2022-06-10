@@ -9,9 +9,14 @@ import { GameService } from './game/game.service';
 import { InitService } from './init/init.service';
 import { QueueService } from './queue/queue.service';
 import { ValidationService } from './game/validation.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Party, PartySchema } from 'src/schemas/game.schema';
 
 @Module({
-  imports: [UserModule],
+  imports: [
+    UserModule,
+    MongooseModule.forFeature([{ name: Party.name, schema: PartySchema }]),
+  ],
   providers: [
     InitGateway,
     InitService,

@@ -9,11 +9,17 @@ import { ServerGateway } from '../server/server.gateway';
 import { Game } from 'src/models/game.model';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { WS_EVENTS } from '../constants';
+import { Party, PartyDocument } from 'src/schemas/game.schema';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 export class GameService {
   private logger = new Logger(GameService.name);
   private gamesStates = new Map<string, Game>();
   private schedulerRegistry = new SchedulerRegistry();
+
+  @InjectModel(Party.name)
+  private partySchema: Model<PartyDocument>;
 
   @Inject(ServerGateway)
   private serverGateway: ServerGateway;
@@ -32,6 +38,8 @@ export class GameService {
     this.serverGateway.server
       .in([game.white.socket, game.black.socket])
       .socketsJoin(game.id);
+
+    this.partySchema.create({ ...game });
 
     this.sendGame(game.white.socket);
   }
