@@ -9,7 +9,7 @@ import {
   checkSchemeAttack,
   checkVerticalAndHorizontalMove,
 } from '../../helpers/validation';
-import { ServerGateway } from '../server.gateway';
+import { ServerGateway } from '../server/server.gateway';
 
 export class ValidationService {
   private logger = new Logger();

@@ -43,7 +43,7 @@ export const Game = () => {
     });
 
     return () => {
-      leaveGame();
+      // leaveGame();
       navigate(path.auth());
       window.onbeforeunload = null;
     };

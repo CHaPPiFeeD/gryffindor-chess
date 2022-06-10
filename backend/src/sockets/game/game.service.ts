@@ -1,16 +1,23 @@
 import { Inject, Logger } from '@nestjs/common';
-import { alertBoard, findRoomBySocketId } from '../../helpers/game';
-import { MoveType, QueueUserType } from '../../types';
+import {
+  alertBoard,
+  findRoomBySocketId,
+  findRoomByUserId,
+} from '../../helpers/game';
+import { ISocket, MoveType, QueueUserType } from '../../types';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
 import { COLORS } from 'src/enums/constants';
 import { BoardService } from './board.service';
-import { ServerGateway } from '../server.gateway';
+import { ServerGateway } from '../server/server.gateway';
 import { Game } from 'src/models/game.model';
+import { Timeout, SchedulerRegistry } from '@nestjs/schedule';
+import { randomString } from 'src/helpers';
 
 export class GameService {
   private logger = new Logger(GameService.name);
   private gamesStates = new Map<string, Game>();
+  private schedulerRegistry = new SchedulerRegistry();
 
   @Inject(ServerGateway)
   private serverGateway: ServerGateway;
@@ -183,41 +190,73 @@ export class GameService {
     }
   };
 
-  disconnect = (client: Socket, message: string) => {
-    const roomId = findRoomBySocketId(client.id, this.gamesStates);
+  connect(client: ISocket) {
+    const roomId = this.findRoomByUserId(client.user.id);
     if (!roomId) return;
-    const gameRoom = this.gamesStates.get(roomId);
+    const game = this.gamesStates.get(roomId);
+    const [clientColor] = game.getColorsByUserId(client.user.id);
 
-    const [leaving, winner] = gameRoom.getColorsBySocket(client.id);
+    const timeout = this.schedulerRegistry.getTimeout(client.user.id);
+    clearTimeout(timeout);
+    this.schedulerRegistry.deleteTimeout(client.user.id);
 
-    gameRoom[leaving].socket = null;
+    game[clientColor].socket = client.id;
+  }
 
-    if (gameRoom.white.socket === null && gameRoom.black.socket === null)
-      this.gamesStates.delete(roomId);
+  reconnect(client: ISocket) {
+    const roomId = this.findRoomByUserId(client.user.id);
+    if (!roomId) return;
+    const game = this.gamesStates.get(roomId);
+    if (!game.winner) this.sendGame(client.id);
+  }
 
-    if (gameRoom.winner) return;
+  disconnect = (client: ISocket, message: string) => {
+    const roomId = this.findRoomByUserId(client.user.id);
+    if (!roomId) return;
+    const game = this.gamesStates.get(roomId);
+    const [leavingColor, winnerColor] = game.getColorsByUserId(client.user.id);
 
-    gameRoom.winner = winner;
-    gameRoom.gameEnd = new Date();
+    game[leavingColor].socket = null;
 
-    this.serverGateway.server.in(client.id).emit('/game/end', {
-      title: 'You lost!',
-      message: 'You surrendered!',
-      gameEnd: gameRoom.gameEnd,
-      board: gameRoom.board,
-      ways: [],
-      moveQueue: null,
-    });
+    const callback = () => {
+      // if (game.white.socket === null && game.black.socket === null)
+      //   this.gamesStates.delete(roomId);
 
-    this.serverGateway.server.in(gameRoom[winner].socket).emit('/game/end', {
-      title: 'You win!',
-      message,
-      gameEnd: gameRoom.gameEnd,
-      board: gameRoom.board,
-      ways: [],
-      moveQueue: null,
-    });
+      if (game.winner) return;
 
-    this.logger.debug(gameRoom.winner);
+      game.winner = winnerColor;
+      game.gameEnd = new Date();
+
+      // this.serverGateway.server.in(client.id).emit('/game/end', {
+      //   title: 'You lost!',
+      //   message: 'You surrendered!',
+      //   gameEnd: game.gameEnd,
+      //   board: game.board,
+      //   ways: [],
+      //   moveQueue: null,
+      // });
+
+      this.serverGateway.server.in(game[winnerColor].socket).emit('/game/end', {
+        title: 'You win!',
+        message,
+        gameEnd: game.gameEnd,
+        board: game.board,
+        ways: [],
+        moveQueue: null,
+      });
+
+      const timeout = this.schedulerRegistry.getTimeout(client.user.id);
+      clearTimeout(timeout);
+    };
+
+    const timeout = setTimeout(callback, 10000);
+    this.schedulerRegistry.addTimeout(client.user.id, timeout);
   };
+
+  private findRoomByUserId(userId: string): string {
+    for (const game of this.gamesStates.values()) {
+      if (game.white.userId === userId || game.black.userId === userId)
+        return game.id;
+    }
+  }
 }

@@ -21,7 +21,10 @@ export const FindGame = () => {
   useEffect(() => {
     joinSocket();
     exceptionHandler(dispatch);
-
+    getGame((payload: gameDataType) => {
+      dispatch(setGame(payload));
+      navigate(path.game());
+    });
   }, []);
 
   return (

@@ -1,8 +1,8 @@
 import { Inject, Logger } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { MoveType } from '../types';
-import { GameService } from './services/game.service';
+import { ISocket, MoveType } from '../../types';
+import { GameService } from './game.service';
 
 @WebSocketGateway({ cors: true })
 export class GameGateway {
@@ -17,7 +17,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage('/game:get')
-  getGame(client: Socket) {
+  getGame(client: ISocket) {
     this.gameService.sendGame(client.id);
   }
 
@@ -27,7 +27,12 @@ export class GameGateway {
   }
 
   @SubscribeMessage('/game/leave')
-  surrender(client: Socket) {
+  surrender(client: ISocket) {
     this.gameService.disconnect(client, 'Your opponent has surrendered.');
+  }
+
+  @SubscribeMessage('/game/reconnect')
+  reconnect(client: ISocket) {
+    this.gameService.reconnect(client);
   }
 }

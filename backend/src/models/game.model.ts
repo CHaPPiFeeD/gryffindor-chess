@@ -100,6 +100,11 @@ export class Game {
     if (clientId === this.black.socket) return [COLORS.BLACK, COLORS.WHITE];
   }
 
+  getColorsByUserId(userId: string): string[] {
+    if (userId === this.white.userId) return [COLORS.WHITE, COLORS.BLACK];
+    if (userId === this.black.userId) return [COLORS.BLACK, COLORS.WHITE];
+  }
+
   getFigureFromStart(move: MoveType): string {
     return this.board[move.start[0]][move.start[1]];
   }

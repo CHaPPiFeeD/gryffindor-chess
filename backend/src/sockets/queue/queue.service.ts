@@ -6,11 +6,11 @@ import {
   getUserByColor,
   checkUserInQueue,
 } from '../../helpers/queue';
-import { GameService } from './game.service';
-import { ServerGateway } from '../server.gateway';
+import { GameService } from '../game/game.service';
+import { ServerGateway } from '../server/server.gateway';
 import { WsException } from '@nestjs/websockets';
 import { ISocket, QueueUserType } from 'src/types';
-import { UserService } from 'src/services/user.service';
+import { UserService } from 'src/modules/user/user.service';
 
 export class QueueService {
   private logger = new Logger(QueueService.name);
