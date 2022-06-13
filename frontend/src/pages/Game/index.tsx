@@ -16,6 +16,7 @@ import { setEndTime, setGame, setMessage } from '../../store/game/gameSlise';
 import { setOpen, setClose } from '../../store/modal/modalSlise';
 import { Board } from './Board';
 import { InfoSidebar } from './InfoSidebar/indes';
+import { RatingBar } from './RatingBar';
 import styles from './styles.module.scss';
 
 
@@ -61,6 +62,7 @@ export const Game = () => {
 
   return (
     <Box className={styles.wrapper}>
+      <RatingBar />
       <Board />
       <InfoSidebar />
     </Box>
