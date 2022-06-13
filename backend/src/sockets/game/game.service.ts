@@ -50,8 +50,6 @@ export class GameService {
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
       this.boardService.createFogBoards(game);
 
-    console.log([whiteLog, blackLog]);
-
     const data: any = {
       players: {
         white: game.white.name,
@@ -102,8 +100,6 @@ export class GameService {
         moveQueue: game.moveQueue,
         eatFigures: game.eatenFigures,
       };
-
-      console.log(endData);
 
       this.serverGateway.server
         .in(game[clientColor].socket)

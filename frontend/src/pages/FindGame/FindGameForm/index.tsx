@@ -24,16 +24,9 @@ export const FindGameForm = () => {
   });
 
   const onSubmit = (values: initialValuesType) => {
-    regInQueue(values, () => {
-      getGame((payload: gameDataType) => {
-        dispatch(setGame(payload));
-        navigate(path.game());
-      });
-      
-      getUsers((queue: usersQueueType[]) => {
-        dispatch(setQueue(queue));
-        navigate(path.waiting());
-      });
+    regInQueue(values, (isFind: boolean) => {
+      if (isFind) navigate(path.game());
+      if (!isFind) navigate(path.waiting());
     });
   };
 

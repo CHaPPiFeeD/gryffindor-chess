@@ -24,4 +24,10 @@ export class QueueGateway {
   leave(client: Socket) {
     this.queueService.disconnect(client);
   }
+
+  @UseGuards(WsAuthGuard)
+  @SubscribeMessage(WS_EVENTS.QUEUE.GET_QUEUE)
+  getQueue(client: ISocket) {
+    this.queueService.sendQueue(client);
+  }
 }

@@ -32,8 +32,6 @@ export class QueueService {
     if (checkUserInQueue(this.queue, user.id))
       throw new WsException('You are already in line');
 
-    // this.serverGateway.server.emit('/queue/search');
-
     const playerOne: QueueUserType = {
       userId: user.id,
       socket: client.id,
@@ -46,15 +44,33 @@ export class QueueService {
 
     if (!playerTwo) {
       this.queue.push(playerOne);
-      this.serverGateway.server.emit(WS_EVENTS.QUEUE.GET_QUEUE, this.queue);
+      this.serverGateway.server.in(playerOne.socket).socketsJoin('queue');
+
+      this.serverGateway.server
+        .in('queue')
+        .emit(WS_EVENTS.QUEUE.GET_QUEUE, this.queue);
+
+      return false;
     } else {
       const index: number = this.queue.findIndex(
         (player) => player.socket === playerTwo.socket,
       );
 
       if (index >= 0) this.queue.splice(index, 1);
+
+      this.serverGateway.server
+        .in([playerOne.socket, playerTwo.socket])
+        .socketsLeave('queue');
+
       this.gameService.startGame(playerOne, playerTwo);
+      return true;
     }
+  }
+
+  sendQueue(client: ISocket) {
+    this.serverGateway.server
+      .in(client.id)
+      .emit(WS_EVENTS.QUEUE.GET_QUEUE, this.queue);
   }
 
   disconnect = (socket: Socket) => {
@@ -66,6 +82,8 @@ export class QueueService {
       if (value.socket === socket.id) this.queue.splice(index, 1);
     });
 
-    this.serverGateway.server.emit(WS_EVENTS.QUEUE.GET_QUEUE, this.queue);
+    this.serverGateway.server
+      .in('queue')
+      .emit(WS_EVENTS.QUEUE.GET_QUEUE, this.queue);
   };
 }

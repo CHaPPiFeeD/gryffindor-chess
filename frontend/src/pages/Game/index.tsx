@@ -41,7 +41,6 @@ export const Game = () => {
     };
 
     checkEndGame((data: any) => {
-      console.log('end game');
       dispatch(setMessage(data));
       dispatch(setEndTime(data));
       dispatch(setOpen('endGame'));

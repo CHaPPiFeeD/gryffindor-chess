@@ -53,8 +53,9 @@ export const exceptionHandler = (dispatch: any) => {
 };
 
 export const regInQueue = (data: any, cb: Function) => {
-  socket.emit(WS_EVENTS.QUEUE.SEARCH , data);
-  cb();
+  socket.emit(WS_EVENTS.QUEUE.SEARCH , data, (isFind: boolean) => {
+    cb(isFind);
+  });
 };
 
 export const getGame = (cb: Function) => {
@@ -65,6 +66,8 @@ export const getGame = (cb: Function) => {
 };
 
 export const getUsers = (cb: Function) => {
+  socket.emit(WS_EVENTS.QUEUE.GET_QUEUE);
+
   socket.on(WS_EVENTS.QUEUE.GET_QUEUE, (payload: usersQueueType[]) => {
     cb(payload);
   });
