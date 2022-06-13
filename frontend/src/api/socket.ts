@@ -34,14 +34,15 @@ export const joinSocket = () => {
 
   socket.on('disconnect', () => {
     console.log('disconnect');
+    window.location.href = '/';
   });
 
   socket.on('error', (data) => {
     console.log('error:', data);
-    if (data === 'Unauthorized') {
-      window.location.href = '/';
-    }
-    socket.disconnect();
+    // if (data === 'Unauthorized') {
+    //   window.location.href = '/';
+    // }
+    // socket.disconnect();
   });
 };
 

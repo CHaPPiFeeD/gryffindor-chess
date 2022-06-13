@@ -17,9 +17,9 @@ export class InitService {
   @Inject(UserService)
   private userService: UserService;
 
-  handleConnect(client: ISocket) {
+  async handleConnect(client: ISocket) {
     if (!client.handshake.auth.token) {
-      client.emit('error', 'Unauthorized');
+      // client.emit('error', 'Unauthorized');
       client.disconnect();
       return;
     }
@@ -30,14 +30,24 @@ export class InitService {
     );
 
     if (!decoded) {
-      client.emit('error', 'Unauthorized');
+      // client.emit('error', 'Unauthorized');
       client.disconnect();
       return;
     }
 
-    client.user = { id: decoded['id'] };
-    this.userService.setOnline({ _id: decoded['id'] }, true);
-    this.gameService.connect(client);
+    const user = await this.userService.findOne({ _id: decoded['id'] });
+
+    console.log(user);
+
+    if (!user) {
+      // client.emit('error', 'Unauthorized');
+      client.disconnect();
+      return;
+    }
+
+    client.user = decoded;
+    await this.userService.setOnline({ _id: decoded['id'] }, true);
+    await this.gameService.connect(client);
 
     this.logger.log(`User connection: ${client.id}`);
     return client.id;

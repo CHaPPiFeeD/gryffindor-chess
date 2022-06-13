@@ -143,10 +143,6 @@ const checkTransformPawn = (
   const figure = boardStore[startRow][startCol];
   const pawn = color === 'white' ? 'P' : 'p';
   const endRow = color === 'white' ? 0 : 7;
-  console.log(row);
-  console.log(endRow);
-  console.log(figure === pawn);
-  console.log(row === endRow);
   return figure === pawn && row === endRow;
 };
 
