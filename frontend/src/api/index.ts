@@ -11,6 +11,10 @@ const API = {
     return doHttpCall('POST', endpoints.registration(), data, {});
   },
 
+  async getRate() {
+    return doHttpCall('GET', endpoints.rate(), {}, {});
+  },
+
 };
 
 export default API;
@@ -36,8 +40,10 @@ async function doHttpCall(
 
     let result;
 
-    if (method === 'POST') {
-      result = await axios.post(url, payload, { headers, params });
+    if (method === 'GET') {
+      result = await axios.get(url, { headers, params });
+    } else if (method === 'POST') {
+      result = await axios.post(url, { ...payload }, { headers, params });
     }
 
     if (result?.data?.status) {

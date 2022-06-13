@@ -1,32 +1,16 @@
 import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import API from '../../../api';
 import styles from './styles.module.scss';
 
 export const RatingBar = () => {
-  const [stateRaiting, setStateRaitin] = useState([
-    { name: 'Chapka', parties: 65, partiesWon: 5 },
-    { name: 'Ill', parties: 78, partiesWon: 9 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-    { name: 'Dmitry', parties: 84, partiesWon: 8 },
-  ]);
+  const [stateRaiting, setStateRaiting] = useState<any>([]);
+
+  useEffect(() => {
+    API.getRate()
+      .then((payload) => setStateRaiting(payload));
+  }, []);
 
   return (
     <Box className={styles.content}>
@@ -44,7 +28,7 @@ export const RatingBar = () => {
       </Box>
 
       <Box className={styles.rate_list}>
-        {stateRaiting.map((user, i) => {
+        {stateRaiting?.map((user: any, i: number) => {
           const rate = (user.partiesWon / user.parties * 100).toFixed(1);
 
           return (

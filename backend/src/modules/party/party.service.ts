@@ -26,4 +26,9 @@ export class PartyService {
 
     this.partySchema.create({ ...game });
   }
+
+  getRate() {
+    console.log(this.partySchema.aggregate([{ $sort: { parties: 1 } }]));
+    return this.partySchema.aggregate([{ $sort: { parties: 1 } }]);
+  }
 }
