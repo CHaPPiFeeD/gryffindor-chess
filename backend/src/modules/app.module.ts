@@ -7,7 +7,7 @@ import { SocketsModule } from '../sockets/sockets.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { Party, PartySchema } from 'src/schemas/party.schema';
+import { PartyModule } from './party/party.module';
 
 @Module({
   imports: [
@@ -22,6 +22,7 @@ import { Party, PartySchema } from 'src/schemas/party.schema';
     SocketsModule,
     AuthModule,
     UserModule,
+    PartyModule,
   ],
   controllers: [],
   providers: [],

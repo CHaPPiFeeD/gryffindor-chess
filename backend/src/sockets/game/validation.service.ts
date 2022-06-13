@@ -235,7 +235,7 @@ export class ValidationService {
     const [clientColor] = game.getColorsBySocket(client.id);
 
     if (endFigure === FIGURES.BLACK_KING || endFigure === FIGURES.WHITE_KING) {
-      game.winner = clientColor;
+      game.winner = game[clientColor].userId;
       game.gameEnd = new Date();
     }
   };

@@ -11,10 +11,12 @@ import { QueueService } from './queue/queue.service';
 import { ValidationService } from './game/validation.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Party, PartySchema } from 'src/schemas/party.schema';
+import { PartyModule } from 'src/modules/party/party.module';
 
 @Module({
   imports: [
     UserModule,
+    PartyModule,
     MongooseModule.forFeature([{ name: Party.name, schema: PartySchema }]),
   ],
   providers: [

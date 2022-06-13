@@ -1,5 +1,5 @@
 import { Inject, Logger } from '@nestjs/common';
-import { alertBoard, findRoomBySocketId } from '../../helpers/game';
+import { findRoomBySocketId } from '../../helpers/game';
 import { ISocket, MoveType, QueueUserType } from '../../types';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
@@ -10,16 +10,17 @@ import { Game } from 'src/models/game.model';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { WS_EVENTS } from '../constants';
 import { Party, PartyDocument } from 'src/schemas/party.schema';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { PartyService } from 'src/modules/party/party.service';
 
 export class GameService {
   private logger = new Logger(GameService.name);
   private gamesStates = new Map<string, Game>();
   private schedulerRegistry = new SchedulerRegistry();
 
-  @InjectModel(Party.name)
-  private partySchema: Model<PartyDocument>;
+  // @InjectModel(Party.name)
+  // private partySchema: Model<PartyDocument>;
 
   @Inject(ServerGateway)
   private serverGateway: ServerGateway;
@@ -29,6 +30,9 @@ export class GameService {
 
   @Inject(BoardService)
   private boardService: BoardService;
+
+  @Inject(PartyService)
+  private partyService: PartyService;
 
   startGame(playerOne: QueueUserType, playerTwo: QueueUserType) {
     const game = new Game(playerOne, playerTwo);
@@ -119,7 +123,7 @@ export class GameService {
           ...endData,
         });
 
-      this.partySchema.create({ ...game });
+      this.partyService.create(game);
       this.serverGateway.server
         .in([game.white.socket, game.black.socket])
         .socketsLeave(game.id);
@@ -153,7 +157,6 @@ export class GameService {
 
     if (game[clientColor].offersDraw && game[opponentsColor].offersDraw) {
       game.gameEnd = new Date();
-      game.winner = 'draw';
 
       this.serverGateway.server.in(roomId).emit(WS_EVENTS.GAME.END, {
         title: 'Draw!',
@@ -202,7 +205,7 @@ export class GameService {
     const callback = () => {
       if (game.winner) return;
 
-      game.winner = winnerColor;
+      game.winner = game[winnerColor].userId;
       game.gameEnd = new Date();
 
       this.serverGateway.server
@@ -224,7 +227,7 @@ export class GameService {
       clearTimeout(timeout);
       this.schedulerRegistry.deleteTimeout(client.user.id);
 
-      this.partySchema.create({ ...game });
+      this.partyService.create(game);
       this.serverGateway.server
         .in([game.white.socket, game.black.socket])
         .socketsLeave(game.id);
@@ -248,7 +251,7 @@ export class GameService {
 
     if (game.winner) return;
 
-    game.winner = winnerColor;
+    game.winner = game[winnerColor].userId;
     game.gameEnd = new Date();
 
     this.serverGateway.server
@@ -275,14 +278,14 @@ export class GameService {
 
     game[surrenderColor].socket = null;
     game[winnerColor].socket = null;
-    console.log(game.log);
-    this.partySchema.create({ ...game });
+
+    this.partyService.create(game);
     this.serverGateway.server
       .in([game.white.socket, game.black.socket])
       .socketsLeave(game.id);
   }
 
-  private getGame(userId: string): Game {
+  private getGame(userId: ObjectId): Game {
     let roomId;
 
     for (const game of this.gamesStates.values()) {

@@ -11,6 +11,7 @@ import {
 } from 'src/enums/constants';
 import { randomString } from 'src/helpers';
 import { setPlayerColors } from 'src/helpers/game';
+import { ObjectId } from 'mongoose';
 
 export class Game {
   id: string;
@@ -22,7 +23,7 @@ export class Game {
     black: string[];
   };
   moveQueue: string;
-  winner: string | null;
+  winner: ObjectId | null;
   gameStart: Date;
   gameEnd?: Date;
   log: string[];
@@ -98,7 +99,7 @@ export class Game {
     if (clientId === this.black.socket) return [COLORS.BLACK, COLORS.WHITE];
   }
 
-  getColorsByUserId(userId: string): string[] {
+  getColorsByUserId(userId: ObjectId): string[] {
     if (userId === this.white.userId) return [COLORS.WHITE, COLORS.BLACK];
     if (userId === this.black.userId) return [COLORS.BLACK, COLORS.WHITE];
   }
