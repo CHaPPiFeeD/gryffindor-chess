@@ -34,7 +34,7 @@ export class GameGateway {
   @UseGuards(WsAuthGuard)
   @SubscribeMessage(WS_EVENTS.GAME.LEAVE)
   surrender(client: ISocket) {
-    this.gameService.disconnect(client, 'Your opponent has surrendered.');
+    this.gameService.surrennder(client);
   }
 
   @UseGuards(WsAuthGuard)

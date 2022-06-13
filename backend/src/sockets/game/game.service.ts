@@ -9,7 +9,7 @@ import { ServerGateway } from '../server/server.gateway';
 import { Game } from 'src/models/game.model';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { WS_EVENTS } from '../constants';
-import { Party, PartyDocument } from 'src/schemas/game.schema';
+import { Party, PartyDocument } from 'src/schemas/party.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -39,8 +39,6 @@ export class GameService {
       .in([game.white.socket, game.black.socket])
       .socketsJoin(game.id);
 
-    this.partySchema.create({ ...game });
-
     this.sendGame(game.white.socket);
   }
 
@@ -51,6 +49,8 @@ export class GameService {
     const [whiteLog, blackLog] = game.getLogsForPlayers();
     const { whiteBoard, blackBoard, whiteWays, blackWays } =
       this.boardService.createFogBoards(game);
+
+    console.log([whiteLog, blackLog]);
 
     const data: any = {
       players: {
@@ -86,9 +86,9 @@ export class GameService {
       .in(game.black.socket)
       .emit(WS_EVENTS.GAME.GET_GAME, blackData);
 
-    alertBoard(this.logger, game.board, game.id);
-    alertBoard(this.logger, whiteBoard, 'white board');
-    alertBoard(this.logger, blackBoard, 'black board');
+    // alertBoard(this.logger, game.board, game.id);
+    // alertBoard(this.logger, whiteBoard, 'white board');
+    // alertBoard(this.logger, blackBoard, 'black board');
 
     if (game.winner) {
       const [clientColor, opponentsColor] = game.getColorsBySocket(socketId);
@@ -122,6 +122,11 @@ export class GameService {
           color: opponentsColor,
           ...endData,
         });
+
+      this.partySchema.create({ ...game });
+      this.serverGateway.server
+        .in([game.white.socket, game.black.socket])
+        .socketsLeave(game.id);
     }
   }
 
@@ -194,8 +199,8 @@ export class GameService {
   disconnect = (client: ISocket, message: string) => {
     const game = this.getGame(client.user.id);
     if (!game) return;
-    const [leavingColor, winnerColor] = game.getColorsByUserId(client.user.id);
 
+    const [leavingColor, winnerColor] = game.getColorsByUserId(client.user.id);
     game[leavingColor].socket = null;
 
     const callback = () => {
@@ -218,14 +223,68 @@ export class GameService {
           ways: [],
           moveQueue: null,
         });
+
+      const timeout = this.schedulerRegistry.getTimeout(client.user.id);
+      clearTimeout(timeout);
+      this.schedulerRegistry.deleteTimeout(client.user.id);
+
+      this.partySchema.create({ ...game });
+      this.serverGateway.server
+        .in([game.white.socket, game.black.socket])
+        .socketsLeave(game.id);
     };
 
     const timeout = setTimeout(callback, 15000);
     this.schedulerRegistry.addTimeout(client.user.id, timeout);
+
     this.serverGateway.server
       .in(game[winnerColor].socket)
       .emit(WS_EVENTS.GAME.DISCONNECT_OPPONENT, true);
   };
+
+  surrennder(client: ISocket) {
+    const game = this.getGame(client.user.id);
+    if (!game) return;
+
+    const [surrenderColor, winnerColor] = game.getColorsByUserId(
+      client.user.id,
+    );
+
+    if (game.winner) return;
+
+    game.winner = winnerColor;
+    game.gameEnd = new Date();
+
+    this.serverGateway.server
+      .in(game[winnerColor].socket)
+      .emit(WS_EVENTS.GAME.END, {
+        title: 'You win!',
+        message: 'Your opponent has surrendered!',
+        gameEnd: game.gameEnd,
+        board: game.board,
+        ways: [],
+        moveQueue: null,
+      });
+
+    this.serverGateway.server
+      .in(game[surrenderColor].socket)
+      .emit(WS_EVENTS.GAME.END, {
+        title: 'You lost!',
+        message: 'You surrendered!',
+        gameEnd: game.gameEnd,
+        board: game.board,
+        ways: [],
+        moveQueue: null,
+      });
+
+    game[surrenderColor].socket = null;
+    game[winnerColor].socket = null;
+    console.log(game.log);
+    this.partySchema.create({ ...game });
+    this.serverGateway.server
+      .in([game.white.socket, game.black.socket])
+      .socketsLeave(game.id);
+  }
 
   private getGame(userId: string): Game {
     let roomId;

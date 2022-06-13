@@ -27,6 +27,7 @@ export const Game = () => {
     checkSocketConnection();
     exceptionHandler(dispatch);
     checkOpponentDisconnect((isDisconnect: boolean) => {
+      console.log('disconnect opponent');
       if (isDisconnect) {
         dispatch(setOpen(MODAL.WAITING_FOR_OPPONENT));
       } else {
@@ -40,6 +41,7 @@ export const Game = () => {
     };
 
     checkEndGame((data: any) => {
+      console.log('end game');
       dispatch(setMessage(data));
       dispatch(setEndTime(data));
       dispatch(setOpen('endGame'));

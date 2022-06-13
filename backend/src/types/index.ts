@@ -33,11 +33,6 @@ export type MoveType = {
   };
 };
 
-export type LogType = {
-  color: string;
-  log: string;
-};
-
 export type MovePropsType = {
   client: Socket;
   move: MoveType;

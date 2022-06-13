@@ -59,6 +59,7 @@ export const regInQueue = (data: any, cb: Function) => {
 
 export const getGame = (cb: Function) => {
   socket.on(WS_EVENTS.GAME.GET_GAME, (payload: gameDataType) => {
+    console.log(payload);
     cb(payload);
   });
 };

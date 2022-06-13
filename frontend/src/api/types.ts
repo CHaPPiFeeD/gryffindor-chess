@@ -22,7 +22,7 @@ export type gameDataType = {
   ways: string[],
   moveQueue: 'white' | 'black' | null,
   gameEnd?: Date | null,
-  log?: logType,
+  log?: string[],
   eatFigures: {
     white: string[],
     black: string[],

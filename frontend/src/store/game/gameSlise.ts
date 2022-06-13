@@ -24,7 +24,7 @@ export type gameType = {
     message: string;
   }
   queue: usersQueueType[] | null;
-  log: any;
+  log: string[];
   eatFigures: {
     white: string[],
     black: string[],
@@ -70,7 +70,7 @@ export const gameSlice = createSlice({
       state.moveQueue = action.payload.moveQueue;
       state.gameStartTime = action.payload.gameStart || state.gameStartTime;
       state.gameEndTime = action.payload.gameEnd || initialState.gameEndTime;
-      state.log = initialState.log;
+      state.log = action.payload.log || initialState.log;
       state.eatFigures = initialState.eatFigures;
       state.lastMove = action.payload.lastMove || state.lastMove;
     },

@@ -10,7 +10,7 @@ import { InitService } from './init/init.service';
 import { QueueService } from './queue/queue.service';
 import { ValidationService } from './game/validation.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Party, PartySchema } from 'src/schemas/game.schema';
+import { Party, PartySchema } from 'src/schemas/party.schema';
 
 @Module({
   imports: [
