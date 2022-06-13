@@ -14,6 +14,7 @@ import { Figure } from '../../../../components';
 import styles from './styles.module.scss';
 import { setOpen } from '../../../../store/modal/modalSlise';
 import { BLACK_FIGURES, WHITE_FIGURES } from '../../../../constants';
+import { MODAL } from '../../../../constants/modal';
 
 
 export const RenderBoard = () => {
@@ -65,7 +66,7 @@ export const RenderBoard = () => {
 
     if (isTransformPawn) {
       dispatch(setEndPosition([row, col]));
-      dispatch(setOpen('changeFigure'));
+      dispatch(setOpen(MODAL.CHANGE_PAWN));
     }
 
     if (!isTransformPawn) {
@@ -141,7 +142,12 @@ const checkTransformPawn = (
   const [startRow, startCol] = activePos;
   const figure = boardStore[startRow][startCol];
   const pawn = color === 'white' ? 'P' : 'p';
-  return figure === pawn && (row === 0 || row === 7);
+  const endRow = color === 'white' ? 0 : 7;
+  console.log(row);
+  console.log(endRow);
+  console.log(figure === pawn);
+  console.log(row === endRow);
+  return figure === pawn && row === endRow;
 };
 
 const getCoordinate = (row: number, col: number, color: string): number[] => {

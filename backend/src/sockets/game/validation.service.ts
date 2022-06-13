@@ -67,7 +67,7 @@ export class ValidationService {
   }
 
   private basicСheck(client: Socket, game: Game, move: MoveType) {
-    if (game.winner)
+    if (game.gameEnd)
       throw new WsException("You can't move after the game is over");
 
     if (

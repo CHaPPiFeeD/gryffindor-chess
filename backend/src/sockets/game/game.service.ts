@@ -9,9 +9,7 @@ import { ServerGateway } from '../server/server.gateway';
 import { Game } from 'src/models/game.model';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { WS_EVENTS } from '../constants';
-import { Party, PartyDocument } from 'src/schemas/party.schema';
-import { Model, ObjectId } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
+import { ObjectId } from 'mongoose';
 import { PartyService } from 'src/modules/party/party.service';
 
 export class GameService {
@@ -92,7 +90,7 @@ export class GameService {
     // alertBoard(this.logger, whiteBoard, 'white board');
     // alertBoard(this.logger, blackBoard, 'black board');
 
-    if (game.winner) {
+    if (game.gameEnd) {
       const [clientColor, opponentsColor] = game.getColorsBySocket(socketId);
 
       const endData = {
@@ -127,6 +125,7 @@ export class GameService {
       this.serverGateway.server
         .in([game.white.socket, game.black.socket])
         .socketsLeave(game.id);
+      this.gamesStates.delete(game.id);
     }
   }
 
@@ -167,6 +166,11 @@ export class GameService {
         moveQueue: null,
         log: game.log,
       });
+      this.partyService.create(game);
+      this.serverGateway.server
+        .in([game.white.socket, game.black.socket])
+        .socketsLeave(game.id);
+      this.gamesStates.delete(game.id);
     } else if (isDrawing) {
       this.serverGateway.server
         .in(game[opponentsColor].socket)
@@ -192,7 +196,7 @@ export class GameService {
   reconnect(client: ISocket) {
     const game = this.getGame(client.user.id);
     if (!game) return;
-    if (!game.winner) this.sendGame(client.id);
+    if (!game.gameEnd) this.sendGame(client.id);
   }
 
   disconnect = (client: ISocket, message: string) => {
@@ -200,45 +204,49 @@ export class GameService {
     if (!game) return;
 
     const [leavingColor, winnerColor] = game.getColorsByUserId(client.user.id);
-    game[leavingColor].socket = null;
 
-    const callback = () => {
-      if (game.winner) return;
+    if (!game.gameEnd && (game.white.socket || game.black.socket)) {
+      game[leavingColor].socket = null;
 
-      game.winner = game[winnerColor].userId;
-      game.gameEnd = new Date();
+      const callback = () => {
+        if (game.gameEnd) return;
+
+        game.winner = game[winnerColor].userId;
+        game.gameEnd = new Date();
+
+        this.serverGateway.server
+          .in(game[winnerColor].socket)
+          .emit(WS_EVENTS.GAME.DISCONNECT_OPPONENT, false);
+
+        this.serverGateway.server
+          .in(game[winnerColor].socket)
+          .emit(WS_EVENTS.GAME.END, {
+            title: 'You win!',
+            message,
+            gameEnd: game.gameEnd,
+            board: game.board,
+            ways: [],
+            moveQueue: null,
+          });
+
+        const timeout = this.schedulerRegistry.getTimeout(client.user.id);
+        clearTimeout(timeout);
+        this.schedulerRegistry.deleteTimeout(client.user.id);
+
+        this.partyService.create(game);
+        this.serverGateway.server
+          .in([game.white.socket, game.black.socket])
+          .socketsLeave(game.id);
+        this.gamesStates.delete(game.id);
+      };
+
+      const timeout = setTimeout(callback, 15000);
+      this.schedulerRegistry.addTimeout(client.user.id, timeout);
 
       this.serverGateway.server
         .in(game[winnerColor].socket)
-        .emit(WS_EVENTS.GAME.DISCONNECT_OPPONENT, false);
-
-      this.serverGateway.server
-        .in(game[winnerColor].socket)
-        .emit(WS_EVENTS.GAME.END, {
-          title: 'You win!',
-          message,
-          gameEnd: game.gameEnd,
-          board: game.board,
-          ways: [],
-          moveQueue: null,
-        });
-
-      const timeout = this.schedulerRegistry.getTimeout(client.user.id);
-      clearTimeout(timeout);
-      this.schedulerRegistry.deleteTimeout(client.user.id);
-
-      this.partyService.create(game);
-      this.serverGateway.server
-        .in([game.white.socket, game.black.socket])
-        .socketsLeave(game.id);
-    };
-
-    const timeout = setTimeout(callback, 15000);
-    this.schedulerRegistry.addTimeout(client.user.id, timeout);
-
-    this.serverGateway.server
-      .in(game[winnerColor].socket)
-      .emit(WS_EVENTS.GAME.DISCONNECT_OPPONENT, true);
+        .emit(WS_EVENTS.GAME.DISCONNECT_OPPONENT, true);
+    }
   };
 
   surrennder(client: ISocket) {
@@ -249,7 +257,7 @@ export class GameService {
       client.user.id,
     );
 
-    if (game.winner) return;
+    if (game.gameEnd) return;
 
     game.winner = game[winnerColor].userId;
     game.gameEnd = new Date();
@@ -283,6 +291,7 @@ export class GameService {
     this.serverGateway.server
       .in([game.white.socket, game.black.socket])
       .socketsLeave(game.id);
+    this.gamesStates.delete(game.id);
   }
 
   private getGame(userId: ObjectId): Game {
