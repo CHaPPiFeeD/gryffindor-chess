@@ -36,10 +36,4 @@ export class GameGateway {
   surrender(client: ISocket) {
     this.gameService.surrennder(client);
   }
-
-  @UseGuards(WsAuthGuard)
-  @SubscribeMessage(WS_EVENTS.GAME.RECONNECT)
-  reconnect(client: ISocket) {
-    this.gameService.reconnect(client);
-  }
 }

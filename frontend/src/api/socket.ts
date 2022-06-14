@@ -20,7 +20,6 @@ export const joinSocket = () => {
 
   socket.on('connect', () => {
     console.log('connect:', socket.id);
-    socket.emit('/game/reconnect');
   });
 
   socket.on('disconnect', () => {

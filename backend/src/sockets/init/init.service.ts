@@ -47,8 +47,9 @@ export class InitService {
     await this.userService.setOnline({ _id: decoded['id'] }, true);
     await this.gameService.connect(client);
 
+    this.gameService.reconnect(client);
+
     this.logger.log(`User connection: ${client.id}`);
-    return client.id;
   }
 
   handleDisconnect(client: ISocket) {
