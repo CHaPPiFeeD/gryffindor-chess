@@ -111,8 +111,6 @@ export const findRoomByUserId = (
   gamesStates: Map<string, Game>,
 ): string => {
   for (const game of gamesStates.values()) {
-    console.log(game);
-    console.log(userId);
     if (game.white.userId === userId || game.black.userId === userId)
       return game.id;
   }

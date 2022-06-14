@@ -37,8 +37,6 @@ export class InitService {
 
     const user = await this.userService.findOne({ _id: decoded['id'] });
 
-    console.log(user);
-
     if (!user) {
       client.emit('error', 'Unauthorized');
       client.disconnect();
@@ -61,10 +59,7 @@ export class InitService {
     if (!decoded) return;
 
     client.user = decoded;
-
-    console.log(decoded);
     this.userService.setOnline({ _id: decoded['id'] }, false);
-
     this.queueService.disconnect(client);
 
     this.gameService.disconnect(

@@ -16,8 +16,9 @@ export const FindGame = () => {
   useEffect(() => {
     joinSocket();
     exceptionHandler(dispatch);
-    
+
     getGame((payload: GameDataType) => {
+      console.log(payload);
       dispatch(setGame(payload));
       navigate(path.game());
     });

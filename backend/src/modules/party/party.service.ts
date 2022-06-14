@@ -28,8 +28,6 @@ export class PartyService {
   }
 
   async getRate() {
-    console.log('rate');
-    console.log(await this.partySchema.find().sort({ parties: 1 }).limit(10));
     return await this.partySchema.find().sort({ parties: 1 }).limit(10);
   }
 }

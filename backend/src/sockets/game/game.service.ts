@@ -3,7 +3,6 @@ import { findRoomBySocketId } from '../../helpers/game';
 import { ISocket, MoveType, QueueUserType } from '../../types';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
-import { COLORS } from 'src/enums/constants';
 import { BoardService } from './board.service';
 import { ServerGateway } from '../server/server.gateway';
 import { Game } from 'src/models/game.model';
@@ -16,9 +15,6 @@ export class GameService {
   private logger = new Logger(GameService.name);
   private gamesStates = new Map<string, Game>();
   private schedulerRegistry = new SchedulerRegistry();
-
-  // @InjectModel(Party.name)
-  // private partySchema: Model<PartyDocument>;
 
   @Inject(ServerGateway)
   private serverGateway: ServerGateway;
@@ -48,60 +44,23 @@ export class GameService {
     const roomId = findRoomBySocketId(socketId, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
-    const [whiteLog, blackLog] = game.getLogsForPlayers();
-    const { whiteBoard, blackBoard, whiteWays, blackWays } =
-      this.boardService.createFogBoards(game);
-
-    const data: any = {
-      players: {
-        white: game.white.name,
-        black: game.black.name,
-      },
-      gameStart: game.gameStart,
-      moveQueue: game.moveQueue,
-      eatFigures: game.eatenFigures,
-    };
-
-    const whiteData = {
-      ...data,
-      color: COLORS.WHITE,
-      board: whiteBoard,
-      ways: game.moveQueue === COLORS.WHITE ? whiteWays : [],
-      log: whiteLog,
-    };
-
-    const blackData = {
-      ...data,
-      color: COLORS.BLACK,
-      board: blackBoard,
-      ways: game.moveQueue === COLORS.BLACK ? blackWays : [],
-      log: blackLog,
-    };
+    const boardsAndWays = this.boardService.createFogBoards(game);
+    const data = game.getDataForPlayers(boardsAndWays);
 
     this.serverGateway.server
       .in(game.white.socket)
-      .emit(WS_EVENTS.GAME.GET_GAME, whiteData);
+      .emit(WS_EVENTS.GAME.GET_GAME, data.white);
 
     this.serverGateway.server
       .in(game.black.socket)
-      .emit(WS_EVENTS.GAME.GET_GAME, blackData);
+      .emit(WS_EVENTS.GAME.GET_GAME, data.black);
 
     // alertBoard(this.logger, game.board, game.id);
-    // alertBoard(this.logger, whiteBoard, 'white board');
-    // alertBoard(this.logger, blackBoard, 'black board');
+    // alertBoard(this.logger, data.white.board, 'white board');
+    // alertBoard(this.logger, data.black.board, 'black board');
 
     if (game.gameEnd) {
       const [clientColor, opponentsColor] = game.getColorsBySocket(socketId);
-
-      const endData = {
-        ...data,
-        gameEnd: game.gameEnd,
-        board: game.board,
-        ways: [],
-        log: game.log,
-        moveQueue: game.moveQueue,
-        eatFigures: game.eatenFigures,
-      };
 
       this.serverGateway.server
         .in(game[clientColor].socket)
@@ -109,7 +68,7 @@ export class GameService {
           title: 'You win!',
           message: "You have eaten the opponent's king piece.",
           color: clientColor,
-          ...endData,
+          ...data.end,
         });
 
       this.serverGateway.server
@@ -118,7 +77,7 @@ export class GameService {
           title: 'You lost!',
           message: 'The opponent has eaten your king piece.',
           color: opponentsColor,
-          ...endData,
+          ...data.end,
         });
 
       this.partyService.create(game);
@@ -146,10 +105,10 @@ export class GameService {
     const roomId = findRoomBySocketId(client.id, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
+
     const [clientColor, opponentsColor] = game.getColorsBySocket(client.id);
 
     if (game[clientColor].offersDraw && game[opponentsColor].offersDraw) return;
-
     if (!isDrawing) game[opponentsColor].offersDraw = false;
 
     game[clientColor].offersDraw = isDrawing;
@@ -166,10 +125,12 @@ export class GameService {
         moveQueue: null,
         log: game.log,
       });
-      this.partyService.create(game);
+
       this.serverGateway.server
         .in([game.white.socket, game.black.socket])
         .socketsLeave(game.id);
+
+      this.partyService.create(game);
       this.gamesStates.delete(game.id);
     } else if (isDrawing) {
       this.serverGateway.server
@@ -181,6 +142,7 @@ export class GameService {
   connect(client: ISocket) {
     const game = this.getGame(client.user.id);
     if (!game) return;
+
     const [clientColor, opponentColor] = game.getColorsByUserId(client.user.id);
 
     const timeout = this.schedulerRegistry.getTimeout(client.user.id);
@@ -188,6 +150,7 @@ export class GameService {
     this.schedulerRegistry.deleteTimeout(client.user.id);
 
     game[clientColor].socket = client.id;
+
     this.serverGateway.server
       .in(game[opponentColor].socket)
       .emit(WS_EVENTS.GAME.DISCONNECT_OPPONENT, false);
@@ -233,14 +196,15 @@ export class GameService {
         clearTimeout(timeout);
         this.schedulerRegistry.deleteTimeout(client.user.id);
 
-        this.partyService.create(game);
         this.serverGateway.server
           .in([game.white.socket, game.black.socket])
           .socketsLeave(game.id);
+
+        this.partyService.create(game);
         this.gamesStates.delete(game.id);
       };
 
-      const timeout = setTimeout(callback, 15000);
+      const timeout = setTimeout(callback, 30000);
       this.schedulerRegistry.addTimeout(client.user.id, timeout);
 
       this.serverGateway.server
@@ -287,10 +251,11 @@ export class GameService {
     game[surrenderColor].socket = null;
     game[winnerColor].socket = null;
 
-    this.partyService.create(game);
     this.serverGateway.server
       .in([game.white.socket, game.black.socket])
       .socketsLeave(game.id);
+
+    this.partyService.create(game);
     this.gamesStates.delete(game.id);
   }
 

@@ -22,6 +22,7 @@ export const Game = () => {
   useEffect(() => {
     checkSocketConnection();
     exceptionHandler(dispatch);
+
     checkOpponentDisconnect((isDisconnect: boolean) => {
       if (isDisconnect) {
         dispatch(setOpen(MODAL.WAITING_FOR_OPPONENT));

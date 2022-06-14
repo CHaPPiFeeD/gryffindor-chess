@@ -116,4 +116,46 @@ export class Game {
     this.white.rules.interception = [];
     this.black.rules.interception = [];
   }
+
+  getDataForPlayers({ whiteBoard, blackBoard, whiteWays, blackWays }) {
+    const [whiteLog, blackLog] = this.getLogsForPlayers();
+
+    const data: any = {
+      players: {
+        white: this.white.name,
+        black: this.black.name,
+      },
+      gameStart: this.gameStart,
+      moveQueue: this.moveQueue,
+      eatFigures: this.eatenFigures,
+    };
+
+    const white = {
+      ...data,
+      color: COLORS.WHITE,
+      board: whiteBoard,
+      ways: this.moveQueue === COLORS.WHITE ? whiteWays : [],
+      log: whiteLog,
+    };
+
+    const black = {
+      ...data,
+      color: COLORS.BLACK,
+      board: blackBoard,
+      ways: this.moveQueue === COLORS.BLACK ? blackWays : [],
+      log: blackLog,
+    };
+
+    const end = {
+      ...data,
+      gameEnd: this.gameEnd,
+      board: this.board,
+      ways: [],
+      log: this.log,
+      moveQueue: this.moveQueue,
+      eatFigures: this.eatenFigures,
+    };
+
+    return { white, black, end };
+  }
 }

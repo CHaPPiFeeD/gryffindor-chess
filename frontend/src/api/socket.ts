@@ -1,4 +1,4 @@
-import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { showNotification } from '../store/notification/notificationSlise';
 import { WS_EVENTS } from './constants';
 import { GameDataType, MoveDatatype, UsersQueueType } from './types';
@@ -8,18 +8,14 @@ let socket: Socket;
 export const joinSocket = () => {
   if (socket?.connected) return;
 
-  const params: Partial<ManagerOptions & SocketOptions> = {
-    extraHeaders: {
-      closeOnBeforeunload: 'false',
-    },
-    auth: {
-      token: localStorage.getItem('access_token'),
-    },
-  };
-
   socket = io(
     `${process.env.REACT_APP_API_KEY}`,
-    { ...params },
+    {
+      closeOnBeforeunload: false,
+      auth: {
+        token: localStorage.getItem('access_token'),
+      },
+    },
   );
 
   socket.on('connect', () => {
@@ -58,8 +54,9 @@ export const regInQueue = (data: any, cb: Function) => {
 };
 
 export const getGame = (cb: Function) => {
+  socket.emit(WS_EVENTS.GAME.GET_GAME);
+
   socket.on(WS_EVENTS.GAME.GET_GAME, (payload: GameDataType) => {
-    console.log(payload);
     cb(payload);
   });
 };
