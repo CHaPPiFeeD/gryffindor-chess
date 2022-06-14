@@ -13,7 +13,7 @@ export class PartyService {
   @Inject(UserService)
   private userService: UserService;
 
-  create(game: Game) {
+  async create(game: Game) {
     if (game.winner === game.white.userId) {
       this.userService.updateParties(game.white.userId, true);
       this.userService.updateParties(game.black.userId, false);
@@ -24,11 +24,12 @@ export class PartyService {
       this.userService.updateParties(game.black.userId, true);
     }
 
-    this.partySchema.create({ ...game });
+    await this.partySchema.create({ ...game });
   }
 
-  getRate() {
-    console.log(this.partySchema.aggregate([{ $sort: { parties: 1 } }]));
-    return this.partySchema.aggregate([{ $sort: { parties: 1 } }]);
+  async getRate() {
+    console.log('rate');
+    console.log(await this.partySchema.find().sort({ parties: 1 }).limit(10));
+    return await this.partySchema.find().sort({ parties: 1 }).limit(10);
   }
 }

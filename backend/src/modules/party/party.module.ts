@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Party, PartySchema } from 'src/schemas/party.schema';
+import { Party, PartySchema } from '../../schemas/party.schema';
 import { UserModule } from '../user/user.module';
-import { PartyController } from './party.controller';
 import { PartyService } from './party.service';
 
 @Module({
@@ -10,7 +9,7 @@ import { PartyService } from './party.service';
     MongooseModule.forFeature([{ name: Party.name, schema: PartySchema }]),
     UserModule,
   ],
-  providers: [PartyController, PartyService],
+  providers: [PartyService],
   exports: [PartyService],
 })
 export class PartyModule {}
