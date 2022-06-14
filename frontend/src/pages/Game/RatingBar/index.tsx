@@ -10,7 +10,6 @@ export const RatingBar = () => {
   useEffect(() => {
     API.getRate()
       .then((payload) => {
-        console.log(payload.data);
         setStateRaiting(payload.data);
       });
   }, []);
@@ -32,10 +31,8 @@ export const RatingBar = () => {
 
       <Box className={styles.rate_list}>
         {stateRaiting?.map((user: any, i: number) => {
-          const rate = (user.partiesWon / user.parties * 100).toFixed(1);
-
           return (
-            <Box key={i + 1} className={styles.rate_item}>
+            <Box key={i} className={styles.rate_item}>
               <Typography className={styles.name}>
                 {user.username}
               </Typography>
@@ -48,7 +45,7 @@ export const RatingBar = () => {
                   {user.partiesWon}
                 </Box>
                 <Box className={styles.parameter}>
-                  {`${rate}%`}
+                  {`${user.winRate}%`}
                 </Box>
               </Box>
             </Box>

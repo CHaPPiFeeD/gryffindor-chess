@@ -18,6 +18,7 @@ export const WaitingForOpponentModal = () => {
       onClose={handleClose}
     >
       <Box className={styles.modal} >
+        
         <Typography component='h5' variant='h5' className={styles.title} >
         The opponent has disconnected. 
         </Typography>

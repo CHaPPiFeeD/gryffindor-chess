@@ -1,51 +1,43 @@
 import { Box, Typography } from '@mui/material';
-import { Pawn } from '../../../components/Figure/figures/Pawn';
-import { useAppSelector } from '../../../hooks/redux';
+import { useState } from 'react';
+import { getUsers } from '../../../api/socket';
+import { UsersQueueType } from '../../../api/types';
 import styles from './styles.module.scss';
-
+import { useAppDispatch } from '../../../hooks/redux';
+import { CheckPawn } from './CheckPawn';
 
 export const QueueList = () => {
-  const queue = useAppSelector(store => store.game.queue);
+  const dispatch = useAppDispatch();
+  const [stateQueue, setStateQueue] = useState<UsersQueueType[]>([]);
 
-  if (!queue) return null;
+  getUsers((queue: UsersQueueType[]) => {
+    dispatch(setStateQueue(queue));
+  });
+
+  if (!stateQueue) return null;
 
   return (
     <Box className={styles.list}>
 
-      {queue?.map((value, index) => {
+      {stateQueue?.map((value, index) => {
 
         return (
           <Box key={index} className={styles.item}>
+
             <Typography className={styles.name}>
               {value.name}
             </Typography>
+
             <Box className={styles.figure_box}>
+              {value.color.map((v: string, i: number) => {
 
-              {value.color.map((v) => {
+                return (<CheckPawn key={i} color={v} />);
 
-                if (v === 'white') return (
-                  <Box
-                    className={styles.figure}
-                    key='0'
-                  >
-                    <Pawn fill='white' />
-                  </Box>
-                );
-                if (v === 'black') return (
-                  <Box
-                    className={styles.figure}
-                    key='1'
-                  >
-                    <Pawn fill='#333333' />
-                  </Box>
-                );
               })}
-
             </Box>
           </Box>
         );
       })}
-
     </Box>
   );
 };

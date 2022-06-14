@@ -9,12 +9,12 @@ export const DrawModal = () => {
   const dispatch = useAppDispatch();
   const open = useAppSelector(state => state.modals.draw);
 
-  const handleYes = () => {
+  const clickYes = () => {
     dispatch(setClose(MODAL.DRAW));
     offerDraw(true);
   };
 
-  const handleNo = () => {
+  const clickNo = () => {
     dispatch(setClose('draw'));
     offerDraw(false);
   };
@@ -29,7 +29,7 @@ export const DrawModal = () => {
 
         <Box className={styles.button_box}>
           <Button
-            onClick={handleYes}
+            onClick={clickYes}
             variant='contained'
             className={styles.button}
           >
@@ -37,7 +37,7 @@ export const DrawModal = () => {
           </Button>
 
           <Button
-            onClick={handleNo}
+            onClick={clickNo}
             variant='contained'
             className={styles.button}
           >

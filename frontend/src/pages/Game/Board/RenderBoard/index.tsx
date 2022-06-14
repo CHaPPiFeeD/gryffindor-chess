@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { getGame } from '../../../../api/socket';
-import { gameDataType } from '../../../../api/types';
+import { GameDataType } from '../../../../api/types';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { RootState } from '../../../../store';
 import {
@@ -30,7 +30,7 @@ export const RenderBoard = () => {
   } = useSelector((state: RootState) => state.game);
 
   useEffect(() => {
-    getGame((data: gameDataType) => dispatch(setGame(data)));
+    getGame((data: GameDataType) => dispatch(setGame(data)));
   }, []);
 
   const handleClick = (e: any) => {

@@ -19,7 +19,7 @@ export class InitService {
 
   async handleConnect(client: ISocket) {
     if (!client.handshake.auth.token) {
-      // client.emit('error', 'Unauthorized');
+      client.emit('error', 'Unauthorized');
       client.disconnect();
       return;
     }
@@ -30,7 +30,7 @@ export class InitService {
     );
 
     if (!decoded) {
-      // client.emit('error', 'Unauthorized');
+      client.emit('error', 'Unauthorized');
       client.disconnect();
       return;
     }
@@ -40,7 +40,7 @@ export class InitService {
     console.log(user);
 
     if (!user) {
-      // client.emit('error', 'Unauthorized');
+      client.emit('error', 'Unauthorized');
       client.disconnect();
       return;
     }

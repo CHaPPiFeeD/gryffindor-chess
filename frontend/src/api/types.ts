@@ -1,17 +1,4 @@
-// export type gameDataType = {
-//   board: string[][],
-//   ways: string[],
-//   moveQueue: 'white' | 'black' | null,
-//   gameEnd?: Date | null,
-//   log?: logType,
-//   eatFigures: {
-//     white: string[],
-//     black: string[],
-//   },
-//   lastMove: number[][],
-// };
-
-export type gameDataType = {
+export type GameDataType = {
   players: {
     white: string,
     black: string,
@@ -28,25 +15,22 @@ export type gameDataType = {
     black: string[],
   },
   lastMove?: number[][],
+  title: string,
+  message: string,
 }
 
-type logType = {
-  color: string,
-  log: string,
-}
-
-export type changeFigureDataType = {
+export type ChangeFigureDataType = {
   isChange: boolean,
   chooseFigure: null | string,
 }
 
-export type moveDataType = {
+export type MoveDatatype = {
   start: [number, number],
   end: [number, number],
-  change: changeFigureDataType,
+  change: ChangeFigureDataType,
 }
 
-export type usersQueueType = {
+export type UsersQueueType = {
   socket: string;
   name: string;
   color: string[];

@@ -14,7 +14,6 @@ export class InitGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @Inject(InitService)
   initService: InitService;
 
-  // @UseGuards(WsAuthGuard)
   handleConnection(client: ISocket) {
     return this.initService.handleConnect(client);
   }

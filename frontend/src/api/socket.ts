@@ -1,11 +1,7 @@
 import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client';
 import { showNotification } from '../store/notification/notificationSlise';
 import { WS_EVENTS } from './constants';
-import {
-  gameDataType,
-  moveDataType,
-  usersQueueType,
-} from './types';
+import { GameDataType, MoveDatatype, UsersQueueType } from './types';
 
 let socket: Socket;
 
@@ -28,7 +24,6 @@ export const joinSocket = () => {
 
   socket.on('connect', () => {
     console.log('connect:', socket.id);
-
     socket.emit('/game/reconnect');
   });
 
@@ -39,10 +34,13 @@ export const joinSocket = () => {
 
   socket.on('error', (data) => {
     console.log('error:', data);
-    // if (data === 'Unauthorized') {
-    //   window.location.href = '/';
-    // }
-    // socket.disconnect();
+
+    if (data === 'Unauthorized') {
+      localStorage.clear();
+      window.location.href = '/';
+    }
+
+    socket.disconnect();
   });
 };
 
@@ -54,13 +52,13 @@ export const exceptionHandler = (dispatch: any) => {
 };
 
 export const regInQueue = (data: any, cb: Function) => {
-  socket.emit(WS_EVENTS.QUEUE.SEARCH , data, (isFind: boolean) => {
+  socket.emit(WS_EVENTS.QUEUE.SEARCH, data, (isFind: boolean) => {
     cb(isFind);
   });
 };
 
 export const getGame = (cb: Function) => {
-  socket.on(WS_EVENTS.GAME.GET_GAME, (payload: gameDataType) => {
+  socket.on(WS_EVENTS.GAME.GET_GAME, (payload: GameDataType) => {
     console.log(payload);
     cb(payload);
   });
@@ -69,7 +67,7 @@ export const getGame = (cb: Function) => {
 export const getUsers = (cb: Function) => {
   socket.emit(WS_EVENTS.QUEUE.GET_QUEUE);
 
-  socket.on(WS_EVENTS.QUEUE.GET_QUEUE, (payload: usersQueueType[]) => {
+  socket.on(WS_EVENTS.QUEUE.GET_QUEUE, (payload: UsersQueueType[]) => {
     cb(payload);
   });
 };
@@ -78,7 +76,7 @@ export const leaveQueue = () => {
   socket.emit(WS_EVENTS.QUEUE.LEAVE);
 };
 
-export const move = (data: moveDataType) => {
+export const move = (data: MoveDatatype) => {
   socket.emit(WS_EVENTS.GAME.MOVE, data);
 };
 

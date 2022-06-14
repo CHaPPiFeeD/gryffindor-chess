@@ -19,14 +19,17 @@ export const EndGameModal = () => {
       onClose={handleClose}
     >
       <Box className={styles.modal} >
+
         <Typography variant='h6' component='h1'>
           The game is over! {endGameMessage.title}
         </Typography>
+
         <Typography>
           {endGameMessage.message}
         </Typography>
 
         <Box>
+
           <Button
             onClick={handleClose}
             variant='contained'
@@ -34,6 +37,7 @@ export const EndGameModal = () => {
           >
             OK
           </Button>
+          
         </Box>
 
       </Box>

@@ -2,16 +2,11 @@ import { Button, LinearProgress, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  getUsers,
-  checkSocketConnection,
-  getGame,
-  leaveQueue,
-} from '../../api/socket';
-import { gameDataType, usersQueueType } from '../../api/types';
+import { checkSocketConnection, getGame, leaveQueue } from '../../api/socket';
+import { GameDataType } from '../../api/types';
 import { useAppDispatch } from '../../hooks/redux';
 import { path } from '../../router/constants';
-import { setGame, setQueue } from '../../store/game/gameSlise';
+import { setGame } from '../../store/game/gameSlise';
 import { QueueList } from './QueueList';
 import styles from './styles.module.scss';
 
@@ -22,13 +17,9 @@ export const Waiting = () => {
   useEffect(() => {
     checkSocketConnection();
 
-    getGame((payload: gameDataType) => {
+    getGame((payload: GameDataType) => {
       dispatch(setGame(payload));
       navigate(path.game());
-    });
-    
-    getUsers((queue: usersQueueType[]) => {
-      dispatch(setQueue(queue));
     });
 
     return () => leaveQueue();
