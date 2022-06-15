@@ -68,6 +68,10 @@ export const getUsers = (cb: Function) => {
   });
 };
 
+export const removeEventListener = (listener: any) => {
+  socket.removeListener(listener);
+};
+
 export const leaveQueue = () => {
   socket.emit(WS_EVENTS.QUEUE.LEAVE);
 };

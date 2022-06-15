@@ -1,18 +1,27 @@
 import { Box, Typography } from '@mui/material';
-import { useState } from 'react';
-import { getUsers } from '../../../api/socket';
+import { useEffect, useState } from 'react';
+import { getUsers, removeEventListener } from '../../../api/socket';
 import { UsersQueueType } from '../../../api/types';
 import styles from './styles.module.scss';
 import { useAppDispatch } from '../../../hooks/redux';
 import { CheckPawn } from './CheckPawn';
+import { WS_EVENTS } from '../../../api/constants';
 
 export const QueueList = () => {
   const dispatch = useAppDispatch();
   const [stateQueue, setStateQueue] = useState<UsersQueueType[]>([]);
 
-  getUsers((queue: UsersQueueType[]) => {
-    dispatch(setStateQueue(queue));
-  });
+  useEffect(() => {
+    getUsers((queue: UsersQueueType[]) => {
+      dispatch(setStateQueue(queue));
+    });
+
+    return () => {
+      removeEventListener(WS_EVENTS.QUEUE.GET_QUEUE);
+    };
+  }, []);
+
+
 
   if (!stateQueue) return null;
 
