@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PartyModule } from './party/party.module';
+import { RatingModule } from './rating/rating.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PartyModule } from './party/party.module';
     AuthModule,
     UserModule,
     PartyModule,
+    RatingModule,
   ],
   controllers: [],
   providers: [],
