@@ -110,10 +110,6 @@ export class PartyService {
 
     return [whiteRating, blackRating];
   }
-
-  async getRate() {
-    return await this.partySchema.find().sort({ parties: 1 }).limit(10);
-  }
 }
 
 type NewDataType = {

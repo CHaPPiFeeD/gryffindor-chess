@@ -45,7 +45,7 @@ export const RatingBar = () => {
                   {user.partiesWon}
                 </Box>
                 <Box className={styles.parameter}>
-                  {`${user.winRate}%`}
+                  {`${user.rating} elo`}
                 </Box>
               </Box>
             </Box>

@@ -41,8 +41,8 @@ export class UserService {
 
   async getRate() {
     return await this.userSchema
-      .find({ parties: { $gte: 10 } })
-      .sort({ winRate: -1 })
+      .find({ parties: { $gte: 1 } })
+      .sort({ rating: -1 })
       .limit(10);
   }
 }
