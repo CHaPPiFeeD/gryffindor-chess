@@ -16,8 +16,8 @@ describe('Rating module', () => {
     const userA = { rating: 1500, point: 0.5, parties: 30 };
     const userB = { rating: 1500, point: 0.5, parties: 30 };
     expect(ratingService.getNewRating(userA, userB)).toEqual({
-      rangA: 1500,
-      rangB: 1500,
+      whiteRating: 1500,
+      blackRating: 1500,
     });
   });
 
@@ -25,8 +25,8 @@ describe('Rating module', () => {
     const userA = { rating: 1500, point: 1, parties: 30 };
     const userB = { rating: 1500, point: 0, parties: 30 };
     expect(ratingService.getNewRating(userA, userB)).toEqual({
-      rangA: 1510,
-      rangB: 1490,
+      whiteRating: 1510,
+      blackRating: 1490,
     });
   });
 
@@ -34,8 +34,8 @@ describe('Rating module', () => {
     const userA = { rating: 1500, point: 0, parties: 30 };
     const userB = { rating: 1500, point: 1, parties: 30 };
     expect(ratingService.getNewRating(userA, userB)).toEqual({
-      rangA: 1490,
-      rangB: 1510,
+      whiteRating: 1490,
+      blackRating: 1510,
     });
   });
 
@@ -43,8 +43,8 @@ describe('Rating module', () => {
     const userA = { rating: 1500, point: 0.5, parties: 30 };
     const userB = { rating: 1600, point: 0.5, parties: 30 };
     expect(ratingService.getNewRating(userA, userB)).toEqual({
-      rangA: 1503,
-      rangB: 1597,
+      whiteRating: 1503,
+      blackRating: 1597,
     });
   });
 
@@ -52,8 +52,8 @@ describe('Rating module', () => {
     const userA = { rating: 1500, point: 1, parties: 30 };
     const userB = { rating: 1600, point: 0, parties: 30 };
     expect(ratingService.getNewRating(userA, userB)).toEqual({
-      rangA: 1513,
-      rangB: 1587,
+      whiteRating: 1513,
+      blackRating: 1587,
     });
   });
 
@@ -61,8 +61,8 @@ describe('Rating module', () => {
     const userA = { rating: 1500, point: 0, parties: 30 };
     const userB = { rating: 1600, point: 1, parties: 30 };
     expect(ratingService.getNewRating(userA, userB)).toEqual({
-      rangA: 1493,
-      rangB: 1607,
+      whiteRating: 1493,
+      blackRating: 1607,
     });
   });
 
@@ -70,8 +70,8 @@ describe('Rating module', () => {
     const userA = { rating: 2300, point: 0, parties: 30 };
     const userB = { rating: 2500, point: 1, parties: 0 };
     expect(ratingService.getNewRating(userA, userB)).toEqual({
-      rangA: 2295,
-      rangB: 2505,
+      whiteRating: 2295,
+      blackRating: 2505,
     });
   });
 
@@ -79,8 +79,8 @@ describe('Rating module', () => {
     const userA = { rating: 1500, point: 0, parties: 30 };
     const userB = { rating: 1500, point: 1, parties: 0 };
     expect(ratingService.getNewRating(userA, userB)).toEqual({
-      rangA: 1490,
-      rangB: 1520,
+      whiteRating: 1490,
+      blackRating: 1520,
     });
   });
 
@@ -88,8 +88,8 @@ describe('Rating module', () => {
     const userA = { rating: 2399, point: 0, parties: 30 };
     const userB = { rating: 2400, point: 1, parties: 30 };
     expect(ratingService.getNewRating(userA, userB)).toEqual({
-      rangA: 2389,
-      rangB: 2405,
+      whiteRating: 2389,
+      blackRating: 2405,
     });
   });
 

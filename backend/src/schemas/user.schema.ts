@@ -23,7 +23,7 @@ export class User {
   partiesWon: number;
 
   @Prop()
-  winRate: number;
+  rating: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

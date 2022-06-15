@@ -26,7 +26,7 @@ export class AuthService {
       online: false,
       parties: 0,
       partiesWon: 0,
-      winRate: 0,
+      rating: 1500,
     });
 
     return this.login(email, password);
