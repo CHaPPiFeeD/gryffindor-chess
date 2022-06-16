@@ -11,7 +11,7 @@ export class UserService {
   private userSchema: Model<UserDocument>;
 
   async findOne(params) {
-    return await this.userSchema.findOne({ ...params });
+    return this.userSchema.findOne({ ...params });
   }
 
   async createUser(params) {
@@ -26,8 +26,8 @@ export class UserService {
     await this.userSchema.updateOne({ ...filter }, { ...params });
   }
 
-  async getRate() {
-    return await this.userSchema
+  async getUsersRating() {
+    return this.userSchema
       .find({ parties: { $gte: 1 } })
       .sort({ rating: -1 })
       .limit(10);

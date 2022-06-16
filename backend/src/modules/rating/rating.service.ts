@@ -4,8 +4,8 @@ import { ObjectId } from 'mongoose';
 @Injectable()
 export class RatingService {
   getNewRating(
-    whiteUser: User,
-    blackUser: User,
+    whiteUser: UserType,
+    blackUser: UserType,
   ): { whiteRating: number; blackRating: number } {
     const isWrongCoordinate = !(
       (whiteUser.point === 1 && blackUser.point === 0) ||
@@ -61,7 +61,7 @@ export class RatingService {
   }
 }
 
-type User = {
+type UserType = {
   userId?: ObjectId;
   rating: number;
   point: number;

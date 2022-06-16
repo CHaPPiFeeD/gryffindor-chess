@@ -1,11 +1,15 @@
 import { RatingService } from './rating.service';
 import { Test } from '@nestjs/testing';
+import { RatingController } from './rating.controller';
+import { UserModule } from '../user/user.module';
 
 describe('Rating module', () => {
   let ratingService: RatingService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
+      // imports: [UserModule],
+      controllers: [RatingController],
       providers: [RatingService],
     }).compile();
 
