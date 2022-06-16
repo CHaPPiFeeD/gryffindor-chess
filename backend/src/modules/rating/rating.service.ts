@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { ObjectId } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, ObjectId } from 'mongoose';
+import { User, UserDocument } from '../../schemas/user.schema';
 
 @Injectable()
 export class RatingService {
+  @InjectModel(User.name)
+  private userSchema: Model<UserDocument>;
+
   getNewRating(
     whiteUser: UserType,
     blackUser: UserType,
@@ -45,6 +50,13 @@ export class RatingService {
     );
 
     return { whiteRating, blackRating };
+  }
+
+  async getUsersRating() {
+    return this.userSchema
+      .find({ parties: { $gte: 1 } })
+      .sort({ rating: -1 })
+      .limit(10);
   }
 
   private getCoefficient({

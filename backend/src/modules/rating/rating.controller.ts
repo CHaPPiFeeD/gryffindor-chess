@@ -1,13 +1,13 @@
 import { Controller, Get, Inject } from '@nestjs/common';
-import { UserService } from '../user/user.service';
+import { RatingService } from './rating.service';
 
 @Controller()
 export class RatingController {
-  // @Inject(UserService)
-  // private userService: UserService;
+  @Inject(RatingService)
+  private ratingService: RatingService;
 
   @Get('/api/rate/top')
   getRate(): any {
-    // return this.userService.getUsersRating();
+    return this.ratingService.getUsersRating();
   }
 }

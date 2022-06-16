@@ -1,18 +1,26 @@
 import { RatingService } from './rating.service';
 import { Test } from '@nestjs/testing';
 import { RatingController } from './rating.controller';
-import { UserModule } from '../user/user.module';
+import { getModelToken } from '@nestjs/mongoose';
+import { User } from '../../schemas/user.schema';
 
 describe('Rating module', () => {
   let ratingService: RatingService;
+  let ratingController: RatingController;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      // imports: [UserModule],
       controllers: [RatingController],
-      providers: [RatingService],
+      providers: [
+        RatingService,
+        {
+          provide: getModelToken(User.name),
+          useClass: MockUserSchema,
+        },
+      ],
     }).compile();
 
+    ratingController = moduleRef.get<RatingController>(RatingController);
     ratingService = moduleRef.get<RatingService>(RatingService);
   });
 
@@ -120,4 +128,21 @@ describe('Rating module', () => {
     userA.parties = 30.5;
     expect(() => ratingService.getNewRating(userA, userB)).toThrow();
   });
+
+  test('Check provider (get users rating)', async () => {
+    const data = await ratingController.getRate();
+    console.log(data);
+  });
 });
+
+class MockUserSchema {
+  find() {
+    return this;
+  }
+  sort() {
+    return this;
+  }
+  limit() {
+    return this;
+  }
+}

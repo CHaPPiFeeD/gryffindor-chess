@@ -25,11 +25,4 @@ export class UserService {
   async updateOne(filter, params) {
     await this.userSchema.updateOne({ ...filter }, { ...params });
   }
-
-  async getUsersRating() {
-    return this.userSchema
-      .find({ parties: { $gte: 1 } })
-      .sort({ rating: -1 })
-      .limit(10);
-  }
 }
