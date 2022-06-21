@@ -24,6 +24,9 @@ export class AuthService {
       email: email,
       password: hashPassword,
       online: false,
+      parties: 0,
+      partiesWon: 0,
+      rating: 1500,
     });
 
     return this.login(email, password);

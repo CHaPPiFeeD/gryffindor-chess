@@ -39,7 +39,7 @@ export class ValidationService {
 
     switch (true) {
       case startFigure.toLowerCase() === FIGURES.BLACK_KING:
-        this.checkKing(props);
+        checkSchemeAttack(props);
         break;
 
       case startFigure.toLowerCase() === FIGURES.BLACK_QUEEN:
@@ -67,7 +67,7 @@ export class ValidationService {
   }
 
   private basicСheck(client: Socket, game: Game, move: MoveType) {
-    if (game.winner)
+    if (game.gameEnd)
       throw new WsException("You can't move after the game is over");
 
     if (
@@ -101,12 +101,6 @@ export class ValidationService {
     )
       throw new WsException("Move opponent's figure");
   }
-
-  private checkKing = (props: MovePropsType) => {
-    checkSchemeAttack(props);
-
-    // checkKingCastle(props);
-  };
 
   private checkQueen(props: MovePropsType) {
     checkSchemeAttack(props);
@@ -235,7 +229,7 @@ export class ValidationService {
     const [clientColor] = game.getColorsBySocket(client.id);
 
     if (endFigure === FIGURES.BLACK_KING || endFigure === FIGURES.WHITE_KING) {
-      game.winner = clientColor;
+      game.winner = game[clientColor].userId;
       game.gameEnd = new Date();
     }
   };

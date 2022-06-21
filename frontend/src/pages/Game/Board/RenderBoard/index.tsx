@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { getGame } from '../../../../api/socket';
-import { gameDataType } from '../../../../api/types';
+import { GameDataType } from '../../../../api/types';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { RootState } from '../../../../store';
 import {
@@ -14,6 +14,7 @@ import { Figure } from '../../../../components';
 import styles from './styles.module.scss';
 import { setOpen } from '../../../../store/modal/modalSlise';
 import { BLACK_FIGURES, WHITE_FIGURES } from '../../../../constants';
+import { MODAL } from '../../../../constants/modal';
 
 
 export const RenderBoard = () => {
@@ -29,7 +30,7 @@ export const RenderBoard = () => {
   } = useSelector((state: RootState) => state.game);
 
   useEffect(() => {
-    getGame((data: gameDataType) => dispatch(setGame(data)));
+    getGame((data: GameDataType) => dispatch(setGame(data)));
   }, []);
 
   const handleClick = (e: any) => {
@@ -38,10 +39,6 @@ export const RenderBoard = () => {
     const color: string =
       e.currentTarget.attributes.getNamedItem('data-color')?.value;
 
-    console.log('work');
-    console.log(moveQueueStore !== colorStore);
-    console.log(waysStore);
-    
     if (moveQueueStore !== colorStore || !waysStore.length) return;
 
     let isTransformPawn;
@@ -59,13 +56,12 @@ export const RenderBoard = () => {
       if (color !== colorStore) return;
 
       addActiveClass(boardRef, rowBoard, colBoard);
-
       addWaysClasses(waysStore, row, col, colorStore, boardRef);
     }
 
     if (isTransformPawn) {
       dispatch(setEndPosition([row, col]));
-      dispatch(setOpen('changeFigure'));
+      dispatch(setOpen(MODAL.CHANGE_PAWN));
     }
 
     if (!isTransformPawn) {
@@ -141,7 +137,8 @@ const checkTransformPawn = (
   const [startRow, startCol] = activePos;
   const figure = boardStore[startRow][startCol];
   const pawn = color === 'white' ? 'P' : 'p';
-  return figure === pawn && (row === 0 || row === 7);
+  const endRow = color === 'white' ? 0 : 7;
+  return figure === pawn && row === endRow;
 };
 
 const getCoordinate = (row: number, col: number, color: string): number[] => {

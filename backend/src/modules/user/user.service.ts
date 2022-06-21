@@ -11,7 +11,7 @@ export class UserService {
   private userSchema: Model<UserDocument>;
 
   async findOne(params) {
-    return await this.userSchema.findOne({ ...params });
+    return this.userSchema.findOne({ ...params });
   }
 
   async createUser(params) {
@@ -20,5 +20,9 @@ export class UserService {
 
   async setOnline(filter, isOnline) {
     await this.userSchema.updateOne({ ...filter }, { online: isOnline });
+  }
+
+  async updateOne(filter, params) {
+    await this.userSchema.updateOne({ ...filter }, { ...params });
   }
 }

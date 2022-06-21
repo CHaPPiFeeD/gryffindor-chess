@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from 'src/modules/user/user.module';
+import { UserModule } from '../modules/user/user.module';
 import { GameGateway } from './game/game.gateway';
 import { InitGateway } from './init/init.gateway';
 import { QueueGateway } from './queue/queue.gateway';
@@ -9,9 +9,16 @@ import { GameService } from './game/game.service';
 import { InitService } from './init/init.service';
 import { QueueService } from './queue/queue.service';
 import { ValidationService } from './game/validation.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Party, PartySchema } from '../schemas/party.schema';
+import { PartyModule } from '../modules/party/party.module';
 
 @Module({
-  imports: [UserModule],
+  imports: [
+    UserModule,
+    PartyModule,
+    MongooseModule.forFeature([{ name: Party.name, schema: PartySchema }]),
+  ],
   providers: [
     InitGateway,
     InitService,

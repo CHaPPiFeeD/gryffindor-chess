@@ -15,6 +15,15 @@ export class User {
 
   @Prop()
   online: boolean;
+
+  @Prop()
+  parties: number;
+
+  @Prop()
+  partiesWon: number;
+
+  @Prop()
+  rating: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

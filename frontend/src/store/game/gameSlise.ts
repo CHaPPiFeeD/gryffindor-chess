@@ -1,10 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { move } from '../../api/socket';
-import { 
-  changeFigureDataType, 
-  gameDataType, 
-  usersQueueType, 
-} from '../../api/types';
+import { ChangeFigureDataType, GameDataType } from '../../api/types';
 
 export type gameType = {
   players: {
@@ -23,8 +19,7 @@ export type gameType = {
     title: string;
     message: string;
   }
-  queue: usersQueueType[] | null;
-  log: any;
+  log: string[];
   eatFigures: {
     white: string[],
     black: string[],
@@ -49,7 +44,6 @@ const initialState: gameType = {
     title: '',
     message: '',
   },
-  queue: null,
   log: [],
   eatFigures: {
     white: [],
@@ -62,33 +56,26 @@ export const gameSlice = createSlice({
   name: 'gameSlice',
   initialState,
   reducers: {
-    setGame: (state, action: PayloadAction<gameDataType>) => {
-      state.players = action.payload.players || state.players;
-      state.color = action.payload.color || state.color;
-      state.board = action.payload.board;
-      state.ways = action.payload.ways;
-      state.moveQueue = action.payload.moveQueue;
-      state.gameStartTime = action.payload.gameStart || state.gameStartTime;
-      state.gameEndTime = action.payload.gameEnd || initialState.gameEndTime;
-      state.log = initialState.log;
-      state.eatFigures = initialState.eatFigures;
-      state.lastMove = action.payload.lastMove || state.lastMove;
+    setGame: (state, { payload }: { payload: GameDataType }) => {
+      state.players = payload.players || state.players;
+      state.color = payload.color || state.color;
+      state.board = payload.board;
+      state.ways = payload.ways;
+      state.moveQueue = payload.moveQueue;
+      state.gameStartTime = payload.gameStart || state.gameStartTime;
+      state.gameEndTime = payload.gameEnd || initialState.gameEndTime;
+      state.log = payload.log || initialState.log;
+      state.eatFigures = payload.eatFigures || initialState.eatFigures;
+      state.lastMove = payload.lastMove || state.lastMove;
+      state.endGameMessage.title = payload.title;
+      state.endGameMessage.message = payload.message;
+      state.gameEndTime = payload.gameEnd || null;
     },
     setActivePosition: (state, action) => {
       state.activePosition = action.payload;
     },
-    setMessage: (state, action) => {
-      state.endGameMessage.title = action.payload.title;
-      state.endGameMessage.message = action.payload.message;
-    },
-    setEndTime: (state, action) => {
-      state.gameEndTime = action.payload?.gameEnd || null;
-    },
     setEndPosition: (state, action) => {
       state.endPosition = action.payload;
-    },
-    setQueue: (state, action) => {
-      state.queue = action.payload;
     },
   },
 });
@@ -96,7 +83,7 @@ export const gameSlice = createSlice({
 export const setMove = (
   activePosition: [number, number] | null,
   payload: [number, number],
-  change: changeFigureDataType,
+  change: ChangeFigureDataType,
 ) => async (dispatch: any) => {
   if (activePosition === null) dispatch(setActivePosition(payload));
   if (activePosition !== null) {
@@ -112,14 +99,6 @@ export const setMove = (
 
     const moveData = { start: activePosition, end: payload, change };
 
-    console.log(
-      `move ${
-        JSON.stringify(moveData.start)
-      } to ${
-        JSON.stringify(moveData.end)
-      }`,
-    );
-
     dispatch(setActivePosition(null));
 
     move(moveData);
@@ -129,10 +108,7 @@ export const setMove = (
 export const {
   setGame,
   setActivePosition,
-  setMessage,
   setEndPosition,
-  setQueue,
-  setEndTime,
 } = gameSlice.actions;
 
 

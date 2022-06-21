@@ -2,17 +2,12 @@ import { Box, Typography } from '@mui/material';
 import styles from './styles.module.scss';
 import { FindGameForm } from './FindGameForm';
 import { useEffect } from 'react';
-import { 
-  exceptionHandler, 
-  getUsers, 
-  joinSocket, 
-  getGame, 
-} from '../../api/socket';
+import { exceptionHandler, joinSocket, getGame } from '../../api/socket';
 import { useAppDispatch } from '../../hooks/redux';
 import { path } from '../../router/constants';
 import { useNavigate } from 'react-router-dom';
-import { setGame, setQueue } from '../../store/game/gameSlise';
-import { gameDataType, usersQueueType } from '../../api/types';
+import { setGame } from '../../store/game/gameSlise';
+import { GameDataType } from '../../api/types';
 
 export const FindGame = () => {
   const dispatch = useAppDispatch();
@@ -21,7 +16,9 @@ export const FindGame = () => {
   useEffect(() => {
     joinSocket();
     exceptionHandler(dispatch);
-    getGame((payload: gameDataType) => {
+
+    getGame((payload: GameDataType) => {
+      console.log(payload);
       dispatch(setGame(payload));
       navigate(path.game());
     });

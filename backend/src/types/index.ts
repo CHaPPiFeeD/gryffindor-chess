@@ -1,8 +1,9 @@
+import { ObjectId } from 'mongoose';
 import { Socket } from 'socket.io';
 import { Game } from 'src/models/game.model';
 
 export type GamePlayerType = {
-  userId: string;
+  userId: ObjectId;
   socket: string;
   name: string;
   offersDraw: boolean;
@@ -33,11 +34,6 @@ export type MoveType = {
   };
 };
 
-export type LogType = {
-  color: string;
-  log: string;
-};
-
 export type MovePropsType = {
   client: Socket;
   move: MoveType;
@@ -49,7 +45,7 @@ export type MovePropsType = {
 };
 
 export type QueueUserType = {
-  userId: string;
+  userId: ObjectId;
   socket: string;
   name: string;
   color: string[];

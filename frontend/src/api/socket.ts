@@ -1,46 +1,40 @@
-import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { showNotification } from '../store/notification/notificationSlise';
 import { WS_EVENTS } from './constants';
-import {
-  gameDataType,
-  moveDataType,
-  usersQueueType,
-} from './types';
+import { GameDataType, MoveDatatype, UsersQueueType } from './types';
 
 let socket: Socket;
 
 export const joinSocket = () => {
   if (socket?.connected) return;
 
-  const params: Partial<ManagerOptions & SocketOptions> = {
-    extraHeaders: {
-      closeOnBeforeunload: 'false',
-    },
-    auth: {
-      token: localStorage.getItem('access_token'),
-    },
-  };
-
   socket = io(
     `${process.env.REACT_APP_API_KEY}`,
-    { ...params },
+    {
+      closeOnBeforeunload: false,
+      auth: {
+        token: localStorage.getItem('access_token'),
+      },
+    },
   );
 
   socket.on('connect', () => {
     console.log('connect:', socket.id);
-
-    socket.emit('/game/reconnect');
   });
 
   socket.on('disconnect', () => {
     console.log('disconnect');
+    window.location.href = '/';
   });
 
   socket.on('error', (data) => {
     console.log('error:', data);
+
     if (data === 'Unauthorized') {
+      localStorage.clear();
       window.location.href = '/';
     }
+
     socket.disconnect();
   });
 };
@@ -53,27 +47,36 @@ export const exceptionHandler = (dispatch: any) => {
 };
 
 export const regInQueue = (data: any, cb: Function) => {
-  socket.emit(WS_EVENTS.QUEUE.SEARCH , data);
-  cb();
+  socket.emit(WS_EVENTS.QUEUE.SEARCH, data, (isFind: boolean) => {
+    cb(isFind);
+  });
 };
 
 export const getGame = (cb: Function) => {
-  socket.on(WS_EVENTS.GAME.GET_GAME, (payload: gameDataType) => {
+  socket.emit(WS_EVENTS.GAME.GET_GAME);
+
+  socket.on(WS_EVENTS.GAME.GET_GAME, (payload: GameDataType) => {
     cb(payload);
   });
 };
 
 export const getUsers = (cb: Function) => {
-  socket.on(WS_EVENTS.QUEUE.GET_QUEUE, (payload: usersQueueType[]) => {
+  socket.emit(WS_EVENTS.QUEUE.GET_QUEUE);
+
+  socket.on(WS_EVENTS.QUEUE.GET_QUEUE, (payload: UsersQueueType[]) => {
     cb(payload);
   });
+};
+
+export const removeEventListener = (listener: any) => {
+  socket.removeListener(listener);
 };
 
 export const leaveQueue = () => {
   socket.emit(WS_EVENTS.QUEUE.LEAVE);
 };
 
-export const move = (data: moveDataType) => {
+export const move = (data: MoveDatatype) => {
   socket.emit(WS_EVENTS.GAME.MOVE, data);
 };
 

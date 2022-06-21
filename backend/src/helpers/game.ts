@@ -1,6 +1,7 @@
 import { GamePlayerType, QueueUserType } from '../types';
 import { COLORS } from '../enums/constants';
 import { Game } from 'src/models/game.model';
+import { ObjectId } from 'mongoose';
 
 export const setPlayerColors = (
   playerOne: QueueUserType,
@@ -106,12 +107,10 @@ export const findRoomBySocketId = (socketId: string, gamesStates): string => {
 };
 
 export const findRoomByUserId = (
-  userId: string,
+  userId: ObjectId,
   gamesStates: Map<string, Game>,
 ): string => {
   for (const game of gamesStates.values()) {
-    console.log(game);
-    console.log(userId);
     if (game.white.userId === userId || game.black.userId === userId)
       return game.id;
   }

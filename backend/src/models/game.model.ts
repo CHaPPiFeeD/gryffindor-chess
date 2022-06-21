@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { GamePlayerType, LogType, MoveType } from '../types';
+import { GamePlayerType, MoveType } from '../types';
 import {
   INIT_BOARD,
   COLORS,
@@ -11,6 +11,7 @@ import {
 } from 'src/enums/constants';
 import { randomString } from 'src/helpers';
 import { setPlayerColors } from 'src/helpers/game';
+import { ObjectId } from 'mongoose';
 
 export class Game {
   id: string;
@@ -22,10 +23,10 @@ export class Game {
     black: string[];
   };
   moveQueue: string;
-  winner: string | null;
+  winner: ObjectId | null;
   gameStart: Date;
   gameEnd?: Date;
-  log: LogType[];
+  log: string[];
 
   constructor(playerOne, playerTwo) {
     const { whitePlayer, blackPlayer } = setPlayerColors(playerOne, playerTwo);
@@ -45,19 +46,15 @@ export class Game {
   }
 
   updateLog(client: Socket, move: MoveType) {
-    const [clientColor] = this.getColorsBySocket(client.id);
     const figure = this.getFigureFromStart(move);
 
-    const log: LogType = {
-      color: clientColor,
-      log: [
-        figure,
-        FIRST_LETTER[move.start[1]],
-        SECOND_LETTER[move.start[0]],
-        FIRST_LETTER[move.end[1]],
-        SECOND_LETTER[move.end[0]],
-      ].join(''),
-    };
+    const log: string = [
+      figure,
+      FIRST_LETTER[move.start[1]],
+      SECOND_LETTER[move.start[0]],
+      FIRST_LETTER[move.end[1]],
+      SECOND_LETTER[move.end[0]],
+    ].join('');
 
     this.log.push(log);
   }
@@ -88,8 +85,10 @@ export class Game {
     const blackLog = [];
 
     this.log.forEach((v) => {
-      if (v.color === COLORS.WHITE || this.winner) whiteLog.push(v);
-      if (v.color === COLORS.BLACK || this.winner) blackLog.push(v);
+      if (WHITE_FIGURES.includes(v.split('')[0]) || this.winner)
+        whiteLog.push(v);
+      if (BLACK_FIGURES.includes(v.split('')[0]) || this.winner)
+        blackLog.push(v);
     });
 
     return [whiteLog, blackLog];
@@ -100,7 +99,7 @@ export class Game {
     if (clientId === this.black.socket) return [COLORS.BLACK, COLORS.WHITE];
   }
 
-  getColorsByUserId(userId: string): string[] {
+  getColorsByUserId(userId: ObjectId): string[] {
     if (userId === this.white.userId) return [COLORS.WHITE, COLORS.BLACK];
     if (userId === this.black.userId) return [COLORS.BLACK, COLORS.WHITE];
   }
@@ -116,5 +115,47 @@ export class Game {
   clearInterceptionWays() {
     this.white.rules.interception = [];
     this.black.rules.interception = [];
+  }
+
+  getDataForPlayers({ whiteBoard, blackBoard, whiteWays, blackWays }) {
+    const [whiteLog, blackLog] = this.getLogsForPlayers();
+
+    const data: any = {
+      players: {
+        white: this.white.name,
+        black: this.black.name,
+      },
+      gameStart: this.gameStart,
+      moveQueue: this.moveQueue,
+      eatFigures: this.eatenFigures,
+    };
+
+    const white = {
+      ...data,
+      color: COLORS.WHITE,
+      board: whiteBoard,
+      ways: this.moveQueue === COLORS.WHITE ? whiteWays : [],
+      log: whiteLog,
+    };
+
+    const black = {
+      ...data,
+      color: COLORS.BLACK,
+      board: blackBoard,
+      ways: this.moveQueue === COLORS.BLACK ? blackWays : [],
+      log: blackLog,
+    };
+
+    const end = {
+      ...data,
+      gameEnd: this.gameEnd,
+      board: this.board,
+      ways: [],
+      log: this.log,
+      moveQueue: this.moveQueue,
+      eatFigures: this.eatenFigures,
+    };
+
+    return { white, black, end };
   }
 }

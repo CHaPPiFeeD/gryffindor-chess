@@ -1,0 +1,66 @@
+.content {
+  width: 512px;
+  min-width: 320px;
+  height: 790px;
+  background: #F0D9B5;
+  border: 10px solid #634833;
+  border-radius: 5px;
+  position: relative;
+
+  .top_bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+
+    background-color: #634833;
+    border-radius: 0 0 5px 5px;
+    padding: 8px 32px 16px;
+    color: white;
+    overflow-wrap: normal;
+
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .rate_list {
+    overflow: auto;
+    height: 100%;
+    padding-top: 45px;
+
+    &::-webkit-scrollbar {
+      width: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 5px;
+    }
+  
+    &::-webkit-scrollbar-thumb {
+      background-color: #B58863;
+      border-radius: 5px;
+    }
+
+    .rate_item {
+      margin-bottom: 10px;
+      background-color: #ffeccd;
+      border-radius: 5px;
+      padding: 5px;
+      margin: 16px;
+
+      .name {
+        text-align: center;
+        font-weight: 700;
+      }
+
+      .statistic {
+        display: flex;
+        justify-content: space-around;
+
+        .parameter {
+          width: 64px;
+          text-align: center;
+        }
+      }
+    }
+  }
+
+
+}

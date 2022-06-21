@@ -1,14 +1,15 @@
 import { Box, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { Figure } from '../../../../components';
+import { BLACK_FIGURES, WHITE_FIGURES } from '../../../../constants';
 import { useAppSelector } from '../../../../hooks/redux';
 import styles from './styles.module.scss';
 
 export const Logs = () => {
   const { log: logStore } = useAppSelector(store => store.game);
   const logsEndRef = useRef(document.getElementById('logsEnd'));
-  const [stateWhiteLog, setStateWhiteLog] = useState<LogType[]>([]);
-  const [stateBlackLog, setStateBlackLog] = useState<LogType[]>([]);
+  const [stateWhiteLog, setStateWhiteLog] = useState<string[]>([]);
+  const [stateBlackLog, setStateBlackLog] = useState<string[]>([]);
 
   const scrollToBottom = () => {
     logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -20,17 +21,13 @@ export const Logs = () => {
     setStateWhiteLog([]);
     setStateBlackLog([]);
 
-    logStore?.forEach((v: LogType) => {
-      if (v?.color === 'white') setStateWhiteLog([...stateWhiteLog, v]);
-      if (v?.color === 'black') setStateBlackLog([...stateBlackLog, v]);
-      console.log('working');
-      
-    });
+    logStore?.forEach((v: string) => {
+      if (WHITE_FIGURES.includes(v.split('')[0]))
+        setStateWhiteLog([...stateWhiteLog, v]);
 
-    console.log(logStore);
-    console.log(stateWhiteLog);
-    console.log(stateBlackLog);
-    
+      if (BLACK_FIGURES.includes(v.split('')[0]))
+        setStateBlackLog([...stateBlackLog, v]);
+    });
   }, [logStore]);
 
   return (
@@ -49,14 +46,13 @@ export const Logs = () => {
 
 const LogsColumn = (props: { color: string }) => {
   const { log: logStore } = useAppSelector(store => store.game);
-  console.log('work');
-  
+  const FIGURES = props.color === 'white' ? WHITE_FIGURES : BLACK_FIGURES;
 
   return (
     <Box className={styles.logs_column}>
       {logStore?.map((v: any, i: number) => {
-        if (v?.color !== props.color) return;
-        const letters = v?.log.split('');
+        const letters = v?.split('');
+        if (!FIGURES.includes(letters[0])) return;
         const startPos = '' + letters[1] + letters[2];
         const endPos = '' + letters[3] + letters[4];
 
@@ -75,8 +71,3 @@ const LogsColumn = (props: { color: string }) => {
     </Box>
   );
 };
-
-type LogType = {
-  color: string,
-  log: string,
-}

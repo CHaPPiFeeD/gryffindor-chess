@@ -26,7 +26,7 @@ export const EatFigures = () => {
   return (
     <Box className={styles.wrapper}>
 
-      <Box >
+      <Box style={{ width: '100%', height: '220px' }}>
         <Typography className={styles.title}>
           You eated:
         </Typography>
@@ -34,15 +34,18 @@ export const EatFigures = () => {
         <Box className={styles.figures_container}>
           {youEaten?.map((v: string, i) => {
             return (
+
               <Box className={styles.figure_box} key={i} >
                 <Figure cell={v} />
               </Box>
+
             );
           })}
         </Box>
       </Box>
 
-      <Box>
+      <Box style={{ width: '100%', height: '220px' }}>
+
         <Typography className={styles.title}>
           Opponent eated:
         </Typography>
@@ -50,10 +53,12 @@ export const EatFigures = () => {
         <Box className={styles.figures_container}>
           {opponentsEaten?.map((v: string, i) => {
             return (
+
               <Box className={styles.figure_box} key={i} >
                 <Figure cell={v} />
               </Box>
             );
+
           })}
         </Box>
       </Box>

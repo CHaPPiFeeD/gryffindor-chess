@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongoose';
 import { QueueUserType } from 'src/types';
 import { COLORS } from '../enums/constants';
 
@@ -26,7 +27,7 @@ export const getUserBySocket = (
 
 export const checkUserInQueue = (
   queue: QueueUserType[],
-  userId: string,
+  userId: ObjectId,
 ): QueueUserType => {
   return queue.find((user) => user.userId === userId);
 };
