@@ -1,0 +1,45 @@
+version: '3'
+services:
+  api:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+    container_name: gryffindor-chess-api-dev
+    volumes:
+      - 'C:\GitHub\gryffindor-chess\backend\src:/app/src'
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+  client:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - '3000:3000'
+    container_name: gryffindor-chess-client-dev
+    volumes:
+      - 'C:\GitHub\gryffindor-chess\frontend\src:/app/src'
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+        reservations:
+          memory: 1024M
+  db:
+    image: mongo
+    ports:
+      - '27017:27017'
+    container_name: gryffindor-chess-db
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
