@@ -10,7 +10,7 @@ services:
       - db
     container_name: gryffindor-chess-api-dev
     volumes:
-      - 'C:\GitHub\gryffindor-chess\backend\src:/app/src'
+      - './backend/src:/app/src'
     deploy:
       resources:
         limits:
@@ -25,7 +25,7 @@ services:
       - '3000:3000'
     container_name: gryffindor-chess-client-dev
     volumes:
-      - 'C:\GitHub\gryffindor-chess\frontend\src:/app/src'
+      - './frontend/src:/app/src'
     deploy:
       resources:
         limits:
