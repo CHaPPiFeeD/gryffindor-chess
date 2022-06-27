@@ -53,6 +53,6 @@ export class AuthService {
 }
 
 export class AuthResponseDto {
-  @ApiProperty()
+  @ApiProperty({ default: 'xxxxx.yyyyy.zzzzz' })
   token: string;
 }

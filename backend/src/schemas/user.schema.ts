@@ -5,15 +5,15 @@ export type UserDocument = User & Document;
 
 @Schema()
 export class User {
-  @ApiProperty()
+  @ApiProperty({ default: 'Name' })
   @Prop()
   username: string;
 
-  @ApiProperty()
+  @ApiProperty({ default: 'email@gmai.com' })
   @Prop()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ default: '12345678' })
   @Prop()
   password: string;
 

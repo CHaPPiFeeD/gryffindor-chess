@@ -21,9 +21,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 2048M
         reservations:
-          memory: 128M
+          memory: 1024M
   db:
     image: mongo
     ports:
