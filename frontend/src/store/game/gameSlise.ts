@@ -11,8 +11,8 @@ export type gameType = {
   ways: string[];
   color: string;
   moveQueue: string | null;
-  moveStart: [number, number] | null;
-  moveEnd: [number, number] | null;
+  activePosition: [number, number] | null;
+  endPosition: [number, number] | null;
   gameStartTime: Date | null;
   gameEndTime: Date | null;
   endGameMessage: {
@@ -36,8 +36,8 @@ const initialState: gameType = {
   ways: [],
   color: '',
   moveQueue: null,
-  moveStart: null,
-  moveEnd: null,
+  activePosition: null,
+  endPosition: null,
   gameStartTime: null,
   gameEndTime: null,
   endGameMessage: {
@@ -71,43 +71,44 @@ export const gameSlice = createSlice({
       state.endGameMessage.message = payload.message;
       state.gameEndTime = payload.gameEnd || null;
     },
-    setMoveStart: (state, action) => {
-      state.moveStart = action.payload;
+    setActivePosition: (state, action) => {
+      state.activePosition = action.payload;
     },
-    setMoveEnd: (state, action) => {
-      state.moveEnd = action.payload;
+    setEndPosition: (state, action) => {
+      state.endPosition = action.payload;
     },
   },
 });
 
 export const setMove = (
-  moveStart: [number, number] | null,
+  activePosition: [number, number] | null,
   payload: [number, number],
   change: ChangeFigureDataType,
 ) => async (dispatch: any) => {
-  if (moveStart === null) {
-    dispatch(setMoveStart(payload));
-  } else {
+  if (activePosition === null) dispatch(setActivePosition(payload));
+  if (activePosition !== null) {
 
     const isCancelMove =
-      moveStart[0] === payload[0] &&
-      moveStart[1] === payload[1];
+      activePosition[0] === payload[0] &&
+      activePosition[1] === payload[1];
 
     if (isCancelMove) {
-      dispatch(setMoveStart(null));
+      dispatch(setActivePosition(null));
       return;
     }
 
-    const moveData = { start: moveStart, end: payload, change };
-    dispatch(setMoveStart(null));
+    const moveData = { start: activePosition, end: payload, change };
+
+    dispatch(setActivePosition(null));
+
     move(moveData);
   }
 };
 
 export const {
   setGame,
-  setMoveStart,
-  setMoveEnd,
+  setActivePosition,
+  setEndPosition,
 } = gameSlice.actions;
 
 

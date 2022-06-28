@@ -7,9 +7,8 @@ import { useAppDispatch } from '../../../../hooks/redux';
 import { RootState } from '../../../../store';
 import {
   setGame,
-  setMoveEnd,
+  setEndPosition,
   setMove,
-  setMoveStart,
 } from '../../../../store/game/gameSlise';
 import { Figure } from '../../../../components';
 import styles from './styles.module.scss';
@@ -24,7 +23,7 @@ export const RenderBoard = () => {
   const {
     board: boardStore,
     color: colorStore,
-    moveStart: moveStartStore,
+    activePosition: activePositionStore,
     ways: waysStore,
     moveQueue: moveQueueStore,
     lastMove: lastMoveStore,
@@ -34,21 +33,18 @@ export const RenderBoard = () => {
     getGame((data: GameDataType) => dispatch(setGame(data)));
   }, []);
 
-  const handleClick = (event: any) => {
-    const row = +event.currentTarget.attributes.getNamedItem('data-row')?.value;
-    const col = +event.currentTarget.attributes.getNamedItem('data-col')?.value;
+  const handleClick = (e: any) => {
+    const row = +e.currentTarget.attributes.getNamedItem('data-row')?.value;
+    const col = +e.currentTarget.attributes.getNamedItem('data-col')?.value;
     const color: string =
-      event.currentTarget.attributes.getNamedItem('data-color')?.value;
+      e.currentTarget.attributes.getNamedItem('data-color')?.value;
     if (moveQueueStore !== colorStore || !waysStore.length) return;
+    let isTransformPawn;
 
-    if (moveStartStore) {
+    if (activePositionStore) {
       removeAllClasses(boardRef);
-
-      if (checkTransformPawn(moveStartStore, boardStore, colorStore, row)) {
-        dispatch(setMoveEnd([row, col]));
-        dispatch(setOpen(MODAL.CHANGE_PAWN));
-        return;
-      }
+      isTransformPawn =
+        checkTransformPawn(activePositionStore, boardStore, colorStore, row);
     } else {
       const [rowBoard, colBoard] = getCoordinate(row, col, colorStore);
       if (color !== colorStore) return;
@@ -56,11 +52,16 @@ export const RenderBoard = () => {
       addWaysClasses(waysStore, row, col, colorStore, boardRef);
     }
 
-    dispatch(setMove(
-      moveStartStore,
-      [row, col],
-      { isChange: false, chooseFigure: null },
-    ));
+    if (isTransformPawn) {
+      dispatch(setEndPosition([row, col]));
+      dispatch(setOpen(MODAL.CHANGE_PAWN));
+    } else {
+      dispatch(setMove(
+        activePositionStore,
+        [row, col],
+        { isChange: false, chooseFigure: null },
+      ));
+    }
   };
 
   return (
@@ -91,16 +92,7 @@ export const RenderBoard = () => {
                 data-color={color}
                 onClick={handleClick}
               >
-                <Box
-                  data-row={row}
-                  data-col={col}
-                  data-color={color}
-                  className={styles.figure}
-                >
-                  <Figure
-                    cell={boardStore[row][col]}
-                  />
-                </Box>
+                <Figure cell={boardStore[row][col]} />
               </Box>
             );
           })}
@@ -171,7 +163,7 @@ const addWaysClasses = (
     const [rowBoard, colBoard] = getCoordinate(wayEnd[0], wayEnd[1], color);
     const cell = boardRef?.current?.children[rowBoard]?.children[colBoard];
     if (cell === undefined) return;
-    if (cell.children[0].childElementCount) cell.classList.add(styles.circle);
-    if (!cell.children[0].childElementCount) cell.classList.add(styles.ellips);
+    if (cell.childElementCount) cell.classList.add(styles.circle);
+    if (!cell.childElementCount) cell.classList.add(styles.ellips);
   });
 };

@@ -6,7 +6,7 @@ import { Queen } from '../../components/Figure/figures/Queen';
 import { Rook } from '../../components/Figure/figures/Rook';
 import { MODAL } from '../../constants/modal';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { setMove } from '../../store/game/gameSlise';
+import { setEndPosition, setMove } from '../../store/game/gameSlise';
 import { setClose } from '../../store/modal/modalSlise';
 import styles from './styles.module.scss';
 
@@ -16,8 +16,8 @@ export const ChangePawnModal = () => {
   const [stateValue, setStateValue] = useState('');
   const {
     color: colorStore,
-    moveStart: moveStartStore,
-    moveEnd: moveEndStore,
+    activePosition: activePositionStore,
+    endPosition: endPositionStore,
   } = useAppSelector(state => state.game);
 
   const fill = colorStore === 'white' ? 'white' : '#333333';
@@ -39,14 +39,15 @@ export const ChangePawnModal = () => {
   };
 
   const handleClose = () => {
-    if (!stateValue || moveEndStore === null) return;
+    if (!stateValue || endPositionStore === null) return;
 
     dispatch(setMove(
-      moveStartStore,
-      moveEndStore,
+      activePositionStore,
+      endPositionStore,
       { isChange: true, chooseFigure: stateValue },
     ));
 
+    dispatch(setEndPosition(null));
     dispatch(setClose(MODAL.CHANGE_PAWN));
   };
 
