@@ -22,12 +22,11 @@
 
   .last_move {
     box-shadow: inset 0px 0px 3px 5px rgba(0, 0, 0, 0.5);
-    // border: 3px solid black;
   }
 
   .figure {
-    width: 100%;
-    height: 100%;
+    width: 75px;
+    height: 75px;
   }
 
   .active {
@@ -44,8 +43,5 @@
 
   .circle {
     background-image: url('./svg/circle.svg');
-    // background-size: auto;
-    // background-repeat: no-repeat;
-    // background-position: center;
   }
 }

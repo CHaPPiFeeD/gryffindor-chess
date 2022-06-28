@@ -8,7 +8,10 @@ import { Queen } from './figures/Queen';
 import { Rook } from './figures/Rook';
 import styles from './styles.module.scss';
 
-export const Figure = ({ cell }: { cell: string }) => {
+export const Figure = (
+  { cell, onMouseDown }:
+  { cell: string, onMouseDown?: Function },
+) => {
   let fill;
 
   if (WHITE_FIGURES.includes(cell)) fill = 'white';
