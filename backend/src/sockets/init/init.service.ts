@@ -1,9 +1,9 @@
 import { Inject, Logger } from '@nestjs/common';
+import * as jwt from 'jsonwebtoken';
 import { GameService } from '../game/game.service';
 import { QueueService } from '../queue/queue.service';
-import * as jwt from 'jsonwebtoken';
-import { UserService } from 'src/modules/user/user.service';
-import { ISocket } from 'src/types';
+import { UserService } from '../../modules/user/user.service';
+import { ISocket } from '../../types';
 
 export class InitService {
   private logger = new Logger(InitService.name);
@@ -18,16 +18,15 @@ export class InitService {
   private userService: UserService;
 
   async handleConnect(client: ISocket) {
-    if (!client.handshake.auth.token) {
+    const token = client.handshake.auth.token;
+
+    if (!token) {
       client.emit('error', 'Unauthorized');
       client.disconnect();
       return;
     }
 
-    const decoded = jwt.verify(
-      client.handshake.auth.token,
-      process.env.JWT_SECRET,
-    );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     if (!decoded) {
       client.emit('error', 'Unauthorized');
@@ -45,10 +44,8 @@ export class InitService {
 
     client.user = decoded;
     await this.userService.setOnline({ _id: decoded['id'] }, true);
-    await this.gameService.connect(client);
-
+    this.gameService.connect(client);
     this.gameService.reconnect(client);
-
     this.logger.log(`User connection: ${client.id}`);
   }
 

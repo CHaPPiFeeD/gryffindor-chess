@@ -1,9 +1,9 @@
 import { Inject, Logger, UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { WsAuthGuard } from 'src/guards/ws.auth.guard';
+import { WsAuthGuard } from '../../guards/ws.auth.guard';
 import { ISocket, MoveType } from '../../types';
-import { WS_EVENTS } from '../constants';
+import { WS_EVENTS } from '../../enums/constants';
 import { GameService } from './game.service';
 
 @WebSocketGateway({ cors: true })

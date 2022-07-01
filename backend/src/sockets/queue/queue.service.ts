@@ -1,17 +1,13 @@
 import { Inject, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import {
-  getUserBySocket,
-  getFindsColors,
-  getUserByColor,
-  checkUserInQueue,
-} from '../../helpers/queue';
+import { WsException } from '@nestjs/websockets';
+import { ObjectId } from 'mongoose';
 import { GameService } from '../game/game.service';
 import { ServerGateway } from '../server/server.gateway';
-import { WsException } from '@nestjs/websockets';
-import { ISocket, QueueUserType } from 'src/types';
-import { UserService } from 'src/modules/user/user.service';
-import { WS_EVENTS } from '../constants';
+import { ISocket, QueueUserType } from '../../types';
+import { UserService } from '../../modules/user/user.service';
+import { WS_EVENTS } from '../../enums/constants';
+import { COLORS } from '../../enums/constants';
 
 export class QueueService {
   private logger = new Logger(QueueService.name);
@@ -29,7 +25,7 @@ export class QueueService {
   async regToQueue(client: ISocket, data: { color: string[] }) {
     const user = await this.userService.findOne({ _id: client.user['id'] });
 
-    if (checkUserInQueue(this.queue, user.id))
+    if (this.getUserInQueue(user.id))
       throw new WsException('You are already in line');
 
     const playerOne: QueueUserType = {
@@ -39,31 +35,23 @@ export class QueueService {
       color: data.color,
     };
 
-    const desiredColors: string[] = getFindsColors(playerOne.color);
-    const playerTwo: QueueUserType = getUserByColor(this.queue, desiredColors);
+    const desiredColors: string[] = this.getDesiredColors(playerOne.color);
+    const playerTwo: QueueUserType = this.getUserByColor(desiredColors);
 
     if (!playerTwo) {
       this.queue.push(playerOne);
       this.serverGateway.server.in(playerOne.socket).socketsJoin('queue');
-
       this.serverGateway.server
         .in('queue')
         .emit(WS_EVENTS.QUEUE.GET_QUEUE, this.queue);
-
-      return false;
+      return { isFind: false };
     } else {
-      const index: number = this.queue.findIndex(
-        (player) => player.socket === playerTwo.socket,
-      );
-
-      if (index >= 0) this.queue.splice(index, 1);
-
+      this.removeFromQueue(playerTwo.socket);
       this.serverGateway.server
         .in([playerOne.socket, playerTwo.socket])
         .socketsLeave('queue');
-
       this.gameService.startGame(playerOne, playerTwo);
-      return true;
+      return { isFind: true };
     }
   }
 
@@ -73,17 +61,40 @@ export class QueueService {
       .emit(WS_EVENTS.QUEUE.GET_QUEUE, this.queue);
   }
 
-  disconnect = (socket: Socket) => {
-    const isInQueue = getUserBySocket(this.queue, socket.id);
-
+  disconnect(socket: Socket) {
+    const isInQueue = this.getUserBySocket(socket.id);
     if (!isInQueue) return;
-
-    this.queue.forEach((value, index) => {
-      if (value.socket === socket.id) this.queue.splice(index, 1);
-    });
-
+    this.removeFromQueue(socket.id);
+    this.serverGateway.server.in(socket.id).socketsLeave('queue');
     this.serverGateway.server
       .in('queue')
       .emit(WS_EVENTS.QUEUE.GET_QUEUE, this.queue);
-  };
+  }
+
+  private removeFromQueue(socketId: string) {
+    this.queue.forEach((player, index) => {
+      if (player.socket === socketId) this.queue.splice(index, 1);
+    });
+  }
+
+  private getDesiredColors(colors: string[]): string[] {
+    return colors.map((color) => {
+      if (color === COLORS.WHITE) return COLORS.BLACK;
+      if (color === COLORS.BLACK) return COLORS.WHITE;
+    });
+  }
+
+  private getUserByColor(colors: string[]): QueueUserType {
+    return this.queue.find((user) =>
+      colors.some((color) => user.color.includes(color)),
+    );
+  }
+
+  private getUserBySocket(socket: string): QueueUserType {
+    return this.queue.find((obj) => obj.socket === socket);
+  }
+
+  private getUserInQueue(userId: ObjectId): QueueUserType {
+    return this.queue.find((user) => user.userId === userId);
+  }
 }
