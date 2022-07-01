@@ -54,6 +54,7 @@ export type CheckWaysPropsType = {
   ownFigures?: string;
   ownKing?: string;
   pawnWays?: number[][];
+  kingWays?: number[][];
 };
 
 export type CreateBoardsForPlayersType = {
