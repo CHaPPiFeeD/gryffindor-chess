@@ -19,3 +19,7 @@ html, body, #root, .App {
 * {
   box-sizing: border-box;
 }
+
+body {
+  background: url(./images/bg-light-4836.png) 0 0 #e9d4c1;
+}
