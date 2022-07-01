@@ -5,7 +5,7 @@ import { ChessMoveDto } from 'src/dto/gateway.dto';
 import { WsValidationPipe } from 'src/pipes/ws.validation.pipe';
 import { WsAuthGuard } from '../../guards/ws.auth.guard';
 import { ISocket } from '../../types';
-import { WS_EVENTS } from '../constants';
+import { WS_EVENTS } from '../../enums/constants';
 import { GameService } from './game.service';
 
 @WebSocketGateway({ cors: true })

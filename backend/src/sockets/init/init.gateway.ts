@@ -4,7 +4,7 @@ import {
   OnGatewayDisconnect,
   OnGatewayConnection,
 } from '@nestjs/websockets';
-import { ISocket } from 'src/types';
+import { ISocket } from '../../types';
 import { InitService } from './init.service';
 
 @WebSocketGateway({ cors: true })

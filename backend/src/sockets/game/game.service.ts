@@ -1,16 +1,16 @@
 import { Inject, Logger } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { Socket } from 'socket.io';
+import { ObjectId } from 'mongoose';
 import { findRoomBySocketId } from '../../helpers/game';
 import { ISocket, QueueUserType } from '../../types';
 import { ValidationService } from './validation.service';
-import { Socket } from 'socket.io';
 import { BoardService } from './board.service';
 import { ServerGateway } from '../server/server.gateway';
-import { Game } from 'src/models/game.model';
-import { SchedulerRegistry } from '@nestjs/schedule';
-import { WS_EVENTS } from '../constants';
-import { ObjectId } from 'mongoose';
-import { PartyService } from 'src/modules/party/party.service';
 import { ChessMoveDto } from 'src/dto/gateway.dto';
+import { Game } from '../../models/game.model';
+import { WS_EVENTS } from '../../enums/constants';
+import { PartyService } from '../../modules/party/party.service';
 
 export class GameService {
   private logger = new Logger(GameService.name);

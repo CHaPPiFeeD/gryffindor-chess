@@ -47,8 +47,8 @@ export const exceptionHandler = (dispatch: any) => {
 };
 
 export const regInQueue = (data: any, cb: Function) => {
-  socket.emit(WS_EVENTS.QUEUE.SEARCH, data, (isFind: boolean) => {
-    cb(isFind);
+  socket.emit(WS_EVENTS.QUEUE.SEARCH, data, (payload: { isFind: boolean }) => {
+    cb(payload);
   });
 };
 

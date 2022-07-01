@@ -1,9 +1,10 @@
 import { Inject, Logger } from '@nestjs/common';
+import * as jwt from 'jsonwebtoken';
 import { GameService } from '../game/game.service';
 import { QueueService } from '../queue/queue.service';
-import { UserService } from 'src/modules/user/user.service';
-import { ISocket } from 'src/types';
 import { JwtService } from 'src/modules/jwt/jwt.service';
+import { UserService } from '../../modules/user/user.service';
+import { ISocket } from '../../types';
 
 export class InitService {
   private logger = new Logger(InitService.name);

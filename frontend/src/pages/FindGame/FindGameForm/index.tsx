@@ -20,7 +20,7 @@ export const FindGameForm = () => {
   });
 
   const onSubmit = (values: initialValuesType) => {
-    regInQueue(values, (isFind: boolean) => {
+    regInQueue(values, ({ isFind }: { isFind: boolean }) => {
       if (isFind) navigate(path.game());
       if (!isFind) navigate(path.waiting());
     });
