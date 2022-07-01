@@ -83,8 +83,8 @@ export const checkDiagonalMove = (props: MovePropsType): boolean => {
   }
 };
 
-export const checkCoordinates = (wayRow: number, wayCol: number) => {
-  return wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
+export const checkCoordinates = (row: number, col: number) => {
+  return row >= 0 && row < 8 && col >= 0 && col < 8;
 };
 
 export const checkSchemeAttack = (props: MovePropsType) => {
