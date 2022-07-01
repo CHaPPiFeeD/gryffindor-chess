@@ -16,7 +16,7 @@ import { RatingModule } from './rating/rating.module';
     MongooseModule.forRoot(process.env.DB_URL),
     ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../', 'client'),
+      rootPath: join(__dirname, '..', 'client'),
       exclude: ['/api*'],
     }),
 

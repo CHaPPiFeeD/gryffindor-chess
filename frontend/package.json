@@ -33,7 +33,6 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "postbuild": "move ./build ../backend/client",
     "eject": "react-scripts eject",
     "eslint:fix": "npx eslint \"src/**/*.ts*\" --fix"
   },

@@ -92,7 +92,7 @@ export class PartyService {
       point: 0,
     };
 
-    if (winner === 'draw') {
+    if (winner === null) {
       userA.point = 0.5;
       userB.point = 0.5;
     } else if (winner === whiteId) {

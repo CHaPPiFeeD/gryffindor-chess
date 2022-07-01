@@ -38,23 +38,16 @@ export const RenderBoard = () => {
     const col = +e.currentTarget.attributes.getNamedItem('data-col')?.value;
     const color: string =
       e.currentTarget.attributes.getNamedItem('data-color')?.value;
-
     if (moveQueueStore !== colorStore || !waysStore.length) return;
-
     let isTransformPawn;
 
     if (activePositionStore) {
       removeAllClasses(boardRef);
-
       isTransformPawn =
         checkTransformPawn(activePositionStore, boardStore, colorStore, row);
-    }
-
-    if (!activePositionStore) {
+    } else {
       const [rowBoard, colBoard] = getCoordinate(row, col, colorStore);
-
       if (color !== colorStore) return;
-
       addActiveClass(boardRef, rowBoard, colBoard);
       addWaysClasses(waysStore, row, col, colorStore, boardRef);
     }
@@ -62,9 +55,7 @@ export const RenderBoard = () => {
     if (isTransformPawn) {
       dispatch(setEndPosition([row, col]));
       dispatch(setOpen(MODAL.CHANGE_PAWN));
-    }
-
-    if (!isTransformPawn) {
+    } else {
       dispatch(setMove(
         activePositionStore,
         [row, col],
@@ -79,18 +70,15 @@ export const RenderBoard = () => {
         return <Box key={i} style={{ display: 'flex' }}>
           {v.map((v: any, j: number) => {
             const [row, col] = getCoordinate(i, j, colorStore);
-            const l = colorStore === 'black' ? 1 : 0;
-            const number = i + j + l;
-            const style =
-              number % 2 === 0 ? styles.cell_white : styles.cell_black;
+            const num = colorStore === 'black' ? i + j + 1 : i + j;
+            const style = num % 2 === 0
+              ? styles.cell_white
+              : styles.cell_black;
             const cell = boardStore[row][col];
-            let moveStyle;
+            let moveStyle, color;
             lastMoveStore?.forEach((v) => {
               if (v[0] === row && v[1] === col) moveStyle = styles.last_move;
             });
-
-            let color;
-
             if (WHITE_FIGURES.includes(cell)) color = 'white';
             if (BLACK_FIGURES.includes(cell)) color = 'black';
 
@@ -142,8 +130,7 @@ const checkTransformPawn = (
 };
 
 const getCoordinate = (row: number, col: number, color: string): number[] => {
-  const isReverse = color === 'black';
-  if (isReverse) return [Math.abs(row - 7), Math.abs(col - 7)];
+  if (color === 'black') return [Math.abs(row - 7), Math.abs(col - 7)];
   return [row, col];
 };
 
@@ -153,15 +140,12 @@ const addActiveClass = (
   col: number,
 ) => {
   const cell = boardRef?.current?.children[row]?.children[col];
-
-  const isNotEmpty =
+  if (
     cell !== undefined &&
     cell.childElementCount &&
-    !cell.children[0].classList.value.includes('fog_wrapper');
-
-  if (isNotEmpty) {
+    !cell.children[0].classList.value.includes('fog_wrapper')
+  )
     cell.classList.add(styles.active);
-  } else return;
 };
 
 const addWaysClasses = (
@@ -173,32 +157,13 @@ const addWaysClasses = (
 ) => {
   ways.forEach((v) => {
     const way = v.split('');
-    const [start, end] = [
-      [+way[0], +way[1]],
-      [+way[2], +way[3]],
-    ];
-
-    const isAllowWay =
-      row === start[0] &&
-      col === start[1];
-
-    if (isAllowWay) {
-      const [rowBoard, colBoard] = getCoordinate(end[0], end[1], color);
-      const cell = boardRef?.current?.children[rowBoard]?.children[colBoard];
-
-      const isNotUndefined = cell !== undefined;
-
-      if (isNotUndefined) {
-        const isNotEmpty = cell.childElementCount;
-
-        if (isNotEmpty) {
-          cell.classList.add(styles.circle);
-        }
-
-        if (!isNotEmpty) {
-          cell.classList.add(styles.ellips);
-        }
-      }
-    }
+    const wayStart = [+way[0], +way[1]];
+    const wayEnd = [+way[2], +way[3]];
+    if (row !== wayStart[0] || col !== wayStart[1]) return;
+    const [rowBoard, colBoard] = getCoordinate(wayEnd[0], wayEnd[1], color);
+    const cell = boardRef?.current?.children[rowBoard]?.children[colBoard];
+    if (cell === undefined) return;
+    if (cell.childElementCount) cell.classList.add(styles.circle);
+    if (!cell.childElementCount) cell.classList.add(styles.ellips);
   });
 };

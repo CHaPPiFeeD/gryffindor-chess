@@ -1,0 +1,37 @@
+version: '3'
+services:
+  api:
+    build: ./backend
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+    container_name: gryffindor-chess-api
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+  client:
+    build: ./frontend
+    ports:
+      - '80:80'
+    container_name: gryffindor-chess-client
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+        reservations:
+          memory: 1024M
+  db:
+    image: mongo
+    ports:
+      - '27017:27017'
+    container_name: gryffindor-chess-db
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M

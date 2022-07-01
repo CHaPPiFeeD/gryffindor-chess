@@ -4,6 +4,7 @@ import { CreateException } from 'src/exceptions/nocontent.exception';
 import { generateAccessToken } from 'src/utils';
 import { API_ERROR_CODES } from 'src/enums/errorsCode';
 import { UserService } from '../user/user.service';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,11 @@ export class AuthService {
   @Inject(UserService)
   private userService: UserService;
 
-  async register(username: string, email: string, password: string) {
+  async register(
+    username: string,
+    email: string,
+    password: string,
+  ): Promise<AuthResponseDto> {
     const candidate = await this.userService.findOne({ email });
     if (candidate)
       throw new CreateException(API_ERROR_CODES.USER_ALREADY_REGISTERED);
@@ -32,7 +37,7 @@ export class AuthService {
     return this.login(email, password);
   }
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string): Promise<AuthResponseDto> {
     const user = await this.userService.findOne({ email });
     if (!user) throw new CreateException(API_ERROR_CODES.USER_NOT_FOUND);
 
@@ -45,4 +50,9 @@ export class AuthService {
     const token = generateAccessToken(user._id);
     return { token };
   }
+}
+
+export class AuthResponseDto {
+  @ApiProperty({ default: 'xxxxx.yyyyy.zzzzz' })
+  token: string;
 }
