@@ -117,7 +117,12 @@ export class Game {
     this.black.rules.interception = [];
   }
 
-  getDataForPlayers({ whiteBoard, blackBoard, whiteWays, blackWays }) {
+  getDataForPlayers({
+    whiteBoard = null,
+    blackBoard = null,
+    whiteWays,
+    blackWays,
+  }) {
     const [whiteLog, blackLog] = this.getLogsForPlayers();
 
     const data: any = {
@@ -133,7 +138,7 @@ export class Game {
     const white = {
       ...data,
       color: COLORS.WHITE,
-      board: whiteBoard,
+      board: whiteBoard || this.board,
       ways: this.moveQueue === COLORS.WHITE ? whiteWays : [],
       log: whiteLog,
     };
@@ -141,7 +146,7 @@ export class Game {
     const black = {
       ...data,
       color: COLORS.BLACK,
-      board: blackBoard,
+      board: blackBoard || this.board,
       ways: this.moveQueue === COLORS.BLACK ? blackWays : [],
       log: blackLog,
     };

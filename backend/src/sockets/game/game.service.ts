@@ -5,11 +5,11 @@ import { ObjectId } from 'mongoose';
 import { findRoomBySocketId } from '../../helpers/game';
 import { ISocket, MoveType, QueueUserType } from '../../types';
 import { ValidationService } from './validation.service';
-import { BoardService } from './board.service';
 import { ServerGateway } from '../server/server.gateway';
 import { Game } from '../../models/game.model';
 import { WS_EVENTS } from '../../enums/constants';
 import { PartyService } from '../../modules/party/party.service';
+import { BoardService } from './board.service';
 
 export class GameService {
   private logger = new Logger(GameService.name);
@@ -44,7 +44,7 @@ export class GameService {
     const roomId = findRoomBySocketId(socketId, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
-    const boardsAndWays = this.boardService.createFogBoards(game);
+    const boardsAndWays = this.boardService.createWays(game);
     const data = game.getDataForPlayers(boardsAndWays);
 
     this.serverGateway.server
