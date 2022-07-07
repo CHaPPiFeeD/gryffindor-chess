@@ -4,7 +4,7 @@ import { GameGateway } from './game/game.gateway';
 import { InitGateway } from './init/init.gateway';
 import { QueueGateway } from './queue/queue.gateway';
 import { ServerGateway } from './server/server.gateway';
-import { BoardService } from './game/board.service';
+import { FogBoardService } from './game/fogBoard.service';
 import { GameService } from './game/game.service';
 import { InitService } from './init/init.service';
 import { QueueService } from './queue/queue.service';
@@ -13,6 +13,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Party, PartySchema } from '../schemas/party.schema';
 import { PartyModule } from '../modules/party/party.module';
 import { JwtModule } from '../modules/jwt/jwt.module';
+import { BoardService } from './game/board.service';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { JwtModule } from '../modules/jwt/jwt.module';
     GameGateway,
     GameService,
     ValidationService,
+    FogBoardService,
     BoardService,
   ],
   exports: [InitGateway, QueueGateway, QueueService, GameGateway, GameService],
