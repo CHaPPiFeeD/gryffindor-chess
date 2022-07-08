@@ -13,18 +13,12 @@ export class AuthService {
   @Inject(UserService)
   private userService: UserService;
 
-  async register(
-    username: string,
-    email: string,
-    password: string,
-  ): Promise<AuthResponseDto> {
+  async register(username: string, email: string, password: string): Promise<string> {
     const candidate = await this.userService.findOne({ email });
-    if (candidate)
-      throw new CreateException(API_ERROR_CODES.USER_ALREADY_REGISTERED);
-
+    if (candidate) throw new CreateException(API_ERROR_CODES.USER_ALREADY_REGISTERED);
     const hashPassword: string = await bcrypt.hash(password, 8);
 
-    await this.userService.createUser({
+    const user = {
       username: username,
       email: email,
       password: hashPassword,
@@ -32,9 +26,10 @@ export class AuthService {
       parties: 0,
       partiesWon: 0,
       rating: 1500,
-    });
+    };
 
-    return this.login(email, password);
+    await this.userService.createUser(user);
+    return 'OK';
   }
 
   async login(email: string, password: string): Promise<AuthResponseDto> {
@@ -42,8 +37,7 @@ export class AuthService {
     if (!user) throw new CreateException(API_ERROR_CODES.USER_NOT_FOUND);
 
     const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword)
-      throw new CreateException(API_ERROR_CODES.USER_WRONG_PASSWORD);
+    if (!isValidPassword) throw new CreateException(API_ERROR_CODES.USER_WRONG_PASSWORD);
 
     this.userService.setOnline({ email }, true);
 
