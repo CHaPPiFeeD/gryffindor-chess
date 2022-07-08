@@ -18,7 +18,7 @@ class ChangeFigure {
 
   @IsNotEmpty()
   @IsString()
-  @Matches(/^((?![^qbnr]).)$/)
+  @Matches(/^((?![^qbnrQBNR]).)$/)
   chooseFigure: string;
 }
 

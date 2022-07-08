@@ -59,7 +59,6 @@ export const RenderBoard = () => {
       dispatch(setMove(
         activePositionStore,
         [row, col],
-        { isChange: false, chooseFigure: null },
       ));
     }
   };
