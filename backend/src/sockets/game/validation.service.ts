@@ -1,8 +1,9 @@
 import { Inject, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
+import { ChessMoveDto } from 'src/dto/gateway.dto';
 import { Game } from 'src/models/game.model';
-import { MoveType, MovePropsType } from 'src/types';
+import { MovePropsType } from 'src/types';
 import { BLACK_FIGURES, FIGURES, WHITE_FIGURES } from '../../enums/constants';
 import {
   checkDiagonalMove,
@@ -18,7 +19,7 @@ export class ValidationService {
   @Inject(ServerGateway)
   serverGateway: ServerGateway;
 
-  validationMove(client: Socket, game: Game, move: MoveType) {
+  validationMove(client: Socket, game: Game, move: ChessMoveDto) {
     const startFigure = game.getFigureFromStart(move);
     const x: number = move.end[1] - move.start[1];
     const y: number = move.end[0] - move.start[0];
@@ -66,7 +67,7 @@ export class ValidationService {
     this.checkEndGame(client, game, move);
   }
 
-  private basicСheck(client: Socket, game: Game, move: MoveType) {
+  private basicСheck(client: Socket, game: Game, move: ChessMoveDto) {
     if (game.gameEnd)
       throw new WsException("You can't move after the game is over");
 
@@ -224,7 +225,7 @@ export class ValidationService {
     }
   };
 
-  private checkEndGame = (client: Socket, game: Game, move: MoveType) => {
+  private checkEndGame = (client: Socket, game: Game, move: ChessMoveDto) => {
     const endFigure = game.getFigureFromEnd(move);
     const [clientColor] = game.getColorsBySocket(client.id);
 

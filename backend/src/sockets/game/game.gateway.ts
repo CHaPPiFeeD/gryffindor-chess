@@ -1,8 +1,10 @@
-import { Inject, Logger, UseGuards } from '@nestjs/common';
+import { Inject, Logger, UseGuards, UsePipes } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { WsAuthGuard } from 'src/guards/ws.auth.guard';
-import { ISocket, MoveType } from '../../types';
+import { ChessMoveDto } from 'src/dto/gateway.dto';
+import { WsValidationPipe } from 'src/pipes/ws.validation.pipe';
+import { WsAuthGuard } from '../../guards/ws.auth.guard';
+import { ISocket } from '../../types';
 import { WS_EVENTS } from '../constants';
 import { GameService } from './game.service';
 
@@ -15,7 +17,8 @@ export class GameGateway {
 
   @UseGuards(WsAuthGuard)
   @SubscribeMessage(WS_EVENTS.GAME.MOVE)
-  chessMuve(client: Socket, data: MoveType) {
+  @UsePipes(new WsValidationPipe())
+  chessMuve(client: Socket, data: ChessMoveDto) {
     this.gameService.moveChess(client, data);
   }
 

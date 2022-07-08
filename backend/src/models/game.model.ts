@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { GamePlayerType, MoveType } from '../types';
+import { GamePlayerType } from '../types';
 import {
   INIT_BOARD,
   COLORS,
@@ -12,6 +12,7 @@ import {
 import { randomString } from 'src/helpers';
 import { setPlayerColors } from 'src/helpers/game';
 import { ObjectId } from 'mongoose';
+import { ChessMoveDto } from 'src/dto/gateway.dto';
 
 export class Game {
   id: string;
@@ -45,7 +46,7 @@ export class Game {
     this.log = [];
   }
 
-  updateLog(client: Socket, move: MoveType) {
+  updateLog(client: Socket, move: ChessMoveDto) {
     const figure = this.getFigureFromStart(move);
 
     const log: string = [
@@ -59,7 +60,7 @@ export class Game {
     this.log.push(log);
   }
 
-  move(client: Socket, move: MoveType) {
+  move(client: Socket, move: ChessMoveDto) {
     const startFigure = this.getFigureFromStart(move);
     const endFigure = this.getFigureFromEnd(move);
     const [clientColor, opponentsColor] = this.getColorsBySocket(client.id);
@@ -67,7 +68,7 @@ export class Game {
     const pawn = clientColor === 'white' ? 'P' : 'p';
 
     if (startFigure === pawn && (move.end[0] === 0 || move.end[0] === 7))
-      this.board[move.start[0]][move.start[1]] = move.change.chooseFigure;
+      this.board[move.start[0]][move.start[1]] = move.changeFigure.chooseFigure;
 
     if (BLACK_FIGURES.includes(endFigure) || WHITE_FIGURES.includes(endFigure))
       this.eatenFigures[clientColor].push(endFigure);
@@ -104,11 +105,11 @@ export class Game {
     if (userId === this.black.userId) return [COLORS.BLACK, COLORS.WHITE];
   }
 
-  getFigureFromStart(move: MoveType): string {
+  getFigureFromStart(move: ChessMoveDto): string {
     return this.board[move.start[0]][move.start[1]];
   }
 
-  getFigureFromEnd(move: MoveType): string {
+  getFigureFromEnd(move: ChessMoveDto): string {
     return this.board[move.end[0]][move.end[1]];
   }
 
