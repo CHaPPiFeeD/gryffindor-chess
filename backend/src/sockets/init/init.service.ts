@@ -1,9 +1,9 @@
 import { Inject, Logger } from '@nestjs/common';
 import { GameService } from '../game/game.service';
 import { QueueService } from '../queue/queue.service';
-import * as jwt from 'jsonwebtoken';
 import { UserService } from 'src/modules/user/user.service';
 import { ISocket } from 'src/types';
+import { JwtService } from 'src/modules/jwt/jwt.service';
 
 export class InitService {
   private logger = new Logger(InitService.name);
@@ -17,17 +17,19 @@ export class InitService {
   @Inject(UserService)
   private userService: UserService;
 
+  @Inject(JwtService)
+  private jwtService: JwtService;
+
   async handleConnect(client: ISocket) {
-    if (!client.handshake.auth.token) {
+    const accessToken = client.handshake.auth.token;
+
+    if (!accessToken) {
       client.emit('error', 'Unauthorized');
       client.disconnect();
       return;
     }
 
-    const decoded = jwt.verify(
-      client.handshake.auth.token,
-      process.env.JWT_SECRET,
-    );
+    const decoded = this.jwtService.verifyAccessToken(accessToken);
 
     if (!decoded) {
       client.emit('error', 'Unauthorized');
@@ -46,17 +48,15 @@ export class InitService {
     client.user = decoded;
     await this.userService.setOnline({ _id: decoded['id'] }, true);
     await this.gameService.connect(client);
-
     this.gameService.reconnect(client);
-
     this.logger.log(`User connection: ${client.id}`);
   }
 
   handleDisconnect(client: ISocket) {
-    const auth = client.handshake.auth;
-    if (!auth.token) return;
+    const accessToken = client.handshake.auth.token;
+    if (!accessToken) return;
 
-    const decoded = jwt.verify(auth.token, process.env.JWT_SECRET);
+    const decoded = this.jwtService.verifyAccessToken(accessToken);
     if (!decoded) return;
 
     client.user = decoded;

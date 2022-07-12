@@ -4,7 +4,7 @@ import { LoginDto, RegisterDto } from 'src/dto/auth.dto';
 import { AuthResponseDto, AuthService } from 'src/modules/auth/auth.service';
 
 @ApiTags('Auth')
-@Controller()
+@Controller('/api/auth')
 export class AuthController {
   @Inject(AuthService)
   private authService: AuthService;
@@ -18,7 +18,7 @@ export class AuthController {
     status: 400,
     description: 'Bad request.',
   })
-  @Post('/api/auth/registration')
+  @Post('/registration')
   register(@Body() body: RegisterDto) {
     return this.authService.register(body.username, body.email, body.password);
   }
@@ -32,7 +32,7 @@ export class AuthController {
     status: 400,
     description: 'Bad request.',
   })
-  @Post('/api/auth/login')
+  @Post('/login')
   login(@Body() body: LoginDto) {
     return this.authService.login(body.email, body.password);
   }

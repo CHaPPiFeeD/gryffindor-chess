@@ -1,10 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { CreateException } from 'src/exceptions/nocontent.exception';
-import { generateAccessToken } from 'src/utils';
 import { API_ERROR_CODES } from 'src/enums/errorsCode';
 import { UserService } from '../user/user.service';
 import { ApiProperty } from '@nestjs/swagger';
+import { JwtService } from '../jwt/jwt.service';
 
 @Injectable()
 export class AuthService {
@@ -13,9 +13,19 @@ export class AuthService {
   @Inject(UserService)
   private userService: UserService;
 
-  async register(username: string, email: string, password: string): Promise<string> {
+  @Inject(JwtService)
+  private jwtService: JwtService;
+
+  async register(
+    username: string,
+    email: string,
+    password: string,
+  ): Promise<string> {
     const candidate = await this.userService.findOne({ email });
-    if (candidate) throw new CreateException(API_ERROR_CODES.USER_ALREADY_REGISTERED);
+
+    if (candidate)
+      throw new CreateException(API_ERROR_CODES.USER_ALREADY_REGISTERED);
+
     const hashPassword: string = await bcrypt.hash(password, 8);
 
     const user = {
@@ -37,12 +47,13 @@ export class AuthService {
     if (!user) throw new CreateException(API_ERROR_CODES.USER_NOT_FOUND);
 
     const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) throw new CreateException(API_ERROR_CODES.USER_WRONG_PASSWORD);
+    if (!isValidPassword)
+      throw new CreateException(API_ERROR_CODES.USER_WRONG_PASSWORD);
 
     this.userService.setOnline({ email }, true);
 
-    const token = generateAccessToken(user._id);
-    return { token };
+    const accessToken = this.jwtService.generateAccessToken({ id: user._id });
+    return { token: accessToken };
   }
 }
 
