@@ -8,6 +8,6 @@ export class MailController {
 
   @Post('/api/mail')
   sendMail() {
-    this.mailService.sendUserConfirmation();
+    // this.mailService.sendUserConfirmation();
   }
 }

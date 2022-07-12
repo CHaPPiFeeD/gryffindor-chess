@@ -5,6 +5,8 @@ import { API_ERROR_CODES } from 'src/enums/errorsCode';
 import { UserService } from '../user/user.service';
 import { ApiProperty } from '@nestjs/swagger';
 import { JwtService } from '../jwt/jwt.service';
+import { RegisterDto } from 'src/dto/auth.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -16,29 +18,30 @@ export class AuthService {
   @Inject(JwtService)
   private jwtService: JwtService;
 
-  async register(
-    username: string,
-    email: string,
-    password: string,
-  ): Promise<string> {
-    const candidate = await this.userService.findOne({ email });
+  @Inject(MailService)
+  private mailService: MailService;
+
+  async register(user: RegisterDto): Promise<string> {
+    const candidate = await this.userService.findOne({ email: user.email });
 
     if (candidate)
       throw new CreateException(API_ERROR_CODES.USER_ALREADY_REGISTERED);
 
-    const hashPassword: string = await bcrypt.hash(password, 8);
-
-    const user = {
-      username: username,
-      email: email,
-      password: hashPassword,
-      online: false,
-      parties: 0,
-      partiesWon: 0,
-      rating: 1500,
-    };
+    user.password = await bcrypt.hash(user.password, 8);
 
     await this.userService.createUser(user);
+
+    const registrationToken = this.jwtService.generateRegistrationToken({
+      email: user.email,
+    });
+
+    const url = `${process.env.HOST}:${process.env.PORT}?registration_token=${registrationToken}`;
+
+    await this.mailService.sendUserConfirmation(user.email, {
+      name: user.username,
+      url,
+    });
+
     return 'OK';
   }
 

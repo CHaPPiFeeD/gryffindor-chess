@@ -5,6 +5,7 @@ import { User, UserSchema } from 'src/schemas/user.schema';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { UserModule } from '../user/user.module';
 import { JwtModule } from '../jwt/jwt.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { JwtModule } from '../jwt/jwt.module';
 
     UserModule,
     JwtModule,
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService],

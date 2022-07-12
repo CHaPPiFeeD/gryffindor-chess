@@ -29,7 +29,7 @@ export class InitService {
       return;
     }
 
-    const decoded = this.jwtService.verifyAccessToken(accessToken);
+    const decoded = this.jwtService.verifyToken(accessToken);
 
     if (!decoded) {
       client.emit('error', 'Unauthorized');
@@ -56,7 +56,7 @@ export class InitService {
     const accessToken = client.handshake.auth.token;
     if (!accessToken) return;
 
-    const decoded = this.jwtService.verifyAccessToken(accessToken);
+    const decoded = this.jwtService.verifyToken(accessToken);
     if (!decoded) return;
 
     client.user = decoded;

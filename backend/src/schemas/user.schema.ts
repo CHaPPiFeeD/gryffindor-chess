@@ -17,6 +17,10 @@ export class User {
   @Prop()
   password: string;
 
+  @ApiProperty({ default: true })
+  @Prop()
+  isVerified: boolean;
+
   @ApiProperty()
   @Prop()
   online: boolean;

@@ -8,7 +8,13 @@ export class JwtService {
     return jwt.sign(payload, process.env.JWT_SECRET);
   }
 
-  verifyAccessToken(accessToken) {
+  generateRegistrationToken(payload: { email: string }) {
+    return jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: 60 * 60 * 24, // 24 hours
+    });
+  }
+
+  verifyToken(accessToken) {
     return jwt.verify(accessToken, process.env.JWT_SECRET);
   }
 }

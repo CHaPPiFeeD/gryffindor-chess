@@ -6,14 +6,17 @@ export class MailService {
   @Inject(MailerService)
   private mailerService: MailerService;
 
-  async sendUserConfirmation() {
+  async sendUserConfirmation(
+    email: string,
+    context: { name: string; url: string },
+  ) {
     await this.mailerService.sendMail({
-      to: 'sheva8dim@gmail.com',
+      to: email,
       subject: 'CONFIRM',
       template: './confirmation',
       context: {
-        name: 'name',
-        url: 'blablabla',
+        name: context.name,
+        url: context.url,
       },
     });
   }
