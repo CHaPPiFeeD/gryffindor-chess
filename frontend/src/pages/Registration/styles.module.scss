@@ -1,0 +1,38 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  
+  .content {
+    border-radius: 5px;
+    padding: 35px 50px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #F0D9B5;
+    min-width: 256px;
+    border: 10px solid #634833;
+
+    .title {
+      margin-bottom: 5px;
+      text-align: center;
+    }
+    
+    .form {
+      display: flex;
+      flex-direction: column;
+    
+      .button_form,
+      .text_field {
+        margin-bottom: 10px;
+      }
+    
+      .text_field {
+        background: #f0f0f0;
+        border-radius: 5px;
+      }
+    }
+  }
+}
+

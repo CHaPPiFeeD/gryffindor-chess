@@ -4,4 +4,5 @@ export const path = {
   waiting: () => '/waiting',
   game: () => '/game',
   notFound: () => '*',
+  registration: () => '/registration',
 };
