@@ -14,15 +14,21 @@ export class UserService {
     return this.userSchema.findOne({ ...params });
   }
 
-  async registration(email: string, userData: { username: string, password: string }) {
-    await this.updateOne({ email }, {
-      ...userData,
-      isVerified: true,
-      online: false,
-      parties: 0,
-      partiesWon: 0,
-      rating: 1500,
-    })
+  async registration(
+    email: string,
+    userData: { username: string; password: string },
+  ) {
+    await this.updateOne(
+      { email },
+      {
+        ...userData,
+        isVerified: true,
+        online: false,
+        parties: 0,
+        partiesWon: 0,
+        rating: 1500,
+      },
+    );
   }
 
   async create(email: string) {

@@ -23,7 +23,7 @@ export class AuthService {
 
   async registration(user: registrationDto): Promise<string> {
     const decoded: any = this.jwtService.verifyToken(user.registrationToken);
-    if (!decoded) throw new CreateException(API_ERROR_CODES.INVALID_TOKEN)
+    if (!decoded) throw new CreateException(API_ERROR_CODES.INVALID_TOKEN);
 
     const { email } = decoded;
     const candidate = await this.userService.findOne({ email });
@@ -45,8 +45,10 @@ export class AuthService {
       throw new CreateException(API_ERROR_CODES.USER_ALREADY_REGISTERED);
 
     await this.userService.create(email);
-    const registrationToken = this.jwtService.generateRegistrationToken({ email });
-    const url = `${process.env.CLIENT_HOST}?registration_token=${registrationToken}`;
+    const registrationToken = this.jwtService.generateRegistrationToken({
+      email,
+    });
+    const url = `${process.env.CLIENT_HOST}/registration?registration_token=${registrationToken}`;
     await this.mailService.sendUserConfirmation(email, { url });
     this.logger.log(`User created: ${email}`);
 

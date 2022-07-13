@@ -2,14 +2,17 @@ import { Typography, TextField, Button } from '@mui/material';
 import { Box } from '@mui/system';
 import { useFormik } from 'formik';
 import API from '../../api';
-import { path } from '../../router/constants';
 import styles from './styles.module.scss';
 import * as Yup from 'yup';
+import { useQuery } from '../../hooks';
 
 export const Registration = () => {
+  const registrationToken = useQuery('registration_token');
+
   const initialValues: InitialValuesType = {
     username: '',
     password: '',
+    registrationToken,
   };
 
   const validationSchema = Yup.object({
@@ -92,4 +95,5 @@ export const Registration = () => {
 type InitialValuesType = {
   username: string;
   password: string;
+  registrationToken: string | null;
 };
