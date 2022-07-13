@@ -21,7 +21,7 @@ export class AuthService {
   @Inject(MailService)
   private mailService: MailService;
 
-  async registration(user: registrationDto): Promise<string> {
+  async registration(user: registrationDto) {
     const decoded: any = this.jwtService.verifyToken(user.registrationToken);
     if (!decoded) throw new CreateException(API_ERROR_CODES.INVALID_TOKEN);
 
@@ -34,11 +34,9 @@ export class AuthService {
     user.password = await bcrypt.hash(user.password, 8);
     await this.userService.registration(email, user);
     this.logger.log(`User registered: ${email}`);
-
-    return 'OK';
   }
 
-  async create(email: string): Promise<string> {
+  async create(email: string) {
     const isCreated = await this.userService.findOne({ email });
 
     if (isCreated)
@@ -51,8 +49,7 @@ export class AuthService {
     const url = `${process.env.CLIENT_HOST}/registration?registration_token=${registrationToken}`;
     await this.mailService.sendUserConfirmation(email, { url });
     this.logger.log(`User created: ${email}`);
-
-    return 'OK';
+    this.logger.log(url);
   }
 
   async login(email: string, password: string): Promise<AuthResponseDto> {

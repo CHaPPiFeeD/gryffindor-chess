@@ -55,5 +55,6 @@ async function doHttpCall(
     }
   } catch (err: any) {
     console.log(err.response);
+    return err.response.data;
   }
 }

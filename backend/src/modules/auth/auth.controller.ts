@@ -25,7 +25,7 @@ export class AuthController {
 
   @Post('/registration')
   registration(@Body() body: registrationDto) {
-    this.authService.registration(body);
+    return this.authService.registration(body);
   }
 
   // @ApiResponse({

@@ -5,8 +5,11 @@ import API from '../../api';
 import styles from './styles.module.scss';
 import * as Yup from 'yup';
 import { useQuery } from '../../hooks';
+import { showNotification } from '../../store/notification/notificationSlise';
+import { useAppDispatch } from '../../hooks/redux';
 
 export const Registration = () => {
+  const dispatch = useAppDispatch();
   const registrationToken = useQuery('registration_token');
 
   const initialValues: InitialValuesType = {
@@ -25,9 +28,13 @@ export const Registration = () => {
   });
 
   const onSubmit = async (values: InitialValuesType) => {
-    const data = await API.registration(values)
+    await API.registration(values)
       .then((payload) => {
-        console.log(payload);
+        if (payload?.status) {
+          dispatch(showNotification('Confirm registration through the letter that will be sent to your mail', 'success'));
+        } else {
+          dispatch(showNotification(payload.errors[0].message, 'error'));
+        }
       });
   };
 

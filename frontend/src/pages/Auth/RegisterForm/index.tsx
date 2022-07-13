@@ -1,12 +1,15 @@
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import API from '../../../api';
+import { useAppDispatch } from '../../../hooks/redux';
+import { showNotification } from '../../../store/notification/notificationSlise';
 import styles from './styles.module.scss';
 
 export const RegisterForm = (props: { setForm: Function }) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const initialValues: InitialValuesType = {
     email: '',
@@ -19,9 +22,13 @@ export const RegisterForm = (props: { setForm: Function }) => {
   });
 
   const onSubmit = async (values: InitialValuesType) => {
-    const data = await API.createUser(values)
+    await API.createUser(values)
       .then((payload) => {
-        console.log(payload);
+        if (payload?.status) {
+          dispatch(showNotification('Confirm registration through the letter that will be sent to your mail', 'success'));
+        } else {
+          dispatch(showNotification(payload.errors[0].message, 'error'));
+        }
       });
   };
 
