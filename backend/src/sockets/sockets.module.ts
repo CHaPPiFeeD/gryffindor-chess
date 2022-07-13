@@ -12,12 +12,14 @@ import { ValidationService } from './game/validation.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Party, PartySchema } from '../schemas/party.schema';
 import { PartyModule } from '../modules/party/party.module';
+import { JwtModule } from '../modules/jwt/jwt.module';
 
 @Module({
   imports: [
+    MongooseModule.forFeature([{ name: Party.name, schema: PartySchema }]),
     UserModule,
     PartyModule,
-    MongooseModule.forFeature([{ name: Party.name, schema: PartySchema }]),
+    JwtModule,
   ],
   providers: [
     InitGateway,

@@ -3,10 +3,13 @@ import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import API from '../../../api';
+import { useAppDispatch } from '../../../hooks/redux';
 import { path } from '../../../router/constants';
+import { showNotification } from '../../../store/notification/notificationSlise';
 import styles from './styles.module.scss';
 
 export const LoginForm = (props: { setForm: Function }) => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const initialValues: InitialValuesType = {
@@ -26,9 +29,13 @@ export const LoginForm = (props: { setForm: Function }) => {
   const onSubmit = async (values: InitialValuesType) => {
     await API.login(values)
       .then((payload) => {
-        console.log(payload);
-        localStorage.setItem('access_token', payload.data.token);
-        navigate(path.findGame());
+        if (payload?.status) {
+          localStorage.setItem('access_token', payload.data.token);
+          navigate(path.findGame());
+        } else {
+          dispatch(showNotification(payload.errors[0].message, 'error'));
+        }
+
       });
   };
 

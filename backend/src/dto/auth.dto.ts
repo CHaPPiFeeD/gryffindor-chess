@@ -7,7 +7,7 @@ import {
   Matches,
 } from 'class-validator';
 
-export class RegisterDto {
+export class registrationDto {
   @ApiProperty({ default: 'Name' })
   @IsNotEmpty()
   @IsString()
@@ -15,10 +15,10 @@ export class RegisterDto {
   @Matches(/^((?![^\w\s]).)*$/)
   username: string;
 
-  @ApiProperty({ default: 'email@gmail.com' })
+  @ApiProperty({ default: 'xxx.yyy.zzz' })
   @IsNotEmpty()
-  @IsEmail()
-  email: string;
+  @IsString()
+  registrationToken: string;
 
   @ApiProperty({ default: '12345678' })
   @IsNotEmpty()

@@ -11,6 +11,10 @@ const API = {
     return doHttpCall('POST', endpoints.registration(), data, {});
   },
 
+  async createUser(data: any) {
+    return doHttpCall('POST', endpoints.createUser(), data, {});
+  },
+
   async getRate() {
     return doHttpCall('GET', endpoints.rate(), {}, {});
   },
@@ -51,5 +55,6 @@ async function doHttpCall(
     }
   } catch (err: any) {
     console.log(err.response);
+    return err.response.data;
   }
 }

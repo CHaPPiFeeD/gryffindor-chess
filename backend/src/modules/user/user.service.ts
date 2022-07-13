@@ -14,8 +14,25 @@ export class UserService {
     return this.userSchema.findOne({ ...params });
   }
 
-  async createUser(params) {
-    await this.userSchema.create({ ...params });
+  async registration(
+    email: string,
+    userData: { username: string; password: string },
+  ) {
+    await this.updateOne(
+      { email },
+      {
+        ...userData,
+        isVerified: true,
+        online: false,
+        parties: 0,
+        partiesWon: 0,
+        rating: 1500,
+      },
+    );
+  }
+
+  async create(email: string) {
+    await this.userSchema.create({ email, isVerified: false });
   }
 
   async setOnline(filter, isOnline) {

@@ -1,7 +1,8 @@
 export const endpoints = {
-  login: () => `${process.env.API_HOST}/api/auth/login`,
-  registration: () => `${process.env.API_HOST}/api/auth/registration`,
-  rate: () => `${process.env.API_HOST}/api/rate/top`,
+  login: () => `${process.env.REACT_APP_API_HOST}/api/auth/login`,
+  createUser: () => `${process.env.REACT_APP_API_HOST}/api/auth/create`,
+  registration: () => `${process.env.REACT_APP_API_HOST}/api/auth/registration`,
+  rate: () => `${process.env.REACT_APP_API_HOST}/api/rate/top`,
 };
 
 export const WS_EVENTS = {

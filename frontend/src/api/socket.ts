@@ -9,7 +9,7 @@ export const joinSocket = () => {
   if (socket?.connected) return;
 
   socket = io(
-    `${process.env.API_HOST}`,
+    `${process.env.REACT_APP_API_HOST}`,
     {
       closeOnBeforeunload: false,
       auth: {
