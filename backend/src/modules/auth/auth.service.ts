@@ -5,7 +5,7 @@ import { API_ERROR_CODES } from 'src/enums/errorsCode';
 import { UserService } from '../user/user.service';
 import { ApiProperty } from '@nestjs/swagger';
 import { JwtService } from '../jwt/jwt.service';
-import { RegisterDto } from 'src/dto/auth.dto';
+import { registrationDto } from 'src/dto/auth.dto';
 import { MailService } from '../mail/mail.service';
 
 @Injectable()
@@ -21,26 +21,34 @@ export class AuthService {
   @Inject(MailService)
   private mailService: MailService;
 
-  async register(user: RegisterDto): Promise<string> {
-    const candidate = await this.userService.findOne({ email: user.email });
+  async registration(user: registrationDto): Promise<string> {
+    const decoded: any = this.jwtService.verifyToken(user.registrationToken);
+    if (!decoded) throw new CreateException(API_ERROR_CODES.INVALID_TOKEN)
 
-    if (candidate)
+    const { email } = decoded;
+    const candidate = await this.userService.findOne({ email });
+
+    if (candidate.isVerified)
       throw new CreateException(API_ERROR_CODES.USER_ALREADY_REGISTERED);
 
     user.password = await bcrypt.hash(user.password, 8);
+    await this.userService.registration(email, user);
+    this.logger.log(`User registered: ${email}`);
 
-    await this.userService.createUser(user);
+    return 'OK';
+  }
 
-    const registrationToken = this.jwtService.generateRegistrationToken({
-      email: user.email,
-    });
+  async create(email: string): Promise<string> {
+    const isCreated = await this.userService.findOne({ email });
 
-    const url = `${process.env.HOST}:${process.env.PORT}?registration_token=${registrationToken}`;
+    if (isCreated)
+      throw new CreateException(API_ERROR_CODES.USER_ALREADY_REGISTERED);
 
-    await this.mailService.sendUserConfirmation(user.email, {
-      name: user.username,
-      url,
-    });
+    await this.userService.create(email);
+    const registrationToken = this.jwtService.generateRegistrationToken({ email });
+    const url = `${process.env.CLIENT_HOST}?registration_token=${registrationToken}`;
+    await this.mailService.sendUserConfirmation(email, { url });
+    this.logger.log(`User created: ${email}`);
 
     return 'OK';
   }

@@ -8,14 +8,13 @@ export class MailService {
 
   async sendUserConfirmation(
     email: string,
-    context: { name: string; url: string },
+    context: { url: string },
   ) {
     await this.mailerService.sendMail({
       to: email,
       subject: 'CONFIRM',
       template: './confirmation',
       context: {
-        name: context.name,
         url: context.url,
       },
     });
