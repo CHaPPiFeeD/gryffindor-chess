@@ -20,14 +20,14 @@ export type GameDataType = {
 }
 
 export type ChangeFigureDataType = {
-  isChange: boolean,
+  isChangePawn: boolean,
   chooseFigure: null | string,
 }
 
 export type MoveDatatype = {
   start: [number, number],
   end: [number, number],
-  change: ChangeFigureDataType,
+  changeFigure?: ChangeFigureDataType,
 }
 
 export type UsersQueueType = {

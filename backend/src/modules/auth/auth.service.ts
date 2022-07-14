@@ -1,10 +1,12 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { CreateException } from 'src/exceptions/nocontent.exception';
-import { generateAccessToken } from 'src/utils';
 import { API_ERROR_CODES } from 'src/enums/errorsCode';
 import { UserService } from '../user/user.service';
 import { ApiProperty } from '@nestjs/swagger';
+import { JwtService } from '../jwt/jwt.service';
+import { registrationDto } from 'src/dto/auth.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -13,28 +15,41 @@ export class AuthService {
   @Inject(UserService)
   private userService: UserService;
 
-  async register(
-    username: string,
-    email: string,
-    password: string,
-  ): Promise<AuthResponseDto> {
+  @Inject(JwtService)
+  private jwtService: JwtService;
+
+  @Inject(MailService)
+  private mailService: MailService;
+
+  async registration(user: registrationDto) {
+    const decoded: any = this.jwtService.verifyToken(user.registrationToken);
+    if (!decoded) throw new CreateException(API_ERROR_CODES.INVALID_TOKEN);
+
+    const { email } = decoded;
     const candidate = await this.userService.findOne({ email });
-    if (candidate)
+
+    if (candidate.isVerified)
       throw new CreateException(API_ERROR_CODES.USER_ALREADY_REGISTERED);
 
-    const hashPassword: string = await bcrypt.hash(password, 8);
+    user.password = await bcrypt.hash(user.password, 8);
+    await this.userService.registration(email, user);
+    this.logger.log(`User registered: ${email}`);
+  }
 
-    await this.userService.createUser({
-      username: username,
-      email: email,
-      password: hashPassword,
-      online: false,
-      parties: 0,
-      partiesWon: 0,
-      rating: 1500,
+  async create(email: string) {
+    const isCreated = await this.userService.findOne({ email });
+
+    if (isCreated)
+      throw new CreateException(API_ERROR_CODES.USER_ALREADY_REGISTERED);
+
+    await this.userService.create(email);
+    const registrationToken = this.jwtService.generateRegistrationToken({
+      email,
     });
-
-    return this.login(email, password);
+    const url = `${process.env.CLIENT_HOST}/registration?registration_token=${registrationToken}`;
+    await this.mailService.sendUserConfirmation(email, { url });
+    this.logger.log(`User created: ${email}`);
+    this.logger.log(url);
   }
 
   async login(email: string, password: string): Promise<AuthResponseDto> {
@@ -47,8 +62,8 @@ export class AuthService {
 
     this.userService.setOnline({ email }, true);
 
-    const token = generateAccessToken(user._id);
-    return { token };
+    const accessToken = this.jwtService.generateAccessToken({ id: user._id });
+    return { token: accessToken };
   }
 }
 

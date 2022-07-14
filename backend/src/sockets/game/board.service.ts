@@ -22,11 +22,8 @@ import {
   KING_WAYS,
 } from '../../enums/figureWays';
 import { Game } from 'src/models/game.model';
-import {
-  CheckWaysPropsType,
-  CreateBoardsForPlayersType,
-  MoveType,
-} from 'src/types';
+import { CheckWaysPropsType, CreateBoardsForPlayersType } from 'src/types';
+import { ChessMoveDto } from 'src/dto/gateway.dto';
 
 export class BoardService {
   private logger = new Logger(BoardService.name);
@@ -122,7 +119,7 @@ export class BoardService {
   getLastMove = (
     whiteBoard: string[][],
     blackBoard: string[][],
-    move: MoveType,
+    move: ChessMoveDto,
   ) => {
     const white = [];
     const black = [];

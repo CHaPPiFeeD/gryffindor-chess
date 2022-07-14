@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongoose';
 import { Socket } from 'socket.io';
+import { ChessMoveDto } from 'src/dto/gateway.dto';
 import { Game } from 'src/models/game.model';
 
 export type GamePlayerType = {
@@ -25,18 +26,9 @@ export type InterceptionType = {
   figurePosition: number[];
 };
 
-export type MoveType = {
-  start: [number, number];
-  end: [number, number];
-  change: {
-    isChangePawn: boolean;
-    chooseFigure: null | string;
-  };
-};
-
 export type MovePropsType = {
   client: Socket;
-  move: MoveType;
+  move: ChessMoveDto;
   game: Game;
   attackRow?: number;
   attackCol?: number;

@@ -1,6 +1,6 @@
 import { WsException } from '@nestjs/websockets';
-import { KING_WAYS_CASTLING } from 'src/enums/figureWays';
-import { MovePropsType } from 'src/types';
+import { KING_WAYS_CASTLING } from '../enums/figureWays';
+import { MovePropsType } from '../types';
 import { ATTACKS_SCHEME, COLORS, FIGURES } from '../enums/constants';
 
 export const checkVerticalAndHorizontalMove = (

@@ -44,8 +44,12 @@ export const ChangePawnModal = () => {
     dispatch(setMove(
       activePositionStore,
       endPositionStore,
-      { isChange: true, chooseFigure: stateValue },
+      { isChangePawn: true, chooseFigure: stateValue },
     ));
+
+    console.log(activePositionStore,
+      endPositionStore,
+      { isChangePawn: true, chooseFigure: stateValue });
 
     dispatch(setEndPosition(null));
     dispatch(setClose(MODAL.CHANGE_PAWN));
@@ -87,14 +91,14 @@ export const ChangePawnModal = () => {
           >
             <Knight fill={fill} />
           </Box>
-          
+
           <Box
             className={styles.figure_button}
             onClick={() => handleClick(3, FIGURES.ROOK)}
           >
             <Rook fill={fill} />
           </Box>
-          
+
         </Box>
 
         <Button

@@ -1,6 +1,6 @@
 import { Inject, Logger } from '@nestjs/common';
 import { findRoomBySocketId } from '../../helpers/game';
-import { ISocket, MoveType, QueueUserType } from '../../types';
+import { ISocket, QueueUserType } from '../../types';
 import { ValidationService } from './validation.service';
 import { Socket } from 'socket.io';
 import { BoardService } from './board.service';
@@ -10,6 +10,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { WS_EVENTS } from '../constants';
 import { ObjectId } from 'mongoose';
 import { PartyService } from 'src/modules/party/party.service';
+import { ChessMoveDto } from 'src/dto/gateway.dto';
 
 export class GameService {
   private logger = new Logger(GameService.name);
@@ -88,7 +89,7 @@ export class GameService {
     }
   }
 
-  moveChess = (client: Socket, move: MoveType) => {
+  moveChess = (client: Socket, move: ChessMoveDto) => {
     const roomId = findRoomBySocketId(client.id, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);

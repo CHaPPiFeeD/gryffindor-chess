@@ -83,7 +83,7 @@ export const gameSlice = createSlice({
 export const setMove = (
   activePosition: [number, number] | null,
   payload: [number, number],
-  change: ChangeFigureDataType,
+  change?: ChangeFigureDataType,
 ) => async (dispatch: any) => {
   if (activePosition === null) dispatch(setActivePosition(payload));
   if (activePosition !== null) {
@@ -97,7 +97,11 @@ export const setMove = (
       return;
     }
 
-    const moveData = { start: activePosition, end: payload, change };
+    const moveData = {
+      start: activePosition,
+      end: payload,
+      changeFigure: change,
+    };
 
     dispatch(setActivePosition(null));
 
