@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongoose';
 import { Socket } from 'socket.io';
-import { ChessMoveDto } from 'src/dto/gateway.dto';
-import { Game } from 'src/models/game.model';
+import { ChessMoveDto } from '../dto/gateway.dto';
+import { Game } from '../models/game.model';
 
 export type GamePlayerType = {
   userId: ObjectId;

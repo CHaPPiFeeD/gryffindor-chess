@@ -1,20 +1,20 @@
 import { Controller, Get, Inject } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { User } from 'src/schemas/user.schema';
+import { UserRatingDto } from 'src/dto/rating.dto';
 import { RatingService } from './rating.service';
 
 @ApiTags('Rating')
-@Controller()
+@Controller('/api/rate')
 export class RatingController {
   @Inject(RatingService)
   private ratingService: RatingService;
 
   @ApiResponse({
-    status: 200,
-    description: 'Player rating returned.',
-    type: [User],
+    status: 201,
+    description: 'TOP10 players returned.',
+    type: [UserRatingDto],
   })
-  @Get('/api/rate/top')
+  @Get('/top')
   getRate(): any {
     return this.ratingService.getUsersRating();
   }

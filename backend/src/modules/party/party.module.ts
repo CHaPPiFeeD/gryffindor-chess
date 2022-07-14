@@ -8,6 +8,7 @@ import { PartyService } from './party.service';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Party.name, schema: PartySchema }]),
+
     UserModule,
     RatingModule,
   ],

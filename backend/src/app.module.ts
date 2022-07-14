@@ -3,13 +3,13 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { SocketsModule } from '../sockets/sockets.module';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
+import { SocketsModule } from './sockets/sockets.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { PartyModule } from './party/party.module';
-import { RatingModule } from './rating/rating.module';
-import { MailModule } from './mail/mail.module';
+import { PartyModule } from './modules/party/party.module';
+import { RatingModule } from './modules/rating/rating.module';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [

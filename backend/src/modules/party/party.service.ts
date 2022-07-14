@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { Game } from 'src/models/game.model';
-import { Party, PartyDocument } from 'src/schemas/party.schema';
+import { Game } from '../../models/game.model';
+import { Party, PartyDocument } from '../../schemas/party.schema';
 import { RatingService } from '../rating/rating.service';
 import { UserService } from '../user/user.service';
 
@@ -18,108 +18,60 @@ export class PartyService {
   private ratingService: RatingService;
 
   async create(game: Game) {
-    const userWhiteId: ObjectId = game.white.userId;
-    const userBlackId: ObjectId = game.black.userId;
-
-    this.updateParties(userWhiteId, userBlackId, game.winner);
-
+    const whiteId: ObjectId = game.white.userId;
+    const blackId: ObjectId = game.black.userId;
+    this.updateParties(whiteId, blackId, game.winner);
     await this.partySchema.create({ ...game });
   }
 
   private async updateParties(
-    userWhiteId: ObjectId,
-    userBlackId: ObjectId,
-    winner: ObjectId | string,
+    whiteId: ObjectId,
+    blackid: ObjectId,
+    winner: ObjectId | null,
   ) {
-    const userWhite = await this.userService.findOne({ _id: userWhiteId });
-    const userBlack = await this.userService.findOne({ _id: userBlackId });
+    const userWhite = await this.userService.findOne(
+      { _id: whiteId },
+      { rating: 1, parties: 1, partiesWon: 1 },
+    );
+    const userBlack = await this.userService.findOne(
+      { _id: blackid },
+      { rating: 1, parties: 1, partiesWon: 1 },
+    );
 
-    const updateDataWhite: NewDataType = {};
-    const updateDataBlack: NewDataType = {};
+    userWhite.parties += 1;
+    userBlack.parties += 1;
+    if (whiteId === winner) userWhite.partiesWon += 1;
+    if (blackid === winner) userBlack.partiesWon += 1;
 
-    updateDataWhite.parties = userWhite.parties + 1;
-    updateDataBlack.parties = userBlack.parties + 1;
-
-    updateDataWhite.partiesWon =
-      userWhiteId === winner ? userWhite.partiesWon + 1 : userWhite.partiesWon;
-    updateDataBlack.partiesWon =
-      userBlackId === winner ? userBlack.partiesWon + 1 : userBlack.partiesWon;
-
-    const [whiteRating, blackRating] = this.updateRate({
-      whiteId: userWhiteId,
-      blackId: userBlackId,
-      winner,
-      userWhite,
+    const [whiteRating, blackRating] = this.updateRate(
       userBlack,
-    });
-
-    updateDataWhite.rating = whiteRating;
-    updateDataBlack.rating = blackRating;
-
-    await this.userService.updateOne(
-      { _id: userWhiteId },
-      { ...updateDataWhite },
+      userWhite,
+      winner,
     );
 
-    await this.userService.updateOne(
-      { _id: userBlackId },
-      { ...updateDataBlack },
-    );
+    userWhite.rating = whiteRating;
+    userBlack.rating = blackRating;
+    await this.userService.updateOne({ _id: whiteId }, { ...userWhite });
+    await this.userService.updateOne({ _id: blackid }, { ...userBlack });
   }
 
-  private updateRate({
-    whiteId,
-    blackId,
-    winner,
-    userWhite,
-    userBlack,
-  }: {
-    whiteId: ObjectId;
-    blackId: ObjectId;
-    winner: ObjectId | string;
-    userWhite: any;
-    userBlack: any;
-  }) {
-    const userA: UserType = {
-      rating: userWhite.rating,
-      parties: userWhite.parties,
-      point: 0,
-    };
-
-    const userB: UserType = {
-      rating: userBlack.rating,
-      parties: userBlack.parties,
-      point: 0,
-    };
-
+  private updateRate(userWhite, userBlack, winner: ObjectId | null) {
     if (winner === null) {
-      userA.point = 0.5;
-      userB.point = 0.5;
-    } else if (winner === whiteId) {
-      userA.point = 1;
-      userB.point = 0;
-    } else if (winner === blackId) {
-      userA.point = 0;
-      userB.point = 1;
+      userWhite.point = 0.5;
+      userBlack.point = 0.5;
+    } else if (winner === userWhite._id) {
+      userWhite.point = 1;
+      userBlack.point = 0;
+    } else if (winner === userBlack._id) {
+      userWhite.point = 0;
+      userBlack.point = 1;
     } else throw new Error('Winner is incorrect');
 
-    const { whiteRating, blackRating } = this.ratingService.getNewRating(
-      userA,
-      userB,
+    const [whiteRating, blackRating] = this.ratingService.getNewRating(
+      userWhite,
+      userBlack,
     );
 
     return [whiteRating, blackRating];
   }
 }
-
-type NewDataType = {
-  parties?: number;
-  partiesWon?: number;
-  rating?: number;
-};
-
-type UserType = {
-  rating: number;
-  parties: number;
-  point: number;
-};

@@ -7,7 +7,14 @@ import {
   Matches,
 } from 'class-validator';
 
-export class registrationDto {
+export class CreateDto {
+  @ApiProperty({ default: 'user@email.com' })
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+}
+
+export class RegistrationDto {
   @ApiProperty({ default: 'Name' })
   @IsNotEmpty()
   @IsString()
@@ -29,7 +36,7 @@ export class registrationDto {
 }
 
 export class LoginDto {
-  @ApiProperty({ default: 'email@gmail.com' })
+  @ApiProperty({ default: 'user@email.com' })
   @IsNotEmpty()
   @IsEmail()
   email: string;

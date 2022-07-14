@@ -8,9 +8,7 @@ export class WsValidationPipe extends ValidationPipe {
       if (this.isDetailedOutputDisabled) {
         return new WsException('Bad request');
       }
-      // console.debug(validationErrors);
       const errors = this.flattenValidationErrors(validationErrors);
-      console.debug(errors);
       return new WsException(errors);
     };
   }
