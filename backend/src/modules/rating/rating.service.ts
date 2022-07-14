@@ -54,7 +54,10 @@ export class RatingService {
 
   async getUsersRating() {
     return this.userSchema
-      .find({ parties: { $gte: 1 } })
+      .find(
+        { parties: { $gte: 1 } },
+        { username: 1, parties: 1, partiesWon: 1, rating: 1 },
+      )
       .sort({ rating: -1 })
       .limit(10);
   }
