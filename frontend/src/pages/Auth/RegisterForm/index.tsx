@@ -1,5 +1,6 @@
-import { Alert, Box, Button, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, LinearProgress, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import API from '../../../api';
@@ -8,6 +9,7 @@ import { showNotification } from '../../../store/notification/notificationSlise'
 import styles from './styles.module.scss';
 
 export const RegisterForm = (props: { setForm: Function }) => {
+  const [isLoad, setStateLoad] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -22,8 +24,10 @@ export const RegisterForm = (props: { setForm: Function }) => {
   });
 
   const onSubmit = async (values: InitialValuesType) => {
+    setStateLoad(true);
     await API.createUser(values)
       .then((payload) => {
+        setStateLoad(false);
         if (payload?.status) {
           dispatch(showNotification('Confirm registration through the letter that will be sent to your mail', 'success'));
         } else {
@@ -65,6 +69,8 @@ export const RegisterForm = (props: { setForm: Function }) => {
           variant='outlined'
           className={styles.text_field}
         />
+
+        {isLoad ? <LinearProgress className={styles.progress} /> : null}
 
         <Button
           variant='contained'

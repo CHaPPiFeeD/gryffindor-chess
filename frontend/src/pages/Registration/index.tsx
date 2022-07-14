@@ -1,4 +1,4 @@
-import { Typography, TextField, Button } from '@mui/material';
+import { Typography, TextField, Button, LinearProgress } from '@mui/material';
 import { Box } from '@mui/system';
 import { useFormik } from 'formik';
 import API from '../../api';
@@ -7,10 +7,15 @@ import * as Yup from 'yup';
 import { useQuery } from '../../hooks';
 import { showNotification } from '../../store/notification/notificationSlise';
 import { useAppDispatch } from '../../hooks/redux';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { path } from '../../router/constants';
 
 export const Registration = () => {
   const dispatch = useAppDispatch();
   const registrationToken = useQuery('registration_token');
+  const [isLoad, setStateLoad] = useState(false);
+  const navigate = useNavigate();
 
   const initialValues: InitialValuesType = {
     username: '',
@@ -28,8 +33,10 @@ export const Registration = () => {
   });
 
   const onSubmit = async (values: InitialValuesType) => {
+    setStateLoad(true);
     await API.registration(values)
       .then((payload) => {
+        setStateLoad(false);
         if (payload?.status) {
           dispatch(showNotification('Confirm registration through the letter that will be sent to your mail', 'success'));
         } else {
@@ -43,7 +50,7 @@ export const Registration = () => {
     validationSchema,
     onSubmit,
   });
-  
+
   return (
     <Box className={styles.wrapper}>
       <Box className={styles.content}>
@@ -85,6 +92,8 @@ export const Registration = () => {
             className={styles.text_field}
           />
 
+          {isLoad ? <LinearProgress className={styles.progress} /> : null}
+
           <Button
             variant='contained'
             type='submit'
@@ -94,6 +103,10 @@ export const Registration = () => {
           </Button>
 
         </Box>
+        
+        <Button onClick={() => navigate(path.auth())}>
+          Go to login
+        </Button>
       </Box>
     </Box>
   );
