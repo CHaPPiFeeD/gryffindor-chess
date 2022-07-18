@@ -22,35 +22,35 @@ export class QueueService {
   @Inject(UserService)
   private userService: UserService;
 
-  async regToQueue(client: ISocket, data: { color: string[] }) {
+  async regToQueue(client: ISocket, data: { color: string[]; mode: string }) {
     const user = await this.userService.findOne({ _id: client.user['id'] });
 
     if (this.getUserInQueue(user.id))
       throw new WsException('You are already in line');
 
-    const playerOne: QueueUserType = {
+    const player: QueueUserType = {
       userId: user.id,
       socket: client.id,
       name: user.username,
       color: data.color,
+      mode: data.mode,
     };
 
-    const desiredColors: string[] = this.getDesiredColors(playerOne.color);
-    const playerTwo: QueueUserType = this.getUserByColor(desiredColors);
+    const opponent = this.findOpponent(player);
 
-    if (!playerTwo) {
-      this.queue.push(playerOne);
-      this.serverGateway.server.in(playerOne.socket).socketsJoin('queue');
+    if (!opponent) {
+      this.queue.push(player);
+      this.serverGateway.server.in(player.socket).socketsJoin('queue');
       this.serverGateway.server
         .in('queue')
         .emit(WS_EVENTS.QUEUE.GET_QUEUE, this.queue);
       return { isFind: false };
     } else {
-      this.removeFromQueue(playerTwo.socket);
+      this.removeFromQueue(opponent.socket);
       this.serverGateway.server
-        .in([playerOne.socket, playerTwo.socket])
+        .in([player.socket, opponent.socket])
         .socketsLeave('queue');
-      this.gameService.startGame(playerOne, playerTwo);
+      this.gameService.startGame(player, opponent);
       return { isFind: true };
     }
   }
@@ -69,6 +69,24 @@ export class QueueService {
     this.serverGateway.server
       .in('queue')
       .emit(WS_EVENTS.QUEUE.GET_QUEUE, this.queue);
+  }
+
+  private findOpponent(player: QueueUserType): QueueUserType {
+    const desiredColors = this.getDesiredColors(player.color);
+
+    return this.queue.find((opponent) =>
+      this.findOpponentPattern(desiredColors, player, opponent),
+    );
+  }
+
+  private findOpponentPattern(desiredColors, player, opponent) {
+    const sameColor = desiredColors.some((color) =>
+      opponent.color.includes(color),
+    );
+
+    const sameMode = player.mode === opponent.mode;
+
+    if (sameColor && sameMode) return opponent;
   }
 
   private removeFromQueue(socketId: string) {

@@ -23,6 +23,7 @@ export class Game {
     white: string[];
     black: string[];
   };
+  gameMode: string;
   moveQueue: string;
   winner: ObjectId | null;
   gameStart: Date;
@@ -39,6 +40,7 @@ export class Game {
       white: [],
       black: [],
     };
+    this.gameMode = playerOne.mode;
     this.board = INIT_BOARD();
     this.moveQueue = COLORS.WHITE;
     this.winner = null;

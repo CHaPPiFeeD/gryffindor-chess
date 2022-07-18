@@ -42,6 +42,7 @@ export type QueueUserType = {
   socket: string;
   name: string;
   color: string[];
+  mode: string;
 };
 
 export type CreateWaysPropsType = {

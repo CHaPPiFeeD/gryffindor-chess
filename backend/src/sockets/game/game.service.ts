@@ -9,9 +9,11 @@ import { StandartValidationService } from './standart-validation.service';
 import { ServerGateway } from '../server/server.gateway';
 import { ChessMoveDto } from 'src/dto/gateway.dto';
 import { Game } from '../../models/game.model';
-import { WS_EVENTS } from '../../enums/constants';
+import { GAME_MODES, WS_EVENTS } from '../../enums/constants';
 import { PartyService } from '../../modules/party/party.service';
 import { BoardService } from './board.service';
+import { FogBoardService } from './fog-board.service';
+import { ValidationService } from './validation.service';
 
 export class GameService {
   private logger = new Logger(GameService.name);
@@ -22,10 +24,16 @@ export class GameService {
   private serverGateway: ServerGateway;
 
   @Inject(StandartValidationService)
-  private validationService: StandartValidationService;
+  private standartValidationService: StandartValidationService;
+
+  @Inject(ValidationService)
+  private validationService: ValidationService;
 
   @Inject(BoardService)
   private boardService: BoardService;
+
+  @Inject(FogBoardService)
+  private fogBoardService: FogBoardService;
 
   @Inject(PartyService)
   private partyService: PartyService;
@@ -46,7 +54,15 @@ export class GameService {
     const roomId = findRoomBySocketId(socketId, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
-    const boardsAndWays = this.boardService.createWays(game);
+
+    let boardsAndWays;
+
+    if (game.gameMode === GAME_MODES.STANDART) {
+      boardsAndWays = this.boardService.createWays(game);
+    } else {
+      boardsAndWays = this.fogBoardService.createFogBoards(game);
+    }
+
     const data = game.getDataForPlayers(boardsAndWays);
 
     this.serverGateway.server
@@ -95,7 +111,11 @@ export class GameService {
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
 
-    this.validationService.validationMove(client, game, move);
+    if (game.gameMode === GAME_MODES.STANDART) {
+      this.standartValidationService.validationMove(client, game, move);
+    } else {
+      this.validationService.validationMove(client, game, move);
+    }
 
     game.updateLog(client, move);
     game.move(client, move);
