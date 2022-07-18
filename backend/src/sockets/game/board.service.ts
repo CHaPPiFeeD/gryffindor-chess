@@ -25,19 +25,19 @@ export class BoardService {
   createWays(game: Game) {
     const initWhiteWays = [];
     const initBlackWays = [];
-    const whiteKingWays = [];
-    const blackKingWays = [];
+    const initWhiteKingWays = [];
+    const initBlackKingWays = [];
 
     game.board.forEach((v, checkRow) => {
       v.forEach((v, checkCol) => {
         const cell = game.board[checkRow][checkCol];
 
         if (cell === FIGURES.WHITE_KING) {
-          const props = {
+          const props: CreateWaysPropsType = {
             game,
             checkRow,
             checkCol,
-            kingWays: whiteKingWays,
+            kingWays: initWhiteKingWays,
             figures: WHITE_FIGURES,
             color: COLORS.WHITE,
           };
@@ -45,17 +45,48 @@ export class BoardService {
         }
 
         if (cell === FIGURES.BLACK_KING) {
-          const props = {
+          const props: CreateWaysPropsType = {
             game,
             checkRow,
             checkCol,
-            kingWays: blackKingWays,
+            kingWays: initBlackKingWays,
             figures: BLACK_FIGURES,
             color: COLORS.BLACK,
           };
           this.checkKingWays(props);
         }
       });
+    });
+
+    const whiteKingWays = [];
+    const blackKingWays = [];
+
+    initWhiteKingWays.forEach((wayWhite) => {
+      let isAccessWay = true;
+
+      initBlackKingWays.forEach((wayBlack) => {
+        const isIdenticalWay =
+          wayBlack[1][0] === wayWhite[1][0] &&
+          wayBlack[1][1] === wayWhite[1][1];
+
+        if (isIdenticalWay) isAccessWay = false;
+      });
+
+      if (isAccessWay) whiteKingWays.push(wayWhite);
+    });
+
+    initBlackKingWays.forEach((wayBlack) => {
+      let isAccessWay = true;
+
+      initWhiteKingWays.forEach((wayWhite) => {
+        const isIdenticalWay =
+          wayWhite[1][0] === wayBlack[1][0] &&
+          wayWhite[1][1] === wayBlack[1][1];
+
+        if (isIdenticalWay) isAccessWay = false;
+      });
+
+      if (isAccessWay) blackKingWays.push(wayBlack);
     });
 
     game.board.forEach((v, checkRow) => {
@@ -121,6 +152,7 @@ export class BoardService {
 
     const whiteWays: string[] = [];
     const blackWays: string[] = [];
+
     whiteKingWays.forEach((way) => whiteWays.push(this.createWay(way)));
     blackKingWays.forEach((way) => blackWays.push(this.createWay(way)));
     initWhiteWays.forEach((way) => whiteWays.push(this.createWay(way)));
@@ -169,7 +201,6 @@ export class BoardService {
     });
   };
 
-  // private checkKingWays = (props: CreateWaysPropsType) => {
   private checkKingWays(props: CreateWaysPropsType) {
     const { checkRow, checkCol, kingWays, game, figures } = props;
 
