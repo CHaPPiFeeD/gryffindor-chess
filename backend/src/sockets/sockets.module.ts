@@ -4,7 +4,7 @@ import { GameGateway } from './game/game.gateway';
 import { InitGateway } from './init/init.gateway';
 import { QueueGateway } from './queue/queue.gateway';
 import { ServerGateway } from './server/server.gateway';
-import { FogBoardService } from './game/fogBoard.service';
+import { FogBoardService } from './game/fog-board.service';
 import { GameService } from './game/game.service';
 import { InitService } from './init/init.service';
 import { QueueService } from './queue/queue.service';
@@ -14,6 +14,7 @@ import { Party, PartySchema } from '../schemas/party.schema';
 import { PartyModule } from '../modules/party/party.module';
 import { JwtModule } from '../modules/jwt/jwt.module';
 import { BoardService } from './game/board.service';
+import { StandartValidationService } from './game/standart-validation.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { BoardService } from './game/board.service';
     ValidationService,
     FogBoardService,
     BoardService,
+    StandartValidationService,
   ],
   exports: [InitGateway, QueueGateway, QueueService, GameGateway, GameService],
 })

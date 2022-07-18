@@ -3,8 +3,9 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { Socket } from 'socket.io';
 import { ObjectId } from 'mongoose';
 import { findRoomBySocketId } from '../../helpers/game';
-import { ISocket, QueueUserType } from '../../types';
 import { ValidationService } from './validation.service';
+import { ISocket, MoveType, QueueUserType } from '../../types';
+import { StandartValidationService } from './standart-validation.service';
 import { ServerGateway } from '../server/server.gateway';
 import { ChessMoveDto } from 'src/dto/gateway.dto';
 import { Game } from '../../models/game.model';
@@ -20,8 +21,8 @@ export class GameService {
   @Inject(ServerGateway)
   private serverGateway: ServerGateway;
 
-  @Inject(ValidationService)
-  private validationService: ValidationService;
+  @Inject(StandartValidationService)
+  private validationService: StandartValidationService;
 
   @Inject(BoardService)
   private boardService: BoardService;
