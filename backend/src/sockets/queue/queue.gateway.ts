@@ -18,7 +18,10 @@ export class QueueGateway {
   @UseGuards(WsAuthGuard)
   @SubscribeMessage(WS_EVENTS.QUEUE.SEARCH)
   @UsePipes(new WsValidationPipe())
-  regToQueue(client: ISocket, data: SearchGameDto) {
+  registrationToQueue(
+    client: ISocket,
+    data: { color: string[]; mode: string },
+  ) {
     return this.queueService.regToQueue(client, data);
   }
 

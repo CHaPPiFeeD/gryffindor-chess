@@ -112,3 +112,8 @@ export const WS_EVENTS = {
     DISCONNECT_OPPONENT: '/game/opponent/disconnect',
   },
 };
+
+export const GAME_MODES = {
+  STANDART: 'STANDART',
+  FOG: 'FOG',
+};
