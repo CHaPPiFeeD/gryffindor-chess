@@ -4,7 +4,7 @@ import { Socket } from 'socket.io';
 import { ObjectId } from 'mongoose';
 import { findRoomBySocketId } from '../../helpers/game';
 import { ISocket, MoveType, QueueUserType } from '../../types';
-import { ValidationService } from './validation.service';
+import { StandartValidationService } from './standart-validation.service';
 import { ServerGateway } from '../server/server.gateway';
 import { Game } from '../../models/game.model';
 import { WS_EVENTS } from '../../enums/constants';
@@ -19,8 +19,8 @@ export class GameService {
   @Inject(ServerGateway)
   private serverGateway: ServerGateway;
 
-  @Inject(ValidationService)
-  private validationService: ValidationService;
+  @Inject(StandartValidationService)
+  private validationService: StandartValidationService;
 
   @Inject(BoardService)
   private boardService: BoardService;

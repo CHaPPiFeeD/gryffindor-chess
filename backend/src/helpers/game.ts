@@ -38,6 +38,7 @@ const createPlayerColors = (
     socket: white.socket,
     name: white.name,
     offersDraw: false,
+    ways: [],
     rules: {
       castling: {
         long: true,
@@ -53,6 +54,7 @@ const createPlayerColors = (
     socket: black.socket,
     name: black.name,
     offersDraw: false,
+    ways: [],
     rules: {
       castling: {
         long: true,

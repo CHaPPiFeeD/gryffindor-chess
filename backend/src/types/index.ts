@@ -7,6 +7,7 @@ export type GamePlayerType = {
   socket: string;
   name: string;
   offersDraw: boolean;
+  ways: string[];
   rules: {
     castling: {
       long: boolean;
@@ -38,10 +39,10 @@ export type MovePropsType = {
   client: Socket;
   move: MoveType;
   game: Game;
-  attackRow?: number;
-  attackCol?: number;
-  x?: number;
-  y?: number;
+  attackRow: number;
+  attackCol: number;
+  x: number;
+  y: number;
 };
 
 export type QueueUserType = {
@@ -51,12 +52,25 @@ export type QueueUserType = {
   color: string[];
 };
 
+export type CreateWaysPropsType = {
+  game?: Game;
+  color?: string;
+  checkRow?: number;
+  checkCol?: number;
+  ways?: number[][][];
+  pawnWays?: number[][];
+  kingWays?: number[][][];
+  opponentsKingsWays?: number[][][];
+  figures?: string;
+  king?: string;
+};
+
 export type CheckWaysPropsType = {
-  game: Game;
+  game?: Game;
   playerBoard?: string[][];
   playerColor?: string;
-  checkRow: number;
-  checkCol: number;
+  checkRow?: number;
+  checkCol?: number;
   playerWays?: number[][][];
   anotherPlayerWays?: string[];
   ownFigures?: string;
