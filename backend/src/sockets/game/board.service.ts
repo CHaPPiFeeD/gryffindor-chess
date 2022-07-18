@@ -271,7 +271,15 @@ export class BoardService {
   }
 
   private checkPawnWays(props: CreateWaysPropsType) {
-    const { game, checkRow, checkCol, pawnWays, figures, ways } = props;
+    const {
+      game,
+      checkRow,
+      checkCol,
+      pawnWays,
+      figures,
+      ways,
+      opponentsKingsWays,
+    } = props;
     const initPosPawn = pawnWays === WHITE_PAWN_WAYS ? 6 : 1;
 
     pawnWays.forEach((way) => {
@@ -308,6 +316,14 @@ export class BoardService {
               [wayRow, wayCol],
             ]);
           }
+        }
+
+        if (Math.abs(way[1]) === 1) {
+          opponentsKingsWays.forEach((way, index) => {
+            if (way[1][0] === wayRow && way[1][1] === wayCol) {
+              opponentsKingsWays.splice(index, 1);
+            }
+          });
         }
       }
     });
