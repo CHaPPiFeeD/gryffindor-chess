@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { validCoordinate } from '../../helpers/validation';
 import { Game } from '../../models/game.model';
+import { CreateWaysPropsType } from '../../types';
 import {
   WHITE_FIGURES,
   BLACK_FIGURES,
@@ -17,8 +18,6 @@ import {
   KING_WAYS,
   KING_WAYS_CASTLING,
 } from '../../enums/figureWays';
-import { ChessMoveDto } from 'src/dto/gateway.dto';
-import { CheckWaysPropsType } from '../../types';
 
 export class BoardService {
   private logger = new Logger(BoardService.name);
@@ -39,8 +38,8 @@ export class BoardService {
             checkRow,
             checkCol,
             kingWays: whiteKingWays,
-            ownFigures: WHITE_FIGURES,
-            playerColor: COLORS.WHITE,
+            figures: WHITE_FIGURES,
+            color: COLORS.WHITE,
           };
           this.checkKingWays(props);
         }
@@ -51,8 +50,8 @@ export class BoardService {
             checkRow,
             checkCol,
             kingWays: blackKingWays,
-            ownFigures: BLACK_FIGURES,
-            playerColor: COLORS.BLACK,
+            figures: BLACK_FIGURES,
+            color: COLORS.BLACK,
           };
           this.checkKingWays(props);
         }
@@ -63,7 +62,7 @@ export class BoardService {
       v.forEach((v, checkCol) => {
         const cell = game.board[checkRow][checkCol];
 
-        let props: any = {
+        let props: CreateWaysPropsType = {
           game,
           checkRow,
           checkCol,
@@ -72,24 +71,24 @@ export class BoardService {
         if (WHITE_FIGURES.includes(cell)) {
           props = {
             ...props,
-            playerColor: COLORS.WHITE,
-            playerWays: initWhiteWays,
-            ownFigures: WHITE_FIGURES,
-            ownKing: FIGURES.WHITE_KING,
-            opponentsKing: FIGURES.BLACK_KING,
+            color: COLORS.WHITE,
+            ways: initWhiteWays,
+            figures: WHITE_FIGURES,
+            king: FIGURES.WHITE_KING,
             pawnWays: WHITE_PAWN_WAYS,
+            opponentsKingsWays: blackKingWays,
           };
         }
 
         if (BLACK_FIGURES.includes(cell)) {
           props = {
             ...props,
-            playerColor: COLORS.BLACK,
-            playerWays: initBlackWays,
-            ownFigures: BLACK_FIGURES,
-            ownKing: FIGURES.BLACK_KING,
-            opponentsKing: FIGURES.WHITE_KING,
+            color: COLORS.BLACK,
+            ways: initBlackWays,
+            figures: BLACK_FIGURES,
+            king: FIGURES.BLACK_KING,
             pawnWays: BLACK_PAWN_WAYS,
+            opponentsKingsWays: whiteKingWays,
           };
         }
 
@@ -127,32 +126,35 @@ export class BoardService {
     initWhiteWays.forEach((way) => whiteWays.push(this.createWay(way)));
     initBlackWays.forEach((way) => blackWays.push(this.createWay(way)));
 
+    game.white.ways = whiteWays;
+    game.black.ways = blackWays;
+
     return { whiteWays, blackWays };
   }
 
   // TODO not working getLastMove function
-  getLastMove = (
-    whiteBoard: string[][],
-    blackBoard: string[][],
-    move: ChessMoveDto,
-  ) => {
-    const white = [];
-    const black = [];
+  // getLastMove = (
+  //   whiteBoard: string[][],
+  //   blackBoard: string[][],
+  //   move: MoveType,
+  // ) => {
+  //   const white = [];
+  //   const black = [];
 
-    if (whiteBoard[move.start[0]][move.start[1]] !== FIGURES.FOG)
-      white.push([move.start[0], move.start[1]]);
+  //   if (whiteBoard[move.start[0]][move.start[1]] !== FIGURES.FOG)
+  //     white.push([move.start[0], move.start[1]]);
 
-    if (whiteBoard[move.end[0]][move.end[1]] !== FIGURES.FOG)
-      white.push([move.end[0], move.end[1]]);
+  //   if (whiteBoard[move.end[0]][move.end[1]] !== FIGURES.FOG)
+  //     white.push([move.end[0], move.end[1]]);
 
-    if (blackBoard[move.start[0]][move.start[1]] !== FIGURES.FOG)
-      black.push([move.start[0], move.start[1]]);
+  //   if (blackBoard[move.start[0]][move.start[1]] !== FIGURES.FOG)
+  //     black.push([move.start[0], move.start[1]]);
 
-    if (blackBoard[move.end[0]][move.end[1]] !== FIGURES.FOG)
-      black.push([move.end[0], move.end[1]]);
+  //   if (blackBoard[move.end[0]][move.end[1]] !== FIGURES.FOG)
+  //     black.push([move.end[0], move.end[1]]);
 
-    return { white, black };
-  };
+  //   return { white, black };
+  // };
 
   private checkInterceptionWays = (
     game: Game,
@@ -167,16 +169,9 @@ export class BoardService {
     });
   };
 
-  // private checkKingWays = (props: CheckWaysPropsType) => {
-  private checkKingWays(props: {
-    checkRow: number;
-    checkCol: number;
-    kingWays: number[][][];
-    game: Game;
-    ownFigures: string;
-    playerColor: string;
-  }) {
-    const { checkRow, checkCol, kingWays, game, ownFigures } = props;
+  // private checkKingWays = (props: CreateWaysPropsType) => {
+  private checkKingWays(props: CreateWaysPropsType) {
+    const { checkRow, checkCol, kingWays, game, figures } = props;
 
     KING_WAYS.forEach((way) => {
       const wayRow = checkRow + way[0];
@@ -185,7 +180,7 @@ export class BoardService {
       if (validCoordinate(wayRow, wayCol)) {
         const endFigure = game.board[wayRow][wayCol];
 
-        const isOwnFigure = ownFigures.includes(endFigure);
+        const isOwnFigure = figures.includes(endFigure);
 
         if (!isOwnFigure) {
           kingWays.push([
@@ -199,8 +194,9 @@ export class BoardService {
     this.checkCastling(props);
   }
 
-  private checkKnightWays(props: CheckWaysPropsType) {
-    const { checkRow, checkCol, game, ownFigures, playerWays } = props;
+  private checkKnightWays(props: CreateWaysPropsType) {
+    const { checkRow, checkCol, game, figures, ways, opponentsKingsWays } =
+      props;
 
     KNIGHTS_WAYS.forEach((way) => {
       const wayRow = checkRow + way[0];
@@ -209,38 +205,62 @@ export class BoardService {
       if (validCoordinate(wayRow, wayCol)) {
         const endFigure = game.board[wayRow][wayCol];
 
-        const isOwnFigure = ownFigures.includes(endFigure);
+        const isOwnFigure = figures.includes(endFigure);
 
         if (!isOwnFigure) {
-          playerWays.push([
+          ways.push([
             [checkRow, checkCol],
             [wayRow, wayCol],
           ]);
         }
+
+        opponentsKingsWays.forEach((way, index) => {
+          if (way[1][0] === wayRow && way[1][1] === wayCol) {
+            opponentsKingsWays.splice(index, 1);
+          }
+        });
       }
     });
   }
 
-  private checkWays(props: CheckWaysPropsType, figureWays: number[][][]) {
-    const { game, checkRow, checkCol, ownFigures, playerWays } = props;
+  private checkWays(props: CreateWaysPropsType, figureWays: number[][][]) {
+    const { game, checkRow, checkCol, figures, ways, opponentsKingsWays } =
+      props;
 
     figureWays.forEach((side) => {
       let isCanMove = true;
 
-      side.forEach((way) => {
+      side.forEach((way, sideIndex) => {
         if (isCanMove) {
           const wayRow = checkRow + way[0];
           const wayCol = checkCol + way[1];
 
           if (validCoordinate(wayRow, wayCol)) {
             const endFigure = game.board[wayRow][wayCol];
-            const isOwnFigure = ownFigures.includes(endFigure);
+            const isOwnFigure = figures.includes(endFigure);
 
             if (!isOwnFigure) {
-              playerWays.push([
+              ways.push([
                 [checkRow, checkCol],
                 [wayRow, wayCol],
               ]);
+            }
+
+            opponentsKingsWays.forEach((way, index) => {
+              if (way[1][0] === wayRow && way[1][1] === wayCol) {
+                opponentsKingsWays.splice(index, 1);
+              }
+            });
+
+            if (endFigure.toLowerCase() === FIGURES.BLACK_KING) {
+              const wayRow = checkRow + side[sideIndex + 1][0];
+              const wayCol = checkCol + side[sideIndex + 1][1];
+
+              opponentsKingsWays.forEach((way, index) => {
+                if (way[1][0] === wayRow && way[1][1] === wayCol) {
+                  opponentsKingsWays.splice(index, 1);
+                }
+              });
             }
 
             if (game.board[wayRow][wayCol] !== FIGURES.EMPTY) isCanMove = false;
@@ -250,9 +270,8 @@ export class BoardService {
     });
   }
 
-  private checkPawnWays(props: CheckWaysPropsType) {
-    // eslint-disable-next-line prettier/prettier
-    const { game, checkRow, checkCol, pawnWays, ownFigures, playerWays } = props;
+  private checkPawnWays(props: CreateWaysPropsType) {
+    const { game, checkRow, checkCol, pawnWays, figures, ways } = props;
     const initPosPawn = pawnWays === WHITE_PAWN_WAYS ? 6 : 1;
 
     pawnWays.forEach((way) => {
@@ -281,10 +300,10 @@ export class BoardService {
         if (isDiagonal || isStep || isTwoSteps) {
           const endFigure = game.board[wayRow][wayCol];
 
-          const isOwnFigure = ownFigures.includes(endFigure);
+          const isOwnFigure = figures.includes(endFigure);
 
           if (!isOwnFigure) {
-            playerWays.push([
+            ways.push([
               [checkRow, checkCol],
               [wayRow, wayCol],
             ]);
@@ -298,18 +317,11 @@ export class BoardService {
     return [way[0][0], way[0][1], way[1][0], way[1][1]].join('');
   }
 
-  // private checkCastling(props: CheckWaysPropsType) {
-  private checkCastling(props: {
-    game: Game;
-    playerColor: string;
-    checkRow: number;
-    checkCol: number;
-    kingWays: number[][][];
-  }) {
-    const { game, playerColor, checkRow, checkCol, kingWays } = props;
+  private checkCastling(props: CreateWaysPropsType) {
+    const { game, color, checkRow, checkCol, kingWays } = props;
 
     const castling =
-      playerColor === COLORS.WHITE
+      color === COLORS.WHITE
         ? game.white.rules.castling
         : game.black.rules.castling;
 
@@ -341,21 +353,15 @@ export class BoardService {
   }
 
   private checkCastlingSide(
-    props: {
-      game: Game;
-      playerColor: string;
-      checkRow: number;
-      checkCol: number;
-      kingWays?: number[][][];
-    },
+    props: CreateWaysPropsType,
     side: number[][],
     isCastlingSide: boolean,
   ): boolean {
-    const { checkRow, checkCol, game, playerColor } = props;
+    const { checkRow, checkCol, game, color } = props;
 
     if (!isCastlingSide) return;
 
-    const initPos = playerColor === COLORS.WHITE ? [7, 4] : [0, 4];
+    const initPos = color === COLORS.WHITE ? [7, 4] : [0, 4];
     if (checkRow !== initPos[0] || checkCol !== initPos[1]) return false;
 
     let isCastling = true;
