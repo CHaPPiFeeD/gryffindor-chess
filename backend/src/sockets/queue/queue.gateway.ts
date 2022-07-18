@@ -15,7 +15,10 @@ export class QueueGateway {
 
   @UseGuards(WsAuthGuard)
   @SubscribeMessage(WS_EVENTS.QUEUE.SEARCH)
-  regToQueue(client: ISocket, data: { color: string[] }) {
+  registrationToQueue(
+    client: ISocket,
+    data: { color: string[]; mode: string },
+  ) {
     return this.queueService.regToQueue(client, data);
   }
 
