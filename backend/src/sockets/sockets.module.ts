@@ -8,11 +8,11 @@ import { FogBoardService } from './game/fog-board.service';
 import { GameService } from './game/game.service';
 import { InitService } from './init/init.service';
 import { QueueService } from './queue/queue.service';
-import { ValidationService } from './game/validation.service';
+import { FogValidationService } from './game/fog-validation.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Party, PartySchema } from '../schemas/party.schema';
 import { PartyModule } from '../modules/party/party.module';
-import { BoardService } from './game/board.service';
+import { BoardService } from './game/standart-board.service';
 import { StandartValidationService } from './game/standart-validation.service';
 
 @Module({
@@ -29,7 +29,7 @@ import { StandartValidationService } from './game/standart-validation.service';
     QueueService,
     GameGateway,
     GameService,
-    ValidationService,
+    FogValidationService,
     FogBoardService,
     BoardService,
     StandartValidationService,

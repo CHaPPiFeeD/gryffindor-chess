@@ -11,7 +11,7 @@ import {
 } from '../../helpers/validation';
 import { ServerGateway } from '../server/server.gateway';
 
-export class ValidationService {
+export class FogValidationService {
   private logger = new Logger();
   private initPos = 7;
 

@@ -9,9 +9,10 @@ import { ServerGateway } from '../server/server.gateway';
 import { Game } from '../../models/game.model';
 import { GAME_MODES, WS_EVENTS } from '../../enums/constants';
 import { PartyService } from '../../modules/party/party.service';
-import { BoardService } from './board.service';
+import { BoardService } from './standart-board.service';
 import { FogBoardService } from './fog-board.service';
-import { ValidationService } from './validation.service';
+import { FogValidationService } from './fog-validation.service';
+import { WsException } from '@nestjs/websockets';
 
 export class GameService {
   private logger = new Logger(GameService.name);
@@ -24,8 +25,8 @@ export class GameService {
   @Inject(StandartValidationService)
   private standartValidationService: StandartValidationService;
 
-  @Inject(ValidationService)
-  private validationService: ValidationService;
+  @Inject(FogValidationService)
+  private fogValidationService: FogValidationService;
 
   @Inject(BoardService)
   private boardService: BoardService;
@@ -57,6 +58,9 @@ export class GameService {
 
     if (game.gameMode === GAME_MODES.STANDART) {
       boardsAndWays = this.boardService.createWays(game);
+      const [client] = game.getColorsBySocket(socketId);
+      if (game[client].rules.check)
+        throw new WsException('Your king is under attack');
     } else {
       boardsAndWays = this.fogBoardService.createFogBoards(game);
     }
@@ -112,7 +116,7 @@ export class GameService {
     if (game.gameMode === GAME_MODES.STANDART) {
       this.standartValidationService.validationMove(client, game, move);
     } else {
-      this.validationService.validationMove(client, game, move);
+      this.fogValidationService.validationMove(client, game, move);
     }
 
     game.updateLog(client, move);
