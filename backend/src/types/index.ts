@@ -15,6 +15,7 @@ export type GamePlayerType = {
       short: boolean;
     };
     interception: InterceptionType[];
+    check?: boolean;
   };
   disconnect: string | null;
 };
@@ -52,10 +53,12 @@ export type CreateWaysPropsType = {
   checkCol?: number;
   ways?: number[][][];
   pawnWays?: number[][];
-  kingWays?: number[][][];
-  opponentsKingsWays?: number[][][];
-  figures?: string;
   king?: string;
+  kingWays?: number[][][];
+  opponentsKing?: string;
+  opponentsKingsWays?: number[][][];
+  opponentsColor?: string;
+  figures?: string;
 };
 
 export type CheckWaysPropsType = {

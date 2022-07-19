@@ -1,5 +1,5 @@
 import { GamePlayerType, QueueUserType } from '../types';
-import { COLORS } from '../enums/constants';
+import { COLORS, GAME_MODES } from '../enums/constants';
 import { Game } from 'src/models/game.model';
 import { ObjectId } from 'mongoose';
 
@@ -64,6 +64,11 @@ const createPlayerColors = (
     },
     disconnect: null,
   };
+
+  if (white.mode === GAME_MODES.STANDART) {
+    whitePlayer.rules.check = false;
+    blackPlayer.rules.check = false;
+  }
 
   return { whitePlayer, blackPlayer };
 };
