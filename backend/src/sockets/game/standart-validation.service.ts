@@ -88,6 +88,9 @@ export class StandartValidationService {
     if (startFigure === FIGURES.EMPTY)
       throw new WsException('Figure not found');
 
+    if (endFigure.toLowerCase() === FIGURES.BLACK_KING)
+      throw new WsException("You can't eat king figure");
+
     if (
       (client.id === game.white.socket && WHITE_FIGURES.includes(endFigure)) ||
       (client.id === game.black.socket && BLACK_FIGURES.includes(endFigure))
