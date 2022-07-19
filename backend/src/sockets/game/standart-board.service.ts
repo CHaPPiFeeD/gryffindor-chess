@@ -23,6 +23,8 @@ export class BoardService {
   private logger = new Logger(BoardService.name);
 
   createWays(game: Game) {
+    game.white.rules.check = false;
+    game.black.rules.check = false;
     const kingsWays = this.createKingsWays(game);
     const initWays = this.createOtherFiguresWays(game, kingsWays);
     const whiteWays: string[] = [];
@@ -242,8 +244,15 @@ export class BoardService {
   };
 
   private checkKnightWays(props: CreateWaysPropsType) {
-    const { checkRow, checkCol, game, figures, ways, opponentsKingsWays } =
-      props;
+    const {
+      checkRow,
+      checkCol,
+      game,
+      figures,
+      ways,
+      opponentsKingsWays,
+      opponentsKing,
+    } = props;
 
     KNIGHTS_WAYS.forEach((way) => {
       const wayRow = checkRow + way[0];
@@ -251,9 +260,11 @@ export class BoardService {
 
       if (validCoordinate(wayRow, wayCol)) {
         const endFigure = game.board[wayRow][wayCol];
-        const isOwnFigure = figures.includes(endFigure);
 
-        if (!isOwnFigure) {
+        const isAllow =
+          !figures.includes(endFigure) && endFigure !== opponentsKing;
+
+        if (isAllow) {
           ways.push([
             [checkRow, checkCol],
             [wayRow, wayCol],
@@ -273,8 +284,15 @@ export class BoardService {
   }
 
   private checkWays(props: CreateWaysPropsType, figureWays: number[][][]) {
-    const { game, checkRow, checkCol, figures, ways, opponentsKingsWays } =
-      props;
+    const {
+      game,
+      checkRow,
+      checkCol,
+      figures,
+      ways,
+      opponentsKingsWays,
+      opponentsKing,
+    } = props;
 
     figureWays.forEach((side) => {
       let isCanMove = true;
@@ -286,9 +304,11 @@ export class BoardService {
 
           if (validCoordinate(wayRow, wayCol)) {
             const endFigure = game.board[wayRow][wayCol];
-            const isOwnFigure = figures.includes(endFigure);
 
-            if (!isOwnFigure) {
+            const isAllow =
+              !figures.includes(endFigure) && endFigure !== opponentsKing;
+
+            if (isAllow) {
               ways.push([
                 [checkRow, checkCol],
                 [wayRow, wayCol],
@@ -333,6 +353,7 @@ export class BoardService {
       figures,
       ways,
       opponentsKingsWays,
+      opponentsKing,
     } = props;
     const initPosPawn = pawnWays === WHITE_PAWN_WAYS ? 6 : 1;
 
@@ -362,9 +383,10 @@ export class BoardService {
         if (isDiagonal || isStep || isTwoSteps) {
           const endFigure = game.board[wayRow][wayCol];
 
-          const isOwnFigure = figures.includes(endFigure);
+          const isAllow =
+            !figures.includes(endFigure) && endFigure !== opponentsKing;
 
-          if (!isOwnFigure) {
+          if (isAllow) {
             ways.push([
               [checkRow, checkCol],
               [wayRow, wayCol],
@@ -387,7 +409,7 @@ export class BoardService {
 
   private checkCastling(props: CreateWaysPropsType) {
     const { game, color, checkRow, checkCol, kingWays } = props;
-    const castling = game[color].rulse.castling;
+    const castling = game[color].rules.castling;
 
     if (
       castling.long &&
