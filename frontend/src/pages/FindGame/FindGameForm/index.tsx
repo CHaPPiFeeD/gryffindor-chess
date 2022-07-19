@@ -61,7 +61,7 @@ export const FindGameForm = () => {
       />
 
       <Autocomplete
-        sx={{ margin: '10px 0 15px' }}
+        sx={{ marginBottom: '15px' }}
         includeInputInList
         id='mode'
         options={modeOptions}
@@ -87,9 +87,9 @@ export const FindGameForm = () => {
 };
 
 const colorOptions = [
-  { label: 'white', color: ['white'] },
-  { label: 'black', color: ['black'] },
-  { label: 'any', color: ['white', 'black'] },
+  { label: 'White', color: ['white'] },
+  { label: 'Black', color: ['black'] },
+  { label: 'Any', color: ['white', 'black'] },
 ];
 
 const modeOptions = [

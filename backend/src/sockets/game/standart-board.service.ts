@@ -28,6 +28,9 @@ export class BoardService {
     const initWhiteKingWays = [];
     const initBlackKingWays = [];
 
+    game.white.rules.check = false;
+    game.black.rules.check = false;
+
     game.board.forEach((v, checkRow) => {
       v.forEach((v, checkCol) => {
         const cell = game.board[checkRow][checkCol];
@@ -107,7 +110,9 @@ export class BoardService {
             figures: WHITE_FIGURES,
             king: FIGURES.WHITE_KING,
             pawnWays: WHITE_PAWN_WAYS,
+            opponentsKing: FIGURES.BLACK_KING,
             opponentsKingsWays: blackKingWays,
+            opponentsColor: COLORS.BLACK,
           };
         }
 
@@ -119,7 +124,9 @@ export class BoardService {
             figures: BLACK_FIGURES,
             king: FIGURES.BLACK_KING,
             pawnWays: BLACK_PAWN_WAYS,
+            opponentsKing: FIGURES.WHITE_KING,
             opponentsKingsWays: whiteKingWays,
+            opponentsColor: COLORS.WHITE,
           };
         }
 
@@ -250,8 +257,16 @@ export class BoardService {
             opponentsKingsWays.splice(index, 1);
           }
         });
+
+        this.checkCheck(props, endFigure);
       }
     });
+  }
+
+  private checkCheck(props: CreateWaysPropsType, endFigure) {
+    const { opponentsKing, game, opponentsColor } = props;
+    if (endFigure !== opponentsKing) return;
+    game[opponentsColor].rules.check = true;
   }
 
   private checkWays(props: CreateWaysPropsType, figureWays: number[][][]) {
@@ -293,6 +308,8 @@ export class BoardService {
                 }
               });
             }
+
+            this.checkCheck(props, endFigure);
 
             if (game.board[wayRow][wayCol] !== FIGURES.EMPTY) isCanMove = false;
           } else isCanMove = false;
@@ -355,6 +372,8 @@ export class BoardService {
               opponentsKingsWays.splice(index, 1);
             }
           });
+          const endFigure = game.board[wayRow][wayCol];
+          this.checkCheck(props, endFigure);
         }
       }
     });
