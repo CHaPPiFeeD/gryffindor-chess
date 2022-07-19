@@ -168,7 +168,7 @@ export class FogValidationService {
     if (isTwoSteps) this.addInterceptionMove({ ...props, step });
   }
 
-  private checkInterceptionMove = (props) => {
+  private checkInterceptionMove(props) {
     const { game, move, client, x, y, step } = props;
     const [clientColor] = game.getColorsBySocket(client.id);
 
@@ -189,9 +189,9 @@ export class FogValidationService {
     }
 
     return isInterception;
-  };
+  }
 
-  private addInterceptionMove = (props) => {
+  private addInterceptionMove(props) {
     const { game, move, step, client } = props;
     const [, opponentColor] = game.getColorsBySocket(client.id);
 
@@ -222,9 +222,9 @@ export class FogValidationService {
         figurePosition: [move.end[0], move.end[1]],
       });
     }
-  };
+  }
 
-  private checkEndGame = (client: Socket, game: Game, move: MoveType) => {
+  private checkEndGame(client: Socket, game: Game, move: MoveType) {
     const endFigure = game.getFigureFromEnd(move);
     const [clientColor] = game.getColorsBySocket(client.id);
 
@@ -232,5 +232,5 @@ export class FogValidationService {
       game.winner = game[clientColor].userId;
       game.gameEnd = new Date();
     }
-  };
+  }
 }

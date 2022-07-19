@@ -108,7 +108,7 @@ export class GameService {
     }
   }
 
-  moveChess = (client: Socket, move: MoveType) => {
+  moveChess(client: Socket, move: MoveType) {
     const roomId = findRoomBySocketId(client.id, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
@@ -123,9 +123,9 @@ export class GameService {
     game.move(client, move);
 
     this.sendGame(client.id);
-  };
+  }
 
-  draw = (client: Socket, isDrawing: boolean) => {
+  draw(client: Socket, isDrawing: boolean) {
     const roomId = findRoomBySocketId(client.id, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
@@ -161,7 +161,7 @@ export class GameService {
         .in(game[opponentsColor].socket)
         .emit(WS_EVENTS.GAME.DRAW);
     }
-  };
+  }
 
   connect(client: ISocket) {
     const game = this.getGame(client.user.id);
@@ -186,7 +186,7 @@ export class GameService {
     if (!game.gameEnd) this.sendGame(client.id);
   }
 
-  disconnect = (client: ISocket, message: string) => {
+  disconnect(client: ISocket, message: string) {
     const game = this.getGame(client.user.id);
     if (!game) return;
 
@@ -235,7 +235,7 @@ export class GameService {
         .in(game[winnerColor].socket)
         .emit(WS_EVENTS.GAME.DISCONNECT_OPPONENT, true);
     }
-  };
+  }
 
   surrennder(client: ISocket) {
     const game = this.getGame(client.user.id);

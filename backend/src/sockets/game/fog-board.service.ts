@@ -256,12 +256,12 @@ export class FogBoardService {
     return { white, black };
   };
 
-  private checkInterceptionWays = (
+  private checkInterceptionWays(
     game: Game,
     color: string,
     board: string[][],
     ways: number[][][],
-  ) => {
+  ) {
     game[color].rules.interception?.forEach((v) => {
       ways.push([
         [v.move.start[0], v.move.start[1]],
@@ -274,9 +274,9 @@ export class FogBoardService {
       board[v.figurePosition[0]][v.figurePosition[1]] =
         game.board[v.figurePosition[0]][v.figurePosition[1]];
     });
-  };
+  }
 
-  private checkKingWays = (props: CheckWaysPropsType) => {
+  private checkKingWays(props: CheckWaysPropsType) {
     const { checkRow, checkCol } = props;
 
     KING_WAYS.forEach((way) => {
@@ -290,12 +290,9 @@ export class FogBoardService {
     });
 
     this.checkCastling(props);
-  };
+  }
 
-  private checkKnightWays = (
-    props: CheckWaysPropsType,
-    figureWays: number[][],
-  ) => {
+  private checkKnightWays(props: CheckWaysPropsType, figureWays: number[][]) {
     const { checkRow, checkCol } = props;
 
     figureWays.forEach((way) => {
@@ -307,7 +304,7 @@ export class FogBoardService {
       if (isCorrectCoordinates)
         this.addWayAndVisibility({ ...props, wayRow, wayCol });
     });
-  };
+  }
 
   private checkWays(props: CheckWaysPropsType, figureWays: number[][][]) {
     const { game, checkRow, checkCol } = props;
