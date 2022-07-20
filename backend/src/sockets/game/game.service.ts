@@ -58,10 +58,7 @@ export class GameService {
     let boardsAndWays;
 
     if (game.gameMode === GAME_MODES.STANDART) {
-      boardsAndWays = this.boardService.createWays(game);
-      const [client] = game.getColorsBySocket(socketId);
-      if (game[client].rules.check)
-        throw new WsException('Your king is under attack');
+      boardsAndWays = this.boardService.createWays(game, socketId);
     } else {
       boardsAndWays = this.fogBoardService.createFogBoards(game);
     }
