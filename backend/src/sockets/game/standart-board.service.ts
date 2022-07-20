@@ -18,26 +18,72 @@ import {
   KING_WAYS,
   KING_WAYS_CASTLING,
 } from '../../enums/figureWays';
+import { WsException } from '@nestjs/websockets';
 
 export class BoardService {
   private logger = new Logger(BoardService.name);
 
-  createWays(game: Game) {
+  createWays(game: Game, clientSocketId?: string) {
+    const [clientColor, opponentColor] = game.getColorsBySocket(clientSocketId);
+
+    const data = this.createData(game);
+
+    if (data[opponentColor].rules.check) {
+      this.clearWaysCheck(game, data, opponentColor);
+    }
+
+    if (game[clientColor].rules.check)
+      throw new WsException('Your king is under attack');
+
+    game.white.ways = data.white.ways;
+    game.black.ways = data.black.ways;
+    game.white.rules.check = data.white.rules.check;
+    game.black.rules.check = data.black.rules.check;
+
+    return { whiteWays: data.white.ways, blackWays: data.black.ways };
+  }
+
+  private clearWaysCheck(game: Game, data: any, color: string) {
+    data[color].ways.forEach((way, index) => {
+      const copyGame = JSON.parse(JSON.stringify(game));
+      const wayArray = way.split('');
+
+      const move = {
+        start: [wayArray[0], wayArray[1]],
+        end: [wayArray[2], wayArray[3]],
+      };
+
+      copyGame.board[move.end[0]][move.end[1]] =
+        copyGame.board[move.end[2]][move.end[3]];
+
+      copyGame.board[move.end[2]][move.end[3]] = FIGURES.EMPTY;
+
+      const data = this.createData(copyGame);
+
+      if (data[color].rules.check) {
+        data[color].ways.splice(1, index);
+      }
+    });
+  }
+
+  private createData(game: Game) {
     const data = {
       white: {
-        ways: {
+        initWays: {
           king: [],
           figures: [],
         },
+        ways: [],
         rules: {
           check: false,
         },
       },
       black: {
-        ways: {
+        initWays: {
           king: [],
           figures: [],
         },
+        ways: [],
         rules: {
           check: false,
         },
@@ -46,24 +92,24 @@ export class BoardService {
 
     this.addKingsWays(game, data);
     this.createOtherFiguresWays(game, data);
-    const whiteWays: string[] = [];
-    const blackWays: string[] = [];
 
-    data.white.ways.king.forEach((way) => whiteWays.push(this.createWay(way)));
-    data.black.ways.king.forEach((way) => blackWays.push(this.createWay(way)));
-    data.white.ways.figures.forEach((way) =>
-      whiteWays.push(this.createWay(way)),
+    data.white.initWays.king.forEach((way) =>
+      data.white.ways.push(this.createWay(way)),
     );
-    data.black.ways.figures.forEach((way) =>
-      blackWays.push(this.createWay(way)),
+    data.black.initWays.king.forEach((way) =>
+      data.black.ways.push(this.createWay(way)),
+    );
+    data.white.initWays.figures.forEach((way) =>
+      data.white.ways.push(this.createWay(way)),
+    );
+    data.black.initWays.figures.forEach((way) =>
+      data.black.ways.push(this.createWay(way)),
     );
 
-    game.white.ways = whiteWays;
-    game.black.ways = blackWays;
-    game.white.rules.check = data.white.rules.check;
-    game.black.rules.check = data.black.rules.check;
+    delete data.white.initWays;
+    delete data.black.initWays;
 
-    return { whiteWays, blackWays };
+    return data;
   }
 
   private addKingsWays(game: Game, data) {
@@ -100,12 +146,12 @@ export class BoardService {
       });
     });
 
-    data.white.ways.king = this.clearKingWays(
+    data.white.initWays.king = this.clearKingWays(
       initWhiteKingWays,
       initBlackKingWays,
     );
 
-    data.black.ways.king = this.clearKingWays(
+    data.black.initWays.king = this.clearKingWays(
       initBlackKingWays,
       initWhiteKingWays,
     );
@@ -173,12 +219,12 @@ export class BoardService {
           props = {
             ...props,
             color: COLORS.WHITE,
-            ways: data.white.ways.figures,
+            ways: data.white.initWays.figures,
             figures: WHITE_FIGURES,
             king: FIGURES.WHITE_KING,
             pawnWays: WHITE_PAWN_WAYS,
             opponentsKing: FIGURES.BLACK_KING,
-            opponentsKingsWays: data.black.ways.king,
+            opponentsKingsWays: data.black.initWays.king,
             opponentsColor: COLORS.BLACK,
           };
         }
@@ -187,12 +233,12 @@ export class BoardService {
           props = {
             ...props,
             color: COLORS.BLACK,
-            ways: data.black.ways.figures,
+            ways: data.black.initWays.figures,
             figures: BLACK_FIGURES,
             king: FIGURES.BLACK_KING,
             pawnWays: BLACK_PAWN_WAYS,
             opponentsKing: FIGURES.WHITE_KING,
-            opponentsKingsWays: data.white.ways.king,
+            opponentsKingsWays: data.white.initWays.king,
             opponentsColor: COLORS.WHITE,
           };
         }
