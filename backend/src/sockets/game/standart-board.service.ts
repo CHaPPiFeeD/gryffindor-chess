@@ -23,28 +23,50 @@ export class BoardService {
   private logger = new Logger(BoardService.name);
 
   createWays(game: Game) {
-    game.white.rules.check = false;
-    game.black.rules.check = false;
-    const kingsWays = this.createKingsWays(game);
-    const initWays = this.createOtherFiguresWays(game, kingsWays);
+    const data = {
+      white: {
+        ways: {
+          king: [],
+          figures: [],
+        },
+        rules: {
+          check: false,
+        },
+      },
+      black: {
+        ways: {
+          king: [],
+          figures: [],
+        },
+        rules: {
+          check: false,
+        },
+      },
+    };
+
+    this.addKingsWays(game, data);
+    this.createOtherFiguresWays(game, data);
     const whiteWays: string[] = [];
     const blackWays: string[] = [];
 
-    kingsWays.white.forEach((way) => whiteWays.push(this.createWay(way)));
-    kingsWays.black.forEach((way) => blackWays.push(this.createWay(way)));
-    initWays.white.forEach((way) => whiteWays.push(this.createWay(way)));
-    initWays.black.forEach((way) => blackWays.push(this.createWay(way)));
+    data.white.ways.king.forEach((way) => whiteWays.push(this.createWay(way)));
+    data.black.ways.king.forEach((way) => blackWays.push(this.createWay(way)));
+    data.white.ways.figures.forEach((way) =>
+      whiteWays.push(this.createWay(way)),
+    );
+    data.black.ways.figures.forEach((way) =>
+      blackWays.push(this.createWay(way)),
+    );
 
     game.white.ways = whiteWays;
     game.black.ways = blackWays;
+    game.white.rules.check = data.white.rules.check;
+    game.black.rules.check = data.black.rules.check;
 
     return { whiteWays, blackWays };
   }
 
-  private createKingsWays(game: Game): {
-    white: number[][][];
-    black: number[][][];
-  } {
+  private addKingsWays(game: Game, data) {
     const initWhiteKingWays = [];
     const initBlackKingWays = [];
 
@@ -78,10 +100,15 @@ export class BoardService {
       });
     });
 
-    return {
-      white: this.clearKingWays(initWhiteKingWays, initBlackKingWays),
-      black: this.clearKingWays(initBlackKingWays, initWhiteKingWays),
-    };
+    data.white.ways.king = this.clearKingWays(
+      initWhiteKingWays,
+      initBlackKingWays,
+    );
+
+    data.black.ways.king = this.clearKingWays(
+      initBlackKingWays,
+      initWhiteKingWays,
+    );
   }
 
   private checkKingWays(props: CreateWaysPropsType) {
@@ -130,15 +157,7 @@ export class BoardService {
     return ways;
   }
 
-  private createOtherFiguresWays(
-    game: Game,
-    kingsWays: { white: number[][][]; black: number[][][] },
-  ): { white: number[][][]; black: number[][][] } {
-    const initWays = {
-      white: [],
-      black: [],
-    };
-
+  private createOtherFiguresWays(game: Game, data) {
     game.board.forEach((v, checkRow) => {
       v.forEach((v, checkCol) => {
         const cell = game.board[checkRow][checkCol];
@@ -147,18 +166,19 @@ export class BoardService {
           game,
           checkRow,
           checkCol,
+          data,
         };
 
         if (WHITE_FIGURES.includes(cell)) {
           props = {
             ...props,
             color: COLORS.WHITE,
-            ways: initWays.white,
+            ways: data.white.ways.figures,
             figures: WHITE_FIGURES,
             king: FIGURES.WHITE_KING,
             pawnWays: WHITE_PAWN_WAYS,
             opponentsKing: FIGURES.BLACK_KING,
-            opponentsKingsWays: kingsWays.black,
+            opponentsKingsWays: data.black.ways.king,
             opponentsColor: COLORS.BLACK,
           };
         }
@@ -167,12 +187,12 @@ export class BoardService {
           props = {
             ...props,
             color: COLORS.BLACK,
-            ways: initWays.black,
+            ways: data.black.ways.figures,
             figures: BLACK_FIGURES,
             king: FIGURES.BLACK_KING,
             pawnWays: BLACK_PAWN_WAYS,
             opponentsKing: FIGURES.WHITE_KING,
-            opponentsKingsWays: kingsWays.white,
+            opponentsKingsWays: data.white.ways.king,
             opponentsColor: COLORS.WHITE,
           };
         }
@@ -201,10 +221,8 @@ export class BoardService {
       });
     });
 
-    this.addInterceptionWays(game.white, initWays.white);
-    this.addInterceptionWays(game.black, initWays.black);
-
-    return initWays;
+    this.addInterceptionWays(game.white, data.white.ways.figures);
+    this.addInterceptionWays(game.black, data.black.ways.figures);
   }
 
   // TODO not working getLastMove function
@@ -278,9 +296,9 @@ export class BoardService {
   }
 
   private checkCheck(props: CreateWaysPropsType, endFigure) {
-    const { opponentsKing, game, opponentsColor } = props;
+    const { opponentsKing, data, opponentsColor } = props;
     if (endFigure !== opponentsKing) return;
-    game[opponentsColor].rules.check = true;
+    data[opponentsColor].rules.check = true;
   }
 
   private checkWays(props: CreateWaysPropsType, figureWays: number[][][]) {

@@ -56,6 +56,7 @@ export type QueueUserType = {
 
 export type CreateWaysPropsType = {
   game?: Game;
+  data?: any;
   color?: string;
   checkRow?: number;
   checkCol?: number;
