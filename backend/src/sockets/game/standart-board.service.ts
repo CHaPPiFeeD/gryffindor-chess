@@ -32,6 +32,8 @@ export class BoardService {
       this.clearWaysCheck(game, data, opponentColor);
     }
 
+    if (data[opponentColor].ways.length === 0) game.gameEnd = new Date();
+
     if (data[clientColor].rules.check)
       throw new WsException('Your king is under attack');
 
@@ -46,7 +48,7 @@ export class BoardService {
   private clearWaysCheck(game: Game, data: any, color: string) {
     const deleteWays = [];
 
-    data[color].ways.forEach((way, index) => {
+    data[color].ways.forEach((way) => {
       const copyGame = JSON.parse(JSON.stringify(game));
       const wayArray = way.split('');
 
@@ -61,19 +63,15 @@ export class BoardService {
       copyGame.board[move.start[0]][move.start[1]] = FIGURES.EMPTY;
 
       const wayData = this.createData(copyGame);
-
-      if (wayData[color].rules.check) {
-        deleteWays.push(way);
-      }
+      if (wayData[color].rules.check) deleteWays.push(way);
     });
 
     deleteWays.forEach((way) => {
       const index = data[color].ways.findIndex((dataWay) => way === dataWay);
-
       if (index >= 0) data[color].ways.splice(index, 1);
     });
 
-    console.log(data[color]);
+    // if (data[color].ways.length === 0) game.gameEnd = new Date();
   }
 
   private createData(game: Game) {
@@ -277,8 +275,8 @@ export class BoardService {
       });
     });
 
-    this.addInterceptionWays(game.white, data.white.ways.figures);
-    this.addInterceptionWays(game.black, data.black.ways.figures);
+    this.addInterceptionWays(game.white, data.white.initWays.figures);
+    this.addInterceptionWays(game.black, data.black.initWays.figures);
   }
 
   // TODO not working getLastMove function
