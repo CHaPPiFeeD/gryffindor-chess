@@ -32,7 +32,7 @@ export class BoardService {
       this.clearWaysCheck(game, data, opponentColor);
     }
 
-    if (game[clientColor].rules.check)
+    if (data[clientColor].rules.check)
       throw new WsException('Your king is under attack');
 
     game.white.ways = data.white.ways;
@@ -44,6 +44,8 @@ export class BoardService {
   }
 
   private clearWaysCheck(game: Game, data: any, color: string) {
+    const deleteWays = [];
+
     data[color].ways.forEach((way, index) => {
       const copyGame = JSON.parse(JSON.stringify(game));
       const wayArray = way.split('');
@@ -54,16 +56,24 @@ export class BoardService {
       };
 
       copyGame.board[move.end[0]][move.end[1]] =
-        copyGame.board[move.end[2]][move.end[3]];
+        copyGame.board[move.start[0]][move.start[1]];
 
-      copyGame.board[move.end[2]][move.end[3]] = FIGURES.EMPTY;
+      copyGame.board[move.start[0]][move.start[1]] = FIGURES.EMPTY;
 
-      const data = this.createData(copyGame);
+      const wayData = this.createData(copyGame);
 
-      if (data[color].rules.check) {
-        data[color].ways.splice(1, index);
+      if (wayData[color].rules.check) {
+        deleteWays.push(way);
       }
     });
+
+    deleteWays.forEach((way) => {
+      const index = data[color].ways.findIndex((dataWay) => way === dataWay);
+
+      if (index >= 0) data[color].ways.splice(index, 1);
+    });
+
+    console.log(data[color]);
   }
 
   private createData(game: Game) {
