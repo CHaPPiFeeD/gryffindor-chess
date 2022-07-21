@@ -12,7 +12,6 @@ import { PartyService } from '../../modules/party/party.service';
 import { BoardService } from './standart-board.service';
 import { FogBoardService } from './fog-board.service';
 import { FogValidationService } from './fog-validation.service';
-import { WsException } from '@nestjs/websockets';
 
 export class GameService {
   private logger = new Logger(GameService.name);
