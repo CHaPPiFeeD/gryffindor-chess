@@ -11,16 +11,19 @@ export const FindGameForm = () => {
 
   const initialValues: initialValuesType = {
     color: null,
+    mode: null,
   };
 
   const validationSchema = Yup.object({
     color: Yup.array()
       .required('Color is a required field')
       .nullable(),
+    mode: Yup.string()
+      .required('Mode is a required field'),
   });
 
   const onSubmit = (values: initialValuesType) => {
-    regInQueue(values, (isFind: boolean) => {
+    regInQueue(values, ({ isFind }: { isFind: boolean }) => {
       if (isFind) navigate(path.game());
       if (!isFind) navigate(path.waiting());
     });
@@ -57,6 +60,24 @@ export const FindGameForm = () => {
         }
       />
 
+      <Autocomplete
+        sx={{ marginBottom: '15px' }}
+        includeInputInList
+        id='mode'
+        options={modeOptions}
+        getOptionLabel={(option: any) => option.label}
+        onChange={(e, v) => formik.setFieldValue('mode', v?.mode || '')}
+        renderInput={(params) =>
+          <TextField
+            {...params}
+            label='mode'
+            error={formik.touched.mode && !!formik.errors.mode}
+            helperText={(formik.touched.mode && formik.errors.mode) || ''}
+            style={{ background: '#f0f0f0', borderRadius: '5px' }}
+          />
+        }
+      />
+
       <Button variant='contained' type='submit'>
         Start
       </Button>
@@ -66,11 +87,17 @@ export const FindGameForm = () => {
 };
 
 const colorOptions = [
-  { label: 'white', color: ['white'] },
-  { label: 'black', color: ['black'] },
-  { label: 'any', color: ['white', 'black'] },
+  { label: 'White', color: ['white'] },
+  { label: 'Black', color: ['black'] },
+  { label: 'Any', color: ['white', 'black'] },
+];
+
+const modeOptions = [
+  { label: 'Standart', mode: 'STANDART' },
+  { label: 'Fog', mode: 'FOG' },
 ];
 
 type initialValuesType = {
   color: string[] | null,
+  mode: string[] | null,
 }

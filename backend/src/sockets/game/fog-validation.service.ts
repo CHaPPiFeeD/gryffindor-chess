@@ -12,7 +12,7 @@ import {
 } from '../../helpers/validation';
 import { ServerGateway } from '../server/server.gateway';
 
-export class ValidationService {
+export class FogValidationService {
   private logger = new Logger();
   private initPos = 7;
 
@@ -169,7 +169,7 @@ export class ValidationService {
     if (isTwoSteps) this.addInterceptionMove({ ...props, step });
   }
 
-  private checkInterceptionMove = (props) => {
+  private checkInterceptionMove(props) {
     const { game, move, client, x, y, step } = props;
     const [clientColor] = game.getColorsBySocket(client.id);
 
@@ -190,9 +190,9 @@ export class ValidationService {
     }
 
     return isInterception;
-  };
+  }
 
-  private addInterceptionMove = (props) => {
+  private addInterceptionMove(props) {
     const { game, move, step, client } = props;
     const [, opponentColor] = game.getColorsBySocket(client.id);
 
@@ -223,9 +223,9 @@ export class ValidationService {
         figurePosition: [move.end[0], move.end[1]],
       });
     }
-  };
+  }
 
-  private checkEndGame = (client: Socket, game: Game, move: ChessMoveDto) => {
+  private checkEndGame(client: Socket, game: Game, move: ChessMoveDto) {
     const endFigure = game.getFigureFromEnd(move);
     const [clientColor] = game.getColorsBySocket(client.id);
 
@@ -233,5 +233,5 @@ export class ValidationService {
       game.winner = game[clientColor].userId;
       game.gameEnd = new Date();
     }
-  };
+  }
 }

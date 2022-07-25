@@ -31,6 +31,17 @@ export const INIT_BOARD = (): string[][] => [
   ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
 ];
 
+// export const INIT_BOARD = (): string[][] => [
+//   ['.', '.', '.', '.', 'k', '.', '.', '.'],
+//   ['.', '.', '.', '.', '.', '.', '.', '.'],
+//   ['.', '.', '.', '.', '.', '.', '.', '.'],
+//   ['.', '.', '.', '.', '.', '.', '.', '.'],
+//   ['.', '.', '.', '.', '.', '.', '.', '.'],
+//   ['.', '.', '.', '.', '.', '.', '.', '.'],
+//   ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+//   ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+// ];
+
 // prettier-ignore
 export const ATTACKS_SCHEME: string[][] = [
   ['bq',  '',  '',  '',  '',  '',   '', 'rq',   '',  '',  '',  '',  '',  '','bq'],
@@ -94,4 +105,26 @@ export const SECOND_LETTER = {
   5: '3',
   6: '2',
   7: '1',
+};
+
+export const WS_EVENTS = {
+  QUEUE: {
+    SEARCH: '/queue/search',
+    LEAVE: '/queue/leave',
+    GET_QUEUE: '/queue:get',
+  },
+  GAME: {
+    MOVE: '/game/move',
+    LEAVE: '/game/leave',
+    GET_GAME: '/game:get',
+    DRAW: '/game/draw',
+    RECONNECT: '/game/reconnect',
+    END: '/game/end',
+    DISCONNECT_OPPONENT: '/game/opponent/disconnect',
+  },
+};
+
+export const GAME_MODES = {
+  STANDART: 'STANDART',
+  FOG: 'FOG',
 };

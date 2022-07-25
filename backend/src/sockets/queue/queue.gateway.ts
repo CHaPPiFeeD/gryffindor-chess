@@ -2,10 +2,10 @@ import { Inject, Logger, UseGuards, UsePipes } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { SearchGameDto } from 'src/dto/gateway.dto';
-import { WsAuthGuard } from 'src/guards/ws.auth.guard';
-import { WsValidationPipe } from 'src/pipes/ws.validation.pipe';
-import { ISocket } from 'src/types';
-import { WS_EVENTS } from '../constants';
+import { WsValidationPipe } from '../../pipes/ws.validation.pipe';
+import { WsAuthGuard } from '../../guards/ws.auth.guard';
+import { ISocket } from '../../types';
+import { WS_EVENTS } from '../../enums/constants';
 import { QueueService } from './queue.service';
 
 @WebSocketGateway({ cors: true })
@@ -18,7 +18,10 @@ export class QueueGateway {
   @UseGuards(WsAuthGuard)
   @SubscribeMessage(WS_EVENTS.QUEUE.SEARCH)
   @UsePipes(new WsValidationPipe())
-  regToQueue(client: ISocket, data: SearchGameDto) {
+  registrationToQueue(
+    client: ISocket,
+    data: { color: string[]; mode: string },
+  ) {
     return this.queueService.regToQueue(client, data);
   }
 

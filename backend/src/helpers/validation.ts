@@ -83,8 +83,8 @@ export const checkDiagonalMove = (props: MovePropsType): boolean => {
   }
 };
 
-export const checkCoordinates = (wayRow: number, wayCol: number) => {
-  return wayRow >= 0 && wayRow < 8 && wayCol >= 0 && wayCol < 8;
+export const validCoordinate = (row: number, col: number) => {
+  return row >= 0 && row < 8 && col >= 0 && col < 8;
 };
 
 export const checkSchemeAttack = (props: MovePropsType) => {
@@ -169,7 +169,7 @@ const checkCastlingSide = (props: MovePropsType, side): boolean => {
     const wayRow = move.start[0] + way[0];
     const wayCol = move.start[1] + way[1];
 
-    const isCorrectCoordinates = checkCoordinates(wayRow, wayCol);
+    const isCorrectCoordinates = validCoordinate(wayRow, wayCol);
 
     if (isCorrectCoordinates) {
       const isCellNotEmpty = game.board[wayRow][wayCol] !== FIGURES.EMPTY;

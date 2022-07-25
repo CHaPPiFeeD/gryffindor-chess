@@ -8,12 +8,14 @@ export type GamePlayerType = {
   socket: string;
   name: string;
   offersDraw: boolean;
+  ways: string[];
   rules: {
     castling: {
       long: boolean;
       short: boolean;
     };
     interception: InterceptionType[];
+    check?: boolean;
   };
   disconnect: string | null;
 };
@@ -30,10 +32,10 @@ export type MovePropsType = {
   client: Socket;
   move: ChessMoveDto;
   game: Game;
-  attackRow?: number;
-  attackCol?: number;
-  x?: number;
-  y?: number;
+  attackRow: number;
+  attackCol: number;
+  x: number;
+  y: number;
 };
 
 export type QueueUserType = {
@@ -41,19 +43,37 @@ export type QueueUserType = {
   socket: string;
   name: string;
   color: string[];
+  mode: string;
+};
+
+export type CreateWaysPropsType = {
+  game?: Game;
+  data?: any;
+  color?: string;
+  checkRow?: number;
+  checkCol?: number;
+  ways?: number[][][];
+  pawnWays?: number[][];
+  king?: string;
+  kingWays?: number[][][];
+  opponentsKing?: string;
+  opponentsKingsWays?: number[][][];
+  opponentsColor?: string;
+  figures?: string;
 };
 
 export type CheckWaysPropsType = {
-  game: Game;
+  game?: Game;
   playerBoard?: string[][];
   playerColor?: string;
-  checkRow: number;
-  checkCol: number;
+  checkRow?: number;
+  checkCol?: number;
   playerWays?: number[][][];
   anotherPlayerWays?: string[];
   ownFigures?: string;
   ownKing?: string;
   pawnWays?: number[][];
+  kingWays?: number[][];
 };
 
 export type CreateBoardsForPlayersType = {

@@ -1,16 +1,18 @@
 import { Inject, Logger } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { Socket } from 'socket.io';
+import { ObjectId } from 'mongoose';
 import { findRoomBySocketId } from '../../helpers/game';
 import { ISocket, QueueUserType } from '../../types';
-import { ValidationService } from './validation.service';
-import { Socket } from 'socket.io';
-import { BoardService } from './board.service';
+import { StandartValidationService } from './standart-validation.service';
 import { ServerGateway } from '../server/server.gateway';
-import { Game } from 'src/models/game.model';
-import { SchedulerRegistry } from '@nestjs/schedule';
-import { WS_EVENTS } from '../constants';
-import { ObjectId } from 'mongoose';
-import { PartyService } from 'src/modules/party/party.service';
 import { ChessMoveDto } from 'src/dto/gateway.dto';
+import { Game } from '../../models/game.model';
+import { GAME_MODES, WS_EVENTS } from '../../enums/constants';
+import { PartyService } from '../../modules/party/party.service';
+import { BoardService } from './standart-board.service';
+import { FogBoardService } from './fog-board.service';
+import { FogValidationService } from './fog-validation.service';
 
 export class GameService {
   private logger = new Logger(GameService.name);
@@ -20,11 +22,17 @@ export class GameService {
   @Inject(ServerGateway)
   private serverGateway: ServerGateway;
 
-  @Inject(ValidationService)
-  private validationService: ValidationService;
+  @Inject(StandartValidationService)
+  private standartValidationService: StandartValidationService;
+
+  @Inject(FogValidationService)
+  private fogValidationService: FogValidationService;
 
   @Inject(BoardService)
   private boardService: BoardService;
+
+  @Inject(FogBoardService)
+  private fogBoardService: FogBoardService;
 
   @Inject(PartyService)
   private partyService: PartyService;
@@ -45,7 +53,15 @@ export class GameService {
     const roomId = findRoomBySocketId(socketId, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
-    const boardsAndWays = this.boardService.createFogBoards(game);
+
+    let boardsAndWays;
+
+    if (game.gameMode === GAME_MODES.STANDART) {
+      boardsAndWays = this.boardService.createWays(game, socketId);
+    } else {
+      boardsAndWays = this.fogBoardService.createFogBoards(game);
+    }
+
     const data = game.getDataForPlayers(boardsAndWays);
 
     this.serverGateway.server
@@ -89,20 +105,24 @@ export class GameService {
     }
   }
 
-  moveChess = (client: Socket, move: ChessMoveDto) => {
+  moveChess(client: Socket, move: ChessMoveDto) {
     const roomId = findRoomBySocketId(client.id, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
 
-    this.validationService.validationMove(client, game, move);
+    if (game.gameMode === GAME_MODES.STANDART) {
+      this.standartValidationService.validationMove(client, game, move);
+    } else {
+      this.fogValidationService.validationMove(client, game, move);
+    }
 
     game.updateLog(client, move);
     game.move(client, move);
 
     this.sendGame(client.id);
-  };
+  }
 
-  draw = (client: Socket, isDrawing: boolean) => {
+  draw(client: Socket, isDrawing: boolean) {
     const roomId = findRoomBySocketId(client.id, this.gamesStates);
     if (!roomId) return;
     const game = this.gamesStates.get(roomId);
@@ -138,7 +158,7 @@ export class GameService {
         .in(game[opponentsColor].socket)
         .emit(WS_EVENTS.GAME.DRAW);
     }
-  };
+  }
 
   connect(client: ISocket) {
     const game = this.getGame(client.user.id);
@@ -163,7 +183,7 @@ export class GameService {
     if (!game.gameEnd) this.sendGame(client.id);
   }
 
-  disconnect = (client: ISocket, message: string) => {
+  disconnect(client: ISocket, message: string) {
     const game = this.getGame(client.user.id);
     if (!game) return;
 
@@ -212,7 +232,7 @@ export class GameService {
         .in(game[winnerColor].socket)
         .emit(WS_EVENTS.GAME.DISCONNECT_OPPONENT, true);
     }
-  };
+  }
 
   surrennder(client: ISocket) {
     const game = this.getGame(client.user.id);
