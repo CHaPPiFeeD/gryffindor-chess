@@ -18,11 +18,8 @@ import {
   KING_WAYS_CASTLING,
 } from '../../enums/figureWays';
 import { Game } from '../../models/game.model';
-import {
-  CheckWaysPropsType,
-  CreateBoardsForPlayersType,
-  MoveType,
-} from '../../types';
+import { CheckWaysPropsType, CreateBoardsForPlayersType } from '../../types';
+import { ChessMoveDto } from 'src/dto/gateway.dto';
 
 export class FogBoardService {
   private logger = new Logger(FogBoardService.name);
@@ -236,7 +233,7 @@ export class FogBoardService {
   getLastMove = (
     whiteBoard: string[][],
     blackBoard: string[][],
-    move: MoveType,
+    move: ChessMoveDto,
   ) => {
     const white = [];
     const black = [];
