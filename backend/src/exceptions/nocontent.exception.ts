@@ -5,7 +5,7 @@ import {
   API_STATUS_CODES,
   API_STATUS_MESSAGES,
   APPLICATION_ERROR_CODES,
-} from '../enums/errorsCode';
+} from '../enums/errors-сode';
 import { N } from '../helpers';
 
 export class CreateException extends HttpException {

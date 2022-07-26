@@ -2,22 +2,8 @@ import { Logger } from '@nestjs/common';
 import { validCoordinate } from '../../helpers/validation';
 import { Game } from '../../models/game.model';
 import { CreateWaysPropsType, GamePlayerType } from '../../types';
-import {
-  WHITE_FIGURES,
-  BLACK_FIGURES,
-  FIGURES,
-  COLORS,
-} from '../../enums/constants';
-import {
-  QUEEN_WAYS,
-  BISHOP_WAYS,
-  KNIGHTS_WAYS,
-  ROOK_WAYS,
-  WHITE_PAWN_WAYS,
-  BLACK_PAWN_WAYS,
-  KING_WAYS,
-  KING_WAYS_CASTLING,
-} from '../../enums/figureWays';
+import { FIGURES, COLORS } from '../../enums/constants';
+import WAYS from '../../enums/figure-ways';
 import { WsException } from '@nestjs/websockets';
 
 export class BoardService {
@@ -128,25 +114,25 @@ export class BoardService {
       v.forEach((v, checkCol) => {
         const cell = game.board[checkRow][checkCol];
 
-        if (cell === FIGURES.WHITE_KING) {
+        if (cell === FIGURES.WHITE.KING) {
           const props: CreateWaysPropsType = {
             game,
             checkRow,
             checkCol,
             kingWays: initWhiteKingWays,
-            figures: WHITE_FIGURES,
+            figures: FIGURES.WHITE.ALL,
             color: COLORS.WHITE,
           };
           this.checkKingWays(props);
         }
 
-        if (cell === FIGURES.BLACK_KING) {
+        if (cell === FIGURES.BLACK.KING) {
           const props: CreateWaysPropsType = {
             game,
             checkRow,
             checkCol,
             kingWays: initBlackKingWays,
-            figures: BLACK_FIGURES,
+            figures: FIGURES.BLACK.ALL,
             color: COLORS.BLACK,
           };
           this.checkKingWays(props);
@@ -168,7 +154,7 @@ export class BoardService {
   private checkKingWays(props: CreateWaysPropsType) {
     const { checkRow, checkCol, kingWays, game, figures } = props;
 
-    KING_WAYS.forEach((way) => {
+    WAYS.KING.forEach((way) => {
       const wayRow = checkRow + way[0];
       const wayCol = checkCol + way[1];
 
@@ -223,52 +209,52 @@ export class BoardService {
           data,
         };
 
-        if (WHITE_FIGURES.includes(cell)) {
+        if (FIGURES.WHITE.ALL.includes(cell)) {
           props = {
             ...props,
             color: COLORS.WHITE,
             ways: data.white.initWays.figures,
-            figures: WHITE_FIGURES,
-            king: FIGURES.WHITE_KING,
-            pawnWays: WHITE_PAWN_WAYS,
-            opponentsKing: FIGURES.BLACK_KING,
+            figures: FIGURES.WHITE.ALL,
+            king: FIGURES.WHITE.KING,
+            pawnWays: WAYS.WHITE_PAWN,
+            opponentsKing: FIGURES.BLACK.KING,
             opponentsKingsWays: data.black.initWays.king,
             opponentsColor: COLORS.BLACK,
           };
         }
 
-        if (BLACK_FIGURES.includes(cell)) {
+        if (FIGURES.BLACK.ALL.includes(cell)) {
           props = {
             ...props,
             color: COLORS.BLACK,
             ways: data.black.initWays.figures,
-            figures: BLACK_FIGURES,
-            king: FIGURES.BLACK_KING,
-            pawnWays: BLACK_PAWN_WAYS,
-            opponentsKing: FIGURES.WHITE_KING,
+            figures: FIGURES.BLACK.ALL,
+            king: FIGURES.BLACK.KING,
+            pawnWays: WAYS.BLACK_PAWN,
+            opponentsKing: FIGURES.WHITE.KING,
             opponentsKingsWays: data.white.initWays.king,
             opponentsColor: COLORS.WHITE,
           };
         }
 
         switch (true) {
-          case cell.toLowerCase() === FIGURES.BLACK_QUEEN:
-            this.checkWays(props, QUEEN_WAYS);
+          case cell.toLowerCase() === FIGURES.BLACK.QUEEN:
+            this.checkWays(props, WAYS.QUEEN);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_BISHOP:
-            this.checkWays(props, BISHOP_WAYS);
+          case cell.toLowerCase() === FIGURES.BLACK.BISHOP:
+            this.checkWays(props, WAYS.BISHOP);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_KNIGHT:
+          case cell.toLowerCase() === FIGURES.BLACK.KNIGHT:
             this.checkKnightWays(props);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_ROOK:
-            this.checkWays(props, ROOK_WAYS);
+          case cell.toLowerCase() === FIGURES.BLACK.ROOK:
+            this.checkWays(props, WAYS.ROOK);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_PAWN:
+          case cell.toLowerCase() === FIGURES.BLACK.PAWN:
             this.checkPawnWays(props);
             break;
         }
@@ -326,7 +312,7 @@ export class BoardService {
       opponentsKing,
     } = props;
 
-    KNIGHTS_WAYS.forEach((way) => {
+    WAYS.KNIGHT.forEach((way) => {
       const wayRow = checkRow + way[0];
       const wayCol = checkCol + way[1];
 
@@ -390,7 +376,7 @@ export class BoardService {
             this.deleteKingsWay(opponentsKingsWays, wayRow, wayCol);
             this.checkCheck(props, endFigure);
 
-            if (endFigure.toLowerCase() === FIGURES.BLACK_KING) {
+            if (endFigure.toLowerCase() === FIGURES.BLACK.KING) {
               const wayRow = checkRow + side[sideIndex + 1][0];
               const wayCol = checkCol + side[sideIndex + 1][1];
 
@@ -427,13 +413,13 @@ export class BoardService {
       opponentsKingsWays,
       opponentsKing,
     } = props;
-    const initPosPawn = pawnWays === WHITE_PAWN_WAYS ? 6 : 1;
+    const initPosPawn = pawnWays === WAYS.WHITE_PAWN ? 6 : 1;
 
     pawnWays.forEach((way) => {
       const wayRow = checkRow + way[0];
       const wayCol = checkCol + way[1];
 
-      const step = pawnWays === WHITE_PAWN_WAYS ? wayRow + 1 : wayRow - 1;
+      const step = pawnWays === WAYS.WHITE_PAWN ? wayRow + 1 : wayRow - 1;
 
       if (validCoordinate(wayRow, wayCol)) {
         const isStep =
@@ -485,7 +471,7 @@ export class BoardService {
 
     if (
       castling.long &&
-      this.checkCastlingSide(props, KING_WAYS_CASTLING.TO_LONG_SIDE)
+      this.checkCastlingSide(props, WAYS.KING_CASTLING.TO_LONG_SIDE)
     ) {
       kingWays.push([
         [checkRow, checkCol],
@@ -495,7 +481,7 @@ export class BoardService {
 
     if (
       castling.short &&
-      this.checkCastlingSide(props, KING_WAYS_CASTLING.TO_SHORT_SIDE)
+      this.checkCastlingSide(props, WAYS.KING_CASTLING.TO_SHORT_SIDE)
     ) {
       kingWays.push([
         [checkRow, checkCol],

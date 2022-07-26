@@ -1,7 +1,6 @@
 import { Inject, Logger, UseGuards, UsePipes } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { SearchGameDto } from 'src/dto/gateway.dto';
 import { WsValidationPipe } from '../../pipes/ws.validation.pipe';
 import { WsAuthGuard } from '../../guards/ws.auth.guard';
 import { ISocket } from '../../types';

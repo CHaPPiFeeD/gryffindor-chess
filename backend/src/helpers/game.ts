@@ -1,6 +1,6 @@
 import { GamePlayerType, QueueUserType } from '../types';
 import { COLORS, GAME_MODES } from '../enums/constants';
-import { Game } from 'src/models/game.model';
+import { Game } from '../models/game.model';
 import { ObjectId } from 'mongoose';
 
 export const setPlayerColors = (

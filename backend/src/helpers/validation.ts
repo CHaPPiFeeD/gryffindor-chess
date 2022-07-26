@@ -1,5 +1,5 @@
 import { WsException } from '@nestjs/websockets';
-import { KING_WAYS_CASTLING } from '../enums/figureWays';
+import WAYS from '../enums/figure-ways';
 import { MovePropsType } from '../types';
 import { ATTACKS_SCHEME, COLORS, FIGURES } from '../enums/constants';
 
@@ -92,7 +92,7 @@ export const checkSchemeAttack = (props: MovePropsType) => {
   const startFigure = game.getFigureFromStart(move);
 
   if (
-    startFigure.toLowerCase() === FIGURES.BLACK_KING &&
+    startFigure.toLowerCase() === FIGURES.BLACK.KING &&
     checkKingCastle(props)
   )
     return;
@@ -123,12 +123,12 @@ export const checkKingCastle = (props: MovePropsType) => {
 
   const isLongCastlingAllow = checkCastlingSide(
     props,
-    KING_WAYS_CASTLING.TO_LONG_SIDE,
+    WAYS.KING_CASTLING.TO_LONG_SIDE,
   );
 
   const isShortCastlingAllow = checkCastlingSide(
     props,
-    KING_WAYS_CASTLING.TO_SHORT_SIDE,
+    WAYS.KING_CASTLING.TO_SHORT_SIDE,
   );
 
   const isShort = move.end[0] === initRow && move.end[1] === 6;

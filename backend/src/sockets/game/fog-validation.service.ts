@@ -1,10 +1,10 @@
 import { Inject, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { ChessMoveDto } from 'src/dto/gateway.dto';
-import { Game } from 'src/models/game.model';
-import { MovePropsType } from 'src/types';
-import { BLACK_FIGURES, FIGURES, WHITE_FIGURES } from '../../enums/constants';
+import { ChessMoveDto } from '../../dto/gateway.dto';
+import { Game } from '../../models/game.model';
+import { MovePropsType } from '../../types';
+import { FIGURES } from '../../enums/constants';
 import {
   checkDiagonalMove,
   checkSchemeAttack,
@@ -39,27 +39,27 @@ export class FogValidationService {
     };
 
     switch (true) {
-      case startFigure.toLowerCase() === FIGURES.BLACK_KING:
+      case startFigure.toLowerCase() === FIGURES.BLACK.KING:
         checkSchemeAttack(props);
         break;
 
-      case startFigure.toLowerCase() === FIGURES.BLACK_QUEEN:
+      case startFigure.toLowerCase() === FIGURES.BLACK.QUEEN:
         this.checkQueen(props);
         break;
 
-      case startFigure.toLowerCase() === FIGURES.BLACK_BISHOP:
+      case startFigure.toLowerCase() === FIGURES.BLACK.BISHOP:
         this.checkBishop(props);
         break;
 
-      case startFigure.toLowerCase() === FIGURES.BLACK_KNIGHT:
+      case startFigure.toLowerCase() === FIGURES.BLACK.KNIGHT:
         checkSchemeAttack(props);
         break;
 
-      case startFigure.toLowerCase() === FIGURES.BLACK_ROOK:
+      case startFigure.toLowerCase() === FIGURES.BLACK.ROOK:
         this.checkRook(props);
         break;
 
-      case startFigure.toLowerCase() === FIGURES.BLACK_PAWN:
+      case startFigure.toLowerCase() === FIGURES.BLACK.PAWN:
         this.checkPawn(props);
         break;
     }
@@ -90,15 +90,19 @@ export class FogValidationService {
       throw new WsException('Figure not found');
 
     if (
-      (client.id === game.white.socket && WHITE_FIGURES.includes(endFigure)) ||
-      (client.id === game.black.socket && BLACK_FIGURES.includes(endFigure))
+      (client.id === game.white.socket &&
+        FIGURES.WHITE.ALL.includes(endFigure)) ||
+      // eslint-disable-next-line prettier/prettier
+      (client.id === game.black.socket && 
+        FIGURES.BLACK.ALL.includes(endFigure))
     )
       throw new WsException('Move to own figure');
 
     if (
-      // eslint-disable-next-line prettier/prettier
-      (client.id === game.white.socket && BLACK_FIGURES.includes(startFigure)) ||
-      (client.id === game.black.socket && WHITE_FIGURES.includes(startFigure))
+      (client.id === game.white.socket &&
+        FIGURES.BLACK.ALL.includes(startFigure)) ||
+      (client.id === game.black.socket &&
+        FIGURES.WHITE.ALL.includes(startFigure))
     )
       throw new WsException("Move opponent's figure");
   }
@@ -141,8 +145,8 @@ export class FogValidationService {
     const startFigure = game.getFigureFromStart(move);
     const endFigure = game.getFigureFromEnd(move);
 
-    const initPawnPos = startFigure === FIGURES.WHITE_PAWN ? 6 : 1;
-    const step = startFigure === FIGURES.WHITE_PAWN ? -1 : 1;
+    const initPawnPos = startFigure === FIGURES.WHITE.PAWN ? 6 : 1;
+    const step = startFigure === FIGURES.WHITE.PAWN ? -1 : 1;
 
     const isStep = Math.abs(y) === 1 && x === 0 && endFigure === FIGURES.EMPTY;
 
@@ -199,7 +203,7 @@ export class FogValidationService {
     if (
       move.end[1] - 1 > 0 &&
       game.board[move.end[0]][move.end[1] - 1].toLowerCase() ===
-        FIGURES.BLACK_PAWN
+        FIGURES.BLACK.PAWN
     ) {
       game[opponentColor].rules.interception.push({
         move: {
@@ -213,7 +217,7 @@ export class FogValidationService {
     if (
       move.end[1] + 1 < 7 &&
       game.board[move.end[0]][move.end[1] + 1].toLowerCase() ===
-        FIGURES.BLACK_PAWN
+        FIGURES.BLACK.PAWN
     ) {
       game[opponentColor].rules.interception.push({
         move: {
@@ -229,7 +233,7 @@ export class FogValidationService {
     const endFigure = game.getFigureFromEnd(move);
     const [clientColor] = game.getColorsBySocket(client.id);
 
-    if (endFigure === FIGURES.BLACK_KING || endFigure === FIGURES.WHITE_KING) {
+    if (endFigure === FIGURES.BLACK.KING || endFigure === FIGURES.WHITE.KING) {
       game.winner = game[clientColor].userId;
       game.gameEnd = new Date();
     }

@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateException } from '../../exceptions/nocontent.exception';
-import { API_ERROR_CODES } from '../../enums/errorsCode';
+import { API_ERROR_CODES } from '../../enums/errors-сode';
 import { UserService } from '../user/user.service';
 import { JwtService } from '../jwt/jwt.service';
 import { RegistrationDto } from '../../dto/auth.dto';

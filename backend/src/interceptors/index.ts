@@ -4,8 +4,8 @@ import {
   HttpStatus,
   NestInterceptor,
 } from '@nestjs/common';
-import { Response } from '../helpers';
 import { map, Observable } from 'rxjs';
+import { Response } from '../helpers';
 
 export class ResponseInterception implements NestInterceptor<Response> {
   intercept(
@@ -14,7 +14,7 @@ export class ResponseInterception implements NestInterceptor<Response> {
   ): Observable<Response> | Promise<Observable<Response>> {
     const ctx = context.switchToHttp();
     const req = ctx.getRequest();
-    // const res = ctx.getResponse();
+
     return next.handle().pipe(
       map((value) => {
         return new Response({

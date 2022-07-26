@@ -1,6 +1,6 @@
 import { Controller, Get, Inject } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserRatingDto } from 'src/dto/rating.dto';
+import { UserRatingDto } from '../../dto/rating.dto';
 import { RatingService } from './rating.service';
 
 @ApiTags('Rating')

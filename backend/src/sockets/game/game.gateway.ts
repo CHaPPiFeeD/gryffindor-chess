@@ -1,14 +1,11 @@
 import { Inject, Logger, UseGuards, UsePipes } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-// <<<<<<< HEAD
-import { ChessMoveDto } from 'src/dto/gateway.dto';
+import { ChessMoveDto } from '../../dto/gateway.dto';
 import { WsValidationPipe } from '../../pipes/ws.validation.pipe';
 import { ISocket } from '../../types';
-// =======
 import { WsAuthGuard } from '../../guards/ws.auth.guard';
 import { WS_EVENTS } from '../../enums/constants';
-// >>>>>>> 05efe73 (Refactoring)
 import { GameService } from './game.service';
 
 @WebSocketGateway({ cors: true })

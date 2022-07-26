@@ -1,18 +1,10 @@
 import { Socket } from 'socket.io';
-import { GamePlayerType } from '../types';
-import {
-  INIT_BOARD,
-  COLORS,
-  FIRST_LETTER,
-  SECOND_LETTER,
-  FIGURES,
-  BLACK_FIGURES,
-  WHITE_FIGURES,
-} from 'src/enums/constants';
-import { randomString } from 'src/helpers';
-import { setPlayerColors } from 'src/helpers/game';
 import { ObjectId } from 'mongoose';
-import { ChessMoveDto } from 'src/dto/gateway.dto';
+import { GamePlayerType } from '../types';
+import { INIT_BOARD, COLORS, LETTERS, FIGURES } from '../enums/constants';
+import { randomString } from '../helpers/index';
+import { setPlayerColors } from '../helpers/game';
+import { ChessMoveDto } from '../dto/gateway.dto';
 
 export class Game {
   id: string;
@@ -53,10 +45,10 @@ export class Game {
 
     const log: string = [
       figure,
-      FIRST_LETTER[move.start[1]],
-      SECOND_LETTER[move.start[0]],
-      FIRST_LETTER[move.end[1]],
-      SECOND_LETTER[move.end[0]],
+      LETTERS.FIRST[move.start[1]],
+      LETTERS.SECOND[move.start[0]],
+      LETTERS.FIRST[move.end[1]],
+      LETTERS.SECOND[move.end[0]],
     ].join('');
 
     this.log.push(log);
@@ -72,7 +64,10 @@ export class Game {
     if (startFigure === pawn && (move.end[0] === 0 || move.end[0] === 7))
       this.board[move.start[0]][move.start[1]] = move.changeFigure.chooseFigure;
 
-    if (BLACK_FIGURES.includes(endFigure) || WHITE_FIGURES.includes(endFigure))
+    if (
+      FIGURES.BLACK.ALL.includes(endFigure) ||
+      FIGURES.WHITE.ALL.includes(endFigure)
+    )
       this.eatenFigures[clientColor].push(endFigure);
 
     this.board[move.end[0]][move.end[1]] =
@@ -88,9 +83,9 @@ export class Game {
     const blackLog = [];
 
     this.log.forEach((v) => {
-      if (WHITE_FIGURES.includes(v.split('')[0]) || this.winner)
+      if (FIGURES.WHITE.ALL.includes(v.split('')[0]) || this.winner)
         whiteLog.push(v);
-      if (BLACK_FIGURES.includes(v.split('')[0]) || this.winner)
+      if (FIGURES.BLACK.ALL.includes(v.split('')[0]) || this.winner)
         blackLog.push(v);
     });
 

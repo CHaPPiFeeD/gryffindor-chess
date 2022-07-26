@@ -1,25 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { validCoordinate } from '../../helpers/validation';
-import {
-  WHITE_FIGURES,
-  BLACK_FIGURES,
-  FIGURES,
-  FOG_BOARD,
-  COLORS,
-} from '../../enums/constants';
-import {
-  QUEEN_WAYS,
-  BISHOP_WAYS,
-  KNIGHTS_WAYS,
-  ROOK_WAYS,
-  WHITE_PAWN_WAYS,
-  BLACK_PAWN_WAYS,
-  KING_WAYS,
-  KING_WAYS_CASTLING,
-} from '../../enums/figureWays';
+import { FIGURES, FOG_BOARD, COLORS } from '../../enums/constants';
+import WAYS from '../../enums/figure-ways';
 import { Game } from '../../models/game.model';
 import { CheckWaysPropsType, CreateBoardsForPlayersType } from '../../types';
-import { ChessMoveDto } from 'src/dto/gateway.dto';
+import { ChessMoveDto } from '../../dto/gateway.dto';
 
 export class FogBoardService {
   private logger = new Logger(FogBoardService.name);
@@ -40,7 +25,7 @@ export class FogBoardService {
           checkCol,
         };
 
-        if (WHITE_FIGURES.includes(cell)) {
+        if (FIGURES.WHITE.ALL.includes(cell)) {
           whiteBoard[checkRow][checkCol] = cell;
 
           props = {
@@ -48,13 +33,13 @@ export class FogBoardService {
             playerColor: COLORS.WHITE,
             playerBoard: whiteBoard,
             playerWays: initWhiteWays,
-            ownFigures: WHITE_FIGURES,
-            ownKing: FIGURES.WHITE_KING,
-            pawnWays: WHITE_PAWN_WAYS,
+            ownFigures: FIGURES.WHITE.ALL,
+            ownKing: FIGURES.WHITE.KING,
+            pawnWays: WAYS.WHITE_PAWN,
           };
         }
 
-        if (BLACK_FIGURES.includes(cell)) {
+        if (FIGURES.BLACK.ALL.includes(cell)) {
           blackBoard[checkRow][checkCol] = cell;
 
           props = {
@@ -62,34 +47,34 @@ export class FogBoardService {
             playerColor: COLORS.BLACK,
             playerBoard: blackBoard,
             playerWays: initBlackWays,
-            ownFigures: BLACK_FIGURES,
-            ownKing: FIGURES.BLACK_KING,
-            pawnWays: BLACK_PAWN_WAYS,
+            ownFigures: FIGURES.BLACK.ALL,
+            ownKing: FIGURES.BLACK.KING,
+            pawnWays: WAYS.BLACK_PAWN,
           };
         }
 
         switch (true) {
-          case cell.toLowerCase() === FIGURES.BLACK_KING:
+          case cell.toLowerCase() === FIGURES.BLACK.KING:
             this.checkKingWays(props);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_QUEEN:
-            this.checkWays(props, QUEEN_WAYS);
+          case cell.toLowerCase() === FIGURES.BLACK.QUEEN:
+            this.checkWays(props, WAYS.QUEEN);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_BISHOP:
-            this.checkWays(props, BISHOP_WAYS);
+          case cell.toLowerCase() === FIGURES.BLACK.BISHOP:
+            this.checkWays(props, WAYS.BISHOP);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_KNIGHT:
-            this.checkKnightWays(props, KNIGHTS_WAYS);
+          case cell.toLowerCase() === FIGURES.BLACK.KNIGHT:
+            this.checkKnightWays(props, WAYS.KNIGHT);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_ROOK:
-            this.checkWays(props, ROOK_WAYS);
+          case cell.toLowerCase() === FIGURES.BLACK.ROOK:
+            this.checkWays(props, WAYS.ROOK);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_PAWN:
+          case cell.toLowerCase() === FIGURES.BLACK.PAWN:
             this.checkPawnWays(props);
             break;
         }
@@ -127,26 +112,26 @@ export class FogBoardService {
           checkCol,
         };
 
-        if (WHITE_FIGURES.includes(cell)) {
+        if (FIGURES.WHITE.ALL.includes(cell)) {
           props = {
             ...props,
             playerColor: COLORS.WHITE,
             playerWays: initWhiteWays,
-            ownFigures: WHITE_FIGURES,
-            ownKing: FIGURES.WHITE_KING,
-            pawnWays: WHITE_PAWN_WAYS,
+            ownFigures: FIGURES.WHITE.ALL,
+            ownKing: FIGURES.WHITE.KING,
+            pawnWays: WAYS.WHITE_PAWN,
             kingWays: whiteKingWays,
           };
         }
 
-        if (BLACK_FIGURES.includes(cell)) {
+        if (FIGURES.BLACK.ALL.includes(cell)) {
           props = {
             ...props,
             playerColor: COLORS.BLACK,
             playerWays: initBlackWays,
-            ownFigures: BLACK_FIGURES,
-            ownKing: FIGURES.BLACK_KING,
-            pawnWays: BLACK_PAWN_WAYS,
+            ownFigures: FIGURES.BLACK.ALL,
+            ownKing: FIGURES.BLACK.KING,
+            pawnWays: WAYS.BLACK_PAWN,
             kingWays: blackKingWays,
           };
         }
@@ -165,26 +150,26 @@ export class FogBoardService {
           checkCol,
         };
 
-        if (WHITE_FIGURES.includes(cell)) {
+        if (FIGURES.WHITE.ALL.includes(cell)) {
           props = {
             ...props,
             playerColor: COLORS.WHITE,
             playerWays: initWhiteWays,
-            ownFigures: WHITE_FIGURES,
-            ownKing: FIGURES.WHITE_KING,
-            pawnWays: WHITE_PAWN_WAYS,
+            ownFigures: FIGURES.WHITE.ALL,
+            ownKing: FIGURES.WHITE.KING,
+            pawnWays: WAYS.WHITE_PAWN,
             kingWays: whiteKingWays,
           };
         }
 
-        if (BLACK_FIGURES.includes(cell)) {
+        if (FIGURES.BLACK.ALL.includes(cell)) {
           props = {
             ...props,
             playerColor: COLORS.BLACK,
             playerWays: initBlackWays,
-            ownFigures: BLACK_FIGURES,
-            ownKing: FIGURES.BLACK_KING,
-            pawnWays: BLACK_PAWN_WAYS,
+            ownFigures: FIGURES.BLACK.ALL,
+            ownKing: FIGURES.BLACK.KING,
+            pawnWays: WAYS.BLACK_PAWN,
             kingWays: blackKingWays,
           };
         }
@@ -194,23 +179,23 @@ export class FogBoardService {
           //   this.checkKingWays(props);
           //   break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_QUEEN:
-            this.checkWays(props, QUEEN_WAYS);
+          case cell.toLowerCase() === FIGURES.BLACK.QUEEN:
+            this.checkWays(props, WAYS.QUEEN);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_BISHOP:
-            this.checkWays(props, BISHOP_WAYS);
+          case cell.toLowerCase() === FIGURES.BLACK.BISHOP:
+            this.checkWays(props, WAYS.BISHOP);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_KNIGHT:
-            this.checkKnightWays(props, KNIGHTS_WAYS);
+          case cell.toLowerCase() === FIGURES.BLACK.KNIGHT:
+            this.checkKnightWays(props, WAYS.KNIGHT);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_ROOK:
-            this.checkWays(props, ROOK_WAYS);
+          case cell.toLowerCase() === FIGURES.BLACK.ROOK:
+            this.checkWays(props, WAYS.ROOK);
             break;
 
-          case cell.toLowerCase() === FIGURES.BLACK_PAWN:
+          case cell.toLowerCase() === FIGURES.BLACK.PAWN:
             this.checkPawnWays(props);
             break;
         }
@@ -276,7 +261,7 @@ export class FogBoardService {
   private checkKingWays(props: CheckWaysPropsType) {
     const { checkRow, checkCol } = props;
 
-    KING_WAYS.forEach((way) => {
+    WAYS.KING.forEach((way) => {
       const wayRow = checkRow + way[0];
       const wayCol = checkCol + way[1];
 
@@ -326,13 +311,13 @@ export class FogBoardService {
 
   private checkPawnWays(props: CheckWaysPropsType) {
     const { game, checkRow, checkCol, pawnWays } = props;
-    const initPosPawn = pawnWays === WHITE_PAWN_WAYS ? 6 : 1;
+    const initPosPawn = pawnWays === WAYS.WHITE_PAWN ? 6 : 1;
 
     pawnWays.forEach((way) => {
       const wayRow = checkRow + way[0];
       const wayCol = checkCol + way[1];
 
-      const step = pawnWays === WHITE_PAWN_WAYS ? wayRow + 1 : wayRow - 1;
+      const step = pawnWays === WAYS.WHITE_PAWN ? wayRow + 1 : wayRow - 1;
 
       const isCorrectCoordinates = validCoordinate(wayRow, wayCol);
 
@@ -399,7 +384,7 @@ export class FogBoardService {
     if (castling) {
       const isLongCastling = this.checkCastlingSide(
         props,
-        KING_WAYS_CASTLING.TO_LONG_SIDE,
+        WAYS.KING_CASTLING.TO_LONG_SIDE,
         castling.long,
       );
 
@@ -414,7 +399,7 @@ export class FogBoardService {
     if (castling) {
       const isShortCastling = this.checkCastlingSide(
         props,
-        KING_WAYS_CASTLING.TO_SHORT_SIDE,
+        WAYS.KING_CASTLING.TO_SHORT_SIDE,
         castling.short,
       );
 

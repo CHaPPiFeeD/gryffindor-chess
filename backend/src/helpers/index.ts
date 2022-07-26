@@ -1,4 +1,4 @@
-import { API_ERROR_CODES } from '../enums/errorsCode';
+import { API_ERROR_CODES } from '../enums/errors-сode';
 
 export class Response {
   constructor(res: ResponseDto) {

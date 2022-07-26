@@ -1,15 +1,15 @@
-export const KNIGHTS_WAYS = [
-  [-2, -1],
-  [-2, 1],
-  [-1, -2],
-  [-1, 2],
-  [1, -2],
-  [1, 2],
-  [2, -1],
-  [2, 1],
+const KING = [
+  [-1, -1],
+  [-1, 0],
+  [-1, 1],
+  [0, -1],
+  [0, 1],
+  [1, -1],
+  [1, 0],
+  [1, 1],
 ];
 
-export const KING_WAYS_CASTLING = {
+const KING_CASTLING = {
   TO_LONG_SIDE: [
     [0, -1],
     [0, -2],
@@ -21,7 +21,18 @@ export const KING_WAYS_CASTLING = {
   ],
 };
 
-export const ROOK_WAYS = [
+const KNIGHT = [
+  [-2, -1],
+  [-2, 1],
+  [-1, -2],
+  [-1, 2],
+  [1, -2],
+  [1, 2],
+  [2, -1],
+  [2, 1],
+];
+
+const ROOK = [
   [
     [-1, 0],
     [-2, 0],
@@ -60,7 +71,7 @@ export const ROOK_WAYS = [
   ],
 ];
 
-export const BISHOP_WAYS = [
+const BISHOP = [
   [
     [-1, -1],
     [-2, -2],
@@ -99,29 +110,29 @@ export const BISHOP_WAYS = [
   ],
 ];
 
-export const QUEEN_WAYS = [...ROOK_WAYS, ...BISHOP_WAYS];
+const QUEEN = [...ROOK, ...BISHOP];
 
-export const WHITE_PAWN_WAYS = [
+const WHITE_PAWN = [
   [-1, 0],
   [-2, 0],
   [-1, -1],
   [-1, 1],
 ];
 
-export const BLACK_PAWN_WAYS = [
+const BLACK_PAWN = [
   [1, 0],
   [2, 0],
   [1, -1],
   [1, 1],
 ];
 
-export const KING_WAYS = [
-  [-1, -1],
-  [-1, 0],
-  [-1, 1],
-  [0, -1],
-  [0, 1],
-  [1, -1],
-  [1, 0],
-  [1, 1],
-];
+export default {
+  KING,
+  KING_CASTLING,
+  KNIGHT,
+  ROOK,
+  BISHOP,
+  QUEEN,
+  WHITE_PAWN,
+  BLACK_PAWN,
+};

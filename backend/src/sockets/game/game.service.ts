@@ -6,7 +6,7 @@ import { findRoomBySocketId } from '../../helpers/game';
 import { ISocket, QueueUserType } from '../../types';
 import { StandartValidationService } from './standart-validation.service';
 import { ServerGateway } from '../server/server.gateway';
-import { ChessMoveDto } from 'src/dto/gateway.dto';
+import { ChessMoveDto } from '../../dto/gateway.dto';
 import { Game } from '../../models/game.model';
 import { GAME_MODES, WS_EVENTS } from '../../enums/constants';
 import { PartyService } from '../../modules/party/party.service';

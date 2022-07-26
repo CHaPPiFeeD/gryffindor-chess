@@ -4,18 +4,24 @@ export const COLORS = {
 };
 
 export const FIGURES = {
-  BLACK_KING: 'k',
-  BLACK_QUEEN: 'q',
-  BLACK_BISHOP: 'b',
-  BLACK_KNIGHT: 'n',
-  BLACK_ROOK: 'r',
-  BLACK_PAWN: 'p',
-  WHITE_KING: 'K',
-  WHITE_QUEEN: 'Q',
-  WHITE_BISHOP: 'B',
-  WHITE_KNIGHT: 'N',
-  WHITE_ROOK: 'R',
-  WHITE_PAWN: 'P',
+  BLACK: {
+    KING: 'k',
+    QUEEN: 'q',
+    BISHOP: 'b',
+    KNIGHT: 'n',
+    ROOK: 'r',
+    PAWN: 'p',
+    ALL: 'kqbnrp',
+  },
+  WHITE: {
+    KING: 'K',
+    QUEEN: 'Q',
+    BISHOP: 'B',
+    KNIGHT: 'N',
+    ROOK: 'R',
+    PAWN: 'P',
+    ALL: 'KQBNRP',
+  },
   EMPTY: '.',
   FOG: '~',
 };
@@ -30,17 +36,6 @@ export const INIT_BOARD = (): string[][] => [
   ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
   ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
 ];
-
-// export const INIT_BOARD = (): string[][] => [
-//   ['.', '.', '.', '.', 'k', '.', '.', '.'],
-//   ['.', '.', '.', '.', '.', '.', '.', '.'],
-//   ['.', '.', '.', '.', '.', '.', '.', '.'],
-//   ['.', '.', '.', '.', '.', '.', '.', '.'],
-//   ['.', '.', '.', '.', '.', '.', '.', '.'],
-//   ['.', '.', '.', '.', '.', '.', '.', '.'],
-//   ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-//   ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
-// ];
 
 // prettier-ignore
 export const ATTACKS_SCHEME: string[][] = [
@@ -81,30 +76,27 @@ export const FOG_BOARD = (): string[][] => [
   ['~', '~', '~', '~', '~', '~', '~', '~'],
 ];
 
-export const WHITE_FIGURES = 'KQBNRP';
-
-export const BLACK_FIGURES = 'kqbnrp';
-
-export const FIRST_LETTER = {
-  0: 'a',
-  1: 'b',
-  2: 'c',
-  3: 'd',
-  4: 'e',
-  5: 'f',
-  6: 'g',
-  7: 'h',
-};
-
-export const SECOND_LETTER = {
-  0: '8',
-  1: '7',
-  2: '6',
-  3: '5',
-  4: '4',
-  5: '3',
-  6: '2',
-  7: '1',
+export const LETTERS = {
+  FIRST: {
+    0: 'a',
+    1: 'b',
+    2: 'c',
+    3: 'd',
+    4: 'e',
+    5: 'f',
+    6: 'g',
+    7: 'h',
+  },
+  SECOND: {
+    0: '8',
+    1: '7',
+    2: '6',
+    3: '5',
+    4: '4',
+    5: '3',
+    6: '2',
+    7: '1',
+  },
 };
 
 export const WS_EVENTS = {
